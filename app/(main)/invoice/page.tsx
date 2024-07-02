@@ -1,16 +1,16 @@
 "use client";
 
-import TutorList from './invoiceList';
+import InvoiceList from './invoiceList';
 
-const TutorPage = () => {
+const InvoicePage = () => {
 
     return (
         <div>
-            <h1>Tutor</h1>
-            <TutorList></TutorList>
+            <h1>Invoice</h1>
+            <InvoiceList></InvoiceList>
         </div>
-        // </TutorsProvider>
+        // </InvoicesProvider>
     );
 };
 
-export default TutorPage;
+export default InvoicePage;
