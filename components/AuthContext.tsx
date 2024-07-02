@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { signInWithGoogle, signInWithEmail, signUpWithEmail, signOut, deleteUserFromAuth } from '@/lib/firebase/auth';
-import { auth, db } from '@/lib/firebase/clientApp';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
+import { signInWithGoogle, signInWithEmail, signUpWithEmail, signOut, deleteUserFromAuth } from '@/lib/firebase/service/auth';
+import { auth, db } from '@/lib/firebase/service/clientApp';
 import { doc, getDoc } from 'firebase/firestore';
-import { UserRole } from '@/lib/enums';
+import type { UserRole } from '@/lib/enums';
 
 interface AuthContextType {
   user: User | null;
@@ -21,21 +23,19 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
 
-  const fetchUserRole = async (userId: string): Promise<UserRole | null> => {
+  const fetchUserRole = useCallback(async (userId: string): Promise<UserRole | null> => {
     const userDocRef = doc(db, 'users', userId);
     const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-        const userData = userDoc.data();
-        return userData.role as UserRole;
-      } else {
-        console.error('No such document!');
-        return null;
-      }
-    
-  }
+    if (!userDoc.exists()) {
+      console.error('No such document!');
+      return null;
+    }
+    const userData = userDoc.data();
+    return userData.role as UserRole;
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async(currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         const userRole = await fetchUserRole(currentUser.uid);
@@ -45,7 +45,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [fetchUserRole]);
 
   return (
     <AuthContext.Provider value={{ user, role, signInWithEmail, signUpWithEmail, signInWithGoogle, deleteUserFromAuth, signOut }}>

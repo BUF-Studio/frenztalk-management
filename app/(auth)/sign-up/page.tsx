@@ -1,24 +1,35 @@
 "use client";
 
-import { useState } from 'react';
-import { signUpWithEmail } from '@/lib/firebase/auth';
-import { addUserToFirestore } from '@/lib/firebase/firestore';
+import { useState } from "react";
+import { deleteUserFromAuth, signUpWithEmail } from "@/lib/firebase/service/auth";
+import { addUserToFirestore } from "@/lib/firebase/service/firestore";
+import { useRouter } from "next/navigation";
+import styles from "../../styles/Sign-up.module.scss";
 
 const SignUp = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const user = await signUpWithEmail(email, password);
-      await addUserToFirestore(user.uid, name, email);
-      console.log(`Sucess sign up ${JSON.stringify(user)}`)
+      try {
+        await addUserToFirestore(user.uid, name, email);
+        console.log(`Sucess sign up ${JSON.stringify(user)}`);
+        router.push("/auth/sign-in");
+      } catch (error) {
+        console.error("Error adding user to Firestore:", error);
+        // If adding user to Firestore fails, delete the created user
+        await deleteUserFromAuth(user);
+        console.log("User deleted from authentication due to Firestore error");
+      }
     } catch (err) {
       console.log("Error sign up", err);
     } finally {
@@ -26,43 +37,66 @@ const SignUp = () => {
     }
   };
 
+  const handleSignIn = () => {
+    router.push("/auth/sign-in");
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl mb-4">Sign Up</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-sm">
-      <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="px-4 py-2 border rounded-md text-black"
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="px-4 py-2 border rounded-md text-black"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="px-4 py-2 border rounded-md text-black"
-          required
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
-          disabled={loading}
-        >
-          {loading ? 'Signing up...' : 'Sign Up'}
-        </button>
-      </form>
-      {error && <p className="mt-4 text-red-500">{error}</p>}
+    <div className={styles.formSectionContainer}>
+      <div className={styles.formContainer}>
+        <div className={styles.titleContainer}>
+          <h1 className={styles.title}>Join FrenzTalk today</h1>
+          <p className={styles.subtitle}>It&apos;s quick and easy</p>
+        </div>
+        <div className={styles.inputContainer}>
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Username"
+              className={styles.input}
+              required
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email address"
+              className={styles.input}
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="New Password"
+              className={styles.input}
+              required
+            />
+            <button type="submit" className={styles.primaryButton}>
+              {loading ? "Loading..." : "Sign Up"}
+            </button>
+          </form>
+          <p className={styles.terms}>
+            By clicking continue, you agree to our{" "}
+            <a href="/terms">Terms of Service</a> and{" "}
+            <a href="/privacy">Privacy Policy</a> including{" "}
+            <a href="/cookies">Cookies Use</a>.
+          </p>
+        </div>
+        <div className={styles.signInContainer}>
+          <h4 className={styles.signInText}>Already have an account?</h4>
+          <button
+            type="submit"
+            className={styles.signInButton}
+            onClick={handleSignIn}
+          >
+            Sign In
+          </button>
+        </div>
+        {error && <p className={styles.error}>{error}</p>}
+      </div>
     </div>
   );
 };
