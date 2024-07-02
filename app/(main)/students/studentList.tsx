@@ -9,7 +9,9 @@ const StudentList: React.FC = () => {
         <div>
             <h1>Student List</h1>
             <ul>
+                
                 {students.map((student) => (
+                    
                     <li key={student.studentId}>
                         {student.name} - Age: {student.age}
                     </li>

@@ -36,7 +36,7 @@ export const studentsStream = (onUpdate: (updatedData: Student[]) => void,) => {
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
-    'students', // Firestore collection path
+    PATH, // Firestore collection path
     builder,
     onUpdate,
   );
