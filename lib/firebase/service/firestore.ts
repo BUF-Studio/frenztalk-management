@@ -15,8 +15,8 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-import { db } from "@/lib/firebase/clientApp";
-import { UserRole } from "../enums";
+import { UserRole } from "../../enums";
+import { db } from "./clientApp";
 
 export const addUserToFirestore = async (
   userId: string,
