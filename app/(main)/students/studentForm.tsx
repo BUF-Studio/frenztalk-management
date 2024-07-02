@@ -1,27 +1,28 @@
 "use client";
 
-import { addStudent } from '@/lib/firebase/student';
+import { useStudent } from '@/lib/context/page/studentContext';
+import { addStudent, updateStudent } from '@/lib/firebase/student';
 import { Student } from '@/lib/models/student';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 interface StudentFormProps {
-  student?: Student; // Optional prop for existing student data
+  student?: Student | null; // Optional prop for existing student data
 }
 
 
-const StudentForm: React.FC<StudentFormProps> = ({ student }) => {
+const StudentForm: React.FC<StudentFormProps> = () => {
   const [name, setName] = useState('');
   const [age, setAge] = useState<number | ''>('');
   const [email, setEmail] = useState('');
+  const { student, setStudent } = useStudent();
 
-  
+
+
   const router = useRouter();
 
-  const cancel = () => {
-    // router.back()
-  }
+
 
   useEffect(() => {
     if (student) {
@@ -32,7 +33,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student }) => {
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-  // const router = useRouter();
+    // const router = useRouter();
     e.preventDefault();
     console.log({ name, age, email });
 
@@ -42,14 +43,26 @@ const StudentForm: React.FC<StudentFormProps> = ({ student }) => {
     }
 
 
-    const student = new Student(null, name, age)
     try {
-      await addStudent(student)
+      if (student) {
+        const newStudent = new Student(student.studentId, name, age)
+        await updateStudent(newStudent)
+      } else {
+        const newStudent = new Student(null, name, age)
+        await addStudent(newStudent)
+      }
+      setStudent(null)
       router.back()
     } catch (error) {
-      console.error('Failed to add student');
+      console.error('Failed');
+      console.error(error);
     }
   };
+
+  const back = () => {
+    setStudent(null)
+    router.push('/students')
+  }
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 shadow-lg">
@@ -88,8 +101,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ student }) => {
         >
           Add Student
         </button>
-        <Link href={'/students'}>Back</Link>
       </form>
+      <button onClick={() => back()}>Back</button>
     </div>
   );
 };

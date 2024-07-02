@@ -2,8 +2,8 @@
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Tutor } from "../models/tutor";
-import { tutorsStream } from "../firebase/tutor";
+import { Tutor } from "../../models/tutor";
+import { tutorsStream } from "../../firebase/tutor";
 
 type TutorsContextType = {
   tutors: Tutor[];

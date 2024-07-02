@@ -2,8 +2,8 @@
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Invoice } from "../models/invoice";
-import { invoicesStream } from "../firebase/invoice";
+import { Invoice } from "../../models/invoice";
+import { invoicesStream } from "../../firebase/invoice";
 
 type InvoicesContextType = {
   invoices: Invoice[];

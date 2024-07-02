@@ -1,9 +1,8 @@
-import { useInvoices } from '@/lib/context/invoiceContext';
+import { useInvoices } from '@/lib/context/collection/invoiceContext';
 import React from 'react';
 
 const InvoiceList: React.FC = () => {
-    const { invoices } = useInvoices
-    ();
+    const { invoices } = useInvoices();
 
 
     return (

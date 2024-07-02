@@ -1,4 +1,4 @@
-import { useTutors } from '@/lib/context/tutorContext';
+import { useTutors } from '@/lib/context/collection/tutorContext';
 import React from 'react';
 
 const TutorList: React.FC = () => {

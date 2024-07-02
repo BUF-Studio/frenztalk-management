@@ -16,7 +16,7 @@ export const addStudent = async (
   }
 };
 
-export const setStudent = async (
+export const updateStudent = async (
   // studentId: string,
   student: Student
 ): Promise<void> => {
