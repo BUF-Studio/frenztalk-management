@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "../styles/Auth.module.scss";
+import styles from "../styles/auth/Auth.module.scss";
 
 export default function AuthLayout({
   children,

@@ -1,8 +1,8 @@
 import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useStudent } from '@/lib/context/page/studentContext';
-import { Student } from '@/lib/models/student';
+import type { Student } from '@/lib/models/student';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import type React from 'react';
 
 const StudentList: React.FC = () => {
     const { students } = useStudents();

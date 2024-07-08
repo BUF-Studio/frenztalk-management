@@ -9,12 +9,12 @@ import {
     deleteDoc,
     getDoc,
     onSnapshot,
-    Query,
-    QuerySnapshot,
-    DocumentSnapshot,
+    type Query,
+    type QuerySnapshot,
+    type DocumentSnapshot,
     Firestore,
-    DocumentData,
-    CollectionReference
+    type DocumentData,
+    type CollectionReference
 } from 'firebase/firestore';
 
 import { db } from './clientApp';

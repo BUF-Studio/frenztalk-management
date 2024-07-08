@@ -9,7 +9,7 @@ const StudentPage = () => {
     return (
         <div>
                 <h1>Student</h1>
-                <StudentList></StudentList>
+                <StudentList/>
                 <Link href={'/students/addStudent'}>Add Student</Link>
 
         </div>

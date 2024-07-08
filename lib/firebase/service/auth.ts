@@ -1,3 +1,5 @@
+'use client'
+
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -10,18 +12,21 @@ import {
 import type { User } from "firebase/auth";
 
 import { auth } from "./clientApp";
+// import { auth as adminAuth } from "./serverApp";
 
-// onAuthStateChanged(auth, async (user) => {
-//   if (user) {
-//     const userDoc = await getDoc(doc(db, "users", user.uid));
-//     const userData = userDoc.data();
-//     const userRole = userData.role;
-//     // Store the user role in state or context
-//   }
-// });
 export function onAuthStateChanged(cb: (user: User | null) => void){
     return _onAuthStateChanged(auth, cb);
 }
+
+// export const verifyIdToken = async (idToken: string) => {
+//   try {
+//     const decodedToken = await adminAuth.verifyIdToken(idToken);
+//     return decodedToken;
+//   } catch (error) {
+//     console.error("Error verifying ID token:", error);
+//     throw error;
+//   }
+// }
 
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
@@ -81,3 +86,5 @@ export const signOut = async() => {
   }
   return;
 }
+
+
