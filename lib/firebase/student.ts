@@ -1,6 +1,6 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
 import { Student } from "../models/student";
-import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData, } from "./service/firestoreService";
 
 const PATH = "students";
 

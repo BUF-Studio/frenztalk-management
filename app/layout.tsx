@@ -9,6 +9,7 @@ import StudentsProvider from "@/lib/context/collection/studentsContext";
 import TutorsProvider from "@/lib/context/collection/tutorContext";
 import InvoicesProvider from "@/lib/context/collection/invoiceContext";
 import StudentProvider from "@/lib/context/page/studentContext";
+import UserProvider from "@/lib/context/collection/userContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,22 +27,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StudentsProvider tutorId="1">
-          <TutorsProvider>
-            <InvoicesProvider>
-              <StudentProvider>
+        <UserProvider userId="72AiGSs5ZvRLeA9MKEDz88821Y12">
 
-                <div className="flex">
-                  <Sidebar />
-                  <main className="flex-1 p-4">
-                    {children}
-                  </main>
-                </div>
-              </StudentProvider>
-            </InvoicesProvider>
-          </TutorsProvider>
-        </StudentsProvider>
+          <StudentsProvider tutorId="1">
+            <TutorsProvider>
+              <InvoicesProvider>
+                <StudentProvider>
 
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="flex-1 p-4">
+                      {children}
+                    </main>
+                  </div>
+                </StudentProvider>
+              </InvoicesProvider>
+            </TutorsProvider>
+          </StudentsProvider>
+
+        </UserProvider>
 
       </body>
     </html>

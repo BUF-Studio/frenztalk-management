@@ -44,13 +44,13 @@ const StudentForm: React.FC<StudentFormProps> = () => {
 
 
     try {
-      if (student) {
-        const newStudent = new Student(student.studentId, name, age)
-        await updateStudent(newStudent)
-      } else {
-        const newStudent = new Student(null, name, age)
-        await addStudent(newStudent)
-      }
+      // if (student) {
+      //   const newStudent = new Student(student.studentId, name, age)
+      //   await updateStudent(newStudent)
+      // } else {
+      //   const newStudent = new Student(null, name, age)
+      //   await addStudent(newStudent)
+      // }
       setStudent(null)
       router.back()
     } catch (error) {

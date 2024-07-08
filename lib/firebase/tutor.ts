@@ -1,5 +1,5 @@
 import { Tutor } from "../models/tutor";
-import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData, } from "./service/firestoreService";
 
 const PATH = "tutors";
 

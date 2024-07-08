@@ -1,5 +1,5 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData, } from "./service/firestoreService";
 import { AvaSubject } from "../models/avaSubject";
 
 const PATH = "avaSubjects";
