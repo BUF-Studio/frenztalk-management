@@ -90,7 +90,7 @@ export function documentStream<T>(
 
     const unsubscribe = onSnapshot(reference,(snapshot: DocumentSnapshot) => {
         const data = builder(snapshot.data()!, snapshot.id);
-        // console.log(builder(snapshot.data()!, snapshot.id));
+        console.log(builder(snapshot.data()!, snapshot.id));
 
         if (onUpdate) {
             onUpdate(data);

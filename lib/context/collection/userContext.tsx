@@ -27,15 +27,17 @@ function UserProvider({ children, userId }: UserProviderProps) {
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
-    const onUpdate = (user: User) => {
-      setUser(user)
-    }
+    const onUpdate = (userData: User) => {
+      setUser(userData);
+    };
 
+    const unsubscribe = userStream(onUpdate, userId);
 
-    const unsubscribe = userStream(onUpdate, userId)
+    return () => {
+      unsubscribe();
+    };
+  }, [userId]);
 
-    return () => unsubscribe();
-  },);
 
   return (
     <UserContext.Provider value={{ user }}>
