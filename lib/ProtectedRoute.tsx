@@ -1,8 +1,8 @@
 // lib/ProtectedRoute.tsx
-import { useRouter } from 'next/navigation';
-import { useEffect, type ReactNode } from 'react';
-import { useAuth } from './context/AuthContext';
-import type { UserRole } from './enums';
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect, type ReactNode } from "react";
+import { useAuth } from "./context/AuthContext";
+import type { UserRole } from "./enums";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -10,20 +10,26 @@ type ProtectedRouteProps = {
 };
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, role } = useAuth();
+  const { user, role, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      console.log('User not found');
-      router.push('/sign-in');
-    } else if (role && allowedRoles && !allowedRoles.includes(role)) {
-      router.push('/403');
+    if (!loading) {
+      if (!user) {
+        console.log("User not found");
+        router.push("/sign-in");
+      } else if (role && allowedRoles && !allowedRoles.includes(role)) {
+        router.push("/403");
+      }
     }
-  }, [user, allowedRoles, role, router]);
+  }, [user, allowedRoles, loading, role, router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (user && role && (!allowedRoles || allowedRoles.includes(role))) {
-    return <>{children}</>;
+    return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>;
   }
 
   return null;

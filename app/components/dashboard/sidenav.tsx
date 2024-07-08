@@ -1,16 +1,23 @@
 import Link from "next/link";
 import NavLinks from "./nav-links";
+import { useAuth } from "@/lib/context/AuthContext";
 import styles from "../../styles/components/dashboard/SideNav.module.scss";
 import Image from "next/image";
 
 export default function SideNav() {
+
+  const { role } = useAuth();
+
   const user = {
     name: "Steve Jobs",
     profilePic: "/steveJobs.png",
+    role: role,
   };
 
-  const handleSignOut = () => {
-    console.log("Signing out...");
+  const { signOut } = useAuth();
+
+  const handleSignOut = async() => {
+    await signOut();
   }
 
   return (
@@ -35,7 +42,7 @@ export default function SideNav() {
           />
           <div className={styles.profileInfo}>
             <p className={styles.profileName}>{user.name}</p>
-            <p className={styles.profileEmail}>Admin</p>
+            <p className={styles.profileEmail}>{user.role}</p>
           </div>
         </Link>
       </div>

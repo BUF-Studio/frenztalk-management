@@ -4,13 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "../../styles/components/dashboard/NavLinks.module.scss";
 import clsx from "clsx";
+import { useAuth } from "@/lib/context/AuthContext";
+import { UserRole } from "@/lib/enums";
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
-const links = [
+const tutorLinks = [
   {
-    name: "Tutors",
-    href: "/tutors",
+    name: "Home",
+    href: "/",
     // icon: HomeIcon
   },
   {
@@ -18,24 +20,44 @@ const links = [
     href: "/invoice",
     // icon: DocumentDuplicateIcon,
   },
+];
+
+const adminLinks = [
   {
-    name: "Customers",
+    name: "Home",
+    href: "/",
+    // icon: HomeIcon
+  },
+  {
+    name: "Tutors",
+    href: "/tutors",
+    // icon: DocumentDuplicateIcon,
+  },
+  {
+    name: "Students",
     href: "/students",
     // icon: UserGroupIcon,
   },
-  // {
-  //   name: "Settings",
-  //   href: "/settings",
-  //   // icon: CogIcon,
-  // },
+  {
+    name: "Invoices",
+    href: "/invoice",
+    // icon: CogIcon,
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    // icon: CogIcon,
+  },
+
 ];
 
 export default function NavLinks() {
   const pathname = usePathname();
+  const { role } = useAuth();
 
   return (
     <div className={styles.linksContainer}>
-      {links.map((link) => (
+      {(role === UserRole.ADMIN? adminLinks: tutorLinks).map((link) => (
         <Link
           key={link.name}
           href={link.href}

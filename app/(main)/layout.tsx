@@ -2,17 +2,27 @@
 
 import SideNav from "@/app/components/dashboard/sidenav";
 import Header from "@/app/components/dashboard/Header";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import styles from "../styles/main/Main.module.scss";
 import ProtectedRoute from "@/lib/ProtectedRoute";
 import { UserRole } from "@/lib/enums";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  //   const router = useRouter();
-  const currentLocation = "Home";
+  const pathname = usePathname();
+
+  let currentLocation = "Home";
+  if (pathname.includes("/invoice")) {
+    currentLocation = "Invoices";
+  } else if (pathname.includes("/tutors")) {
+    currentLocation = "Tutor";
+  } else if (pathname.includes("/students")) {
+    currentLocation = "Students";
+  } else if (pathname.includes("/settings")) {
+    currentLocation = "Settings";
+  }
 
   return (
-    <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+    <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.TUTOR]}>
       <div className={styles.layout}>
         <div className={styles.sideNav}>
           <SideNav />

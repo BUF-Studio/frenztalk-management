@@ -22,6 +22,7 @@ import type { UserRole } from "@/lib/enums";
 interface AuthContextType {
   user: User | null;
   role: UserRole | null;
+  loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<User>;
   signUpWithEmail: (email: string, password: string) => Promise<User>;
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUserRole = useCallback(
     async (userId: string): Promise<UserRole | null> => {
@@ -53,6 +55,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      setLoading(false);
       if (currentUser) {
         const userRole = await fetchUserRole(currentUser.uid);
         setRole(userRole);
@@ -68,6 +71,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         role,
+        loading,
         signInWithEmail,
         signUpWithEmail,
         signInWithGoogle,
