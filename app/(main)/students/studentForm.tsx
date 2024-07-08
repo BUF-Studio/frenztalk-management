@@ -1,22 +1,20 @@
 "use client";
 
-import { useStudent } from '@/lib/context/page/studentContext';
+import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import { addStudent, updateStudent } from '@/lib/firebase/student';
 import { Student } from '@/lib/models/student';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-interface StudentFormProps {
-  student?: Student | null; // Optional prop for existing student data
-}
 
 
-const StudentForm: React.FC<StudentFormProps> = () => {
+
+const StudentForm= () => {
   const [name, setName] = useState('');
   const [age, setAge] = useState<number | ''>('');
   const [email, setEmail] = useState('');
-  const { student, setStudent } = useStudent();
+  const { student, setStudent } = useStudentPage();
 
 
 
@@ -44,13 +42,13 @@ const StudentForm: React.FC<StudentFormProps> = () => {
 
 
     try {
-      // if (student) {
-      //   const newStudent = new Student(student.studentId, name, age)
-      //   await updateStudent(newStudent)
-      // } else {
-      //   const newStudent = new Student(null, name, age)
-      //   await addStudent(newStudent)
-      // }
+      if (student) {
+        const newStudent = new Student(student.studentId, name, age, 'Active', student.subjectsId, student.tutorsId)
+        await updateStudent(newStudent)
+      } else {
+        const newStudent = new Student(null, name, age, 'Active', [], [])
+        await addStudent(newStudent)
+      }
       setStudent(null)
       router.back()
     } catch (error) {

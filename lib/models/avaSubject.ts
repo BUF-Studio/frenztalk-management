@@ -14,7 +14,7 @@ export class AvaSubject {
 
     toMap(): Record<string, any> {
         return {
-            avaSubjectId: this.avaSubjectId,
+            // avaSubjectId: this.avaSubjectId,
             name: this.name,
         };
     }

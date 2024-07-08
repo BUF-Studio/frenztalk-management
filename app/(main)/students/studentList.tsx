@@ -1,12 +1,12 @@
 import { useStudents } from '@/lib/context/collection/studentsContext';
-import { useStudent } from '@/lib/context/page/studentContext';
+import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import { Student } from '@/lib/models/student';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const StudentList: React.FC = () => {
     const { students } = useStudents();
-    const { setStudent } = useStudent();
+    const { setStudent } = useStudentPage();
     const router = useRouter();
 
     const navi = (student: Student) => {

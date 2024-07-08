@@ -6,6 +6,7 @@ export class Tutor {
         public subjects: string[],
         public des: string,
         public pic: string,
+        public freeze: boolean,
     ) { }
 
     static fromMap(data: Record<string, any>, id: string) {
@@ -15,6 +16,7 @@ export class Tutor {
             data.subjects,
             data.des,
             data.pic,
+            data.freeze,
         );
     }
 
@@ -22,9 +24,10 @@ export class Tutor {
         return {
             // tutorId: this.tutorId,
             name: this.name,
-            subjects:this.subjects,
-            des:this.des,
-            pic:this.pic,
+            subjects: this.subjects,
+            des: this.des,
+            pic: this.pic,
+            freeze: this.freeze,
         };
     }
 }

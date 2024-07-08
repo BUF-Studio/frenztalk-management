@@ -6,14 +6,17 @@ const PATH = "avaSubjects";
 
 export const addAvaSubject = async (
   avaSubject: AvaSubject
-): Promise<void> => {
+): Promise<string> => {
   try {
     const path = PATH
     const data = avaSubject.toMap();
-    await addData(path, data);
+    const id = await addData(path, data);
     console.log("AvaSubject added to Firestore");
+    return id
   } catch (error) {
     console.error("Error adding avaSubject to Firestore:", error);
+    
+    throw error
   }
 };
 
