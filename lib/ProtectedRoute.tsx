@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (!user) {
+      console.log('User not found');
       router.push('/sign-in');
     } else if (role && allowedRoles && !allowedRoles.includes(role)) {
       router.push('/403');
