@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StudentsProvider>
+        <StudentsProvider tutorId="1">
           <TutorsProvider>
             <InvoicesProvider>
               <StudentProvider>

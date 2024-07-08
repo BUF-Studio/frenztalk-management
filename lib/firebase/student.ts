@@ -1,3 +1,4 @@
+import { DocumentData, Query, query, where } from "firebase/firestore";
 import { Student } from "../models/student";
 import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
 
@@ -30,8 +31,17 @@ export const updateStudent = async (
   }
 };
 
-export const studentsStream = (onUpdate: (updatedData: Student[]) => void,) => {
+
+export const studentsStream = (onUpdate: (updatedData: Student[]) => void, tutorId?: string) => {
   const builder = (data: Record<string, any>, id: string) => Student.fromMap(data, id);
+
+  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
+
+  if (tutorId) {
+    console.log('1')
+    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
+  }
+
 
 
   // Subscribe to the collection stream
@@ -39,6 +49,9 @@ export const studentsStream = (onUpdate: (updatedData: Student[]) => void,) => {
     PATH, // Firestore collection path
     builder,
     onUpdate,
+    queryBuilder,
+
+
   );
   // Cleanup function
   return () => unsubscribe();
