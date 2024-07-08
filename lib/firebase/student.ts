@@ -38,8 +38,7 @@ export const studentsStream = (onUpdate: (updatedData: Student[]) => void, tutor
   let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
 
   if (tutorId) {
-    console.log('1')
-    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
+    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', 'array-contains', tutorId));
   }
 
 
@@ -50,8 +49,6 @@ export const studentsStream = (onUpdate: (updatedData: Student[]) => void, tutor
     builder,
     onUpdate,
     queryBuilder,
-
-
   );
   // Cleanup function
   return () => unsubscribe();

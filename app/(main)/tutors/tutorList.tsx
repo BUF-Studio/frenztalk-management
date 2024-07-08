@@ -11,7 +11,10 @@ const TutorList: React.FC = () => {
             <ul>
                 {tutors.map((tutor) => (
                     <li key={tutor.tutorId}>
-                        {tutor.name} - Age: {tutor.age}
+                        {tutor.name} - des: {tutor.des} - pic: {tutor.pic}
+                        {tutor.subjects?.map((sub, index) => (
+                            <div key={index}>{sub}</div>
+                        ))}
                     </li>
                 ))}
             </ul>
