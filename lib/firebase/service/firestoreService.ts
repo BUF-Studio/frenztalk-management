@@ -79,14 +79,26 @@ export const deleteData = async (
     }
 };
 
+
 export function documentStream<T>(
     path: string,
-    builder: (data: Record<string, any>, documentID: string) => T
-): void {
+    builder: (data: Record<string, any>, documentID: string) => T,
+    onUpdate: (updatedData: T) => void,
+): () => void {
     const reference = doc(db, path);
-    const unsubscribe = onSnapshot(reference, (snapshot: DocumentSnapshot) => {
+    let previousData: T | undefined;
+
+    const unsubscribe = onSnapshot(reference,(snapshot: DocumentSnapshot) => {
+        const data = builder(snapshot.data()!, snapshot.id);
         console.log(builder(snapshot.data()!, snapshot.id));
+
+        if (onUpdate) {
+            onUpdate(data);
+        }
+
+
     });
+    return unsubscribe;
 }
 
 export function collectionStream<T>(

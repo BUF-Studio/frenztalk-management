@@ -1,24 +1,21 @@
 
-export class Invoice {
+export class User {
     constructor(
-        public invoiceId: string | null,
+        public userId: string | null,
         public name: string,
-        public age: number,
     ) { }
 
     static fromMap(data: Record<string, any>, id: string) {
-        return new Invoice(
+        return new User(
             id,
             data.name,
-            data.age
         );
     }
 
     toMap(): Record<string, any> {
         return {
-            // invoiceId: this.invoiceId,
+            invoiceId: this.userId,
             name: this.name,
-            age: this.age,
         };
     }
 }

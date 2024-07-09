@@ -1,5 +1,5 @@
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useStudent } from "@/lib/context/page/studentContext";
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import type { Student } from "@/lib/models/student";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/app/components/dashboard/DataTable";
@@ -7,7 +7,7 @@ import type React from "react";
 
 const StudentList: React.FC = () => {
   const { students } = useStudents();
-  const { setStudent } = useStudent();
+  const { setStudent } = useStudentPage();
 
   const columns : { key: keyof Student; label: string }[] = [
     { key: 'id', label: 'ID' },

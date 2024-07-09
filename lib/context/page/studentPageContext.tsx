@@ -3,28 +3,28 @@ import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type StudentContextType = {
+type StudentPageContextType = {
   student: Student | null;
   setStudent: (student: Student | null) => void;
 };
 
-const initialContext: StudentContextType = {
+const initialContext: StudentPageContextType = {
   student: null,
   setStudent: () => { },
 };
 // Create a context to hold the data
-const StudentContext = createContext<StudentContextType>(initialContext);
+const StudentPageContext = createContext<StudentPageContextType>(initialContext);
 
-export const useStudent = () => useContext(StudentContext);
+export const useStudentPage = () => useContext(StudentPageContext);
 
-function StudentProvider({ children }: ScriptProps) {
+function StudentPageProvider({ children }: ScriptProps) {
   const [student, setStudent] = useState<Student | null>(null);
 
   return (
-    <StudentContext.Provider value={{ student, setStudent }}>
+    <StudentPageContext.Provider value={{ student, setStudent }}>
       {children}
-    </StudentContext.Provider>
+    </StudentPageContext.Provider>
   );
 }
 
-export default StudentProvider;
+export default StudentPageProvider;

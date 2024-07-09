@@ -1,5 +1,6 @@
+import { DocumentData, Query, query, where } from "firebase/firestore";
 import { Invoice } from "../models/invoice";
-import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData, } from "./service/firestoreService";
 
 const PATH = "invoices";
 
@@ -30,15 +31,20 @@ export const setInvoice = async (
   }
 };
 
-export const invoicesStream = (onUpdate: (updatedData: Invoice[]) => void,) => {
+export const invoicesStream = (onUpdate: (updatedData: Invoice[]) => void, tutorId?: string) => {
   const builder = (data: Record<string, any>, id: string) => Invoice.fromMap(data, id);
+  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
 
+  if (tutorId) {
+    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
+  }
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
     PATH, // Firestore collection path
     builder,
     onUpdate,
+    queryBuilder,
   );
   // Cleanup function
   return () => unsubscribe();
