@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 // import { signInWithEmail, signInWithGoogle } from "auth";
 
 import { useRouter } from "next/navigation";
-import styles from "../../styles/auth/sign-in/Sign-in.module.scss";
+import styles from "@/styles/auth/sign-in/Sign-in.module.scss";
 import GoogleSignInButton from "@/app/components/sign-in/googleSignInButton";
 
 const SignIn = () => {

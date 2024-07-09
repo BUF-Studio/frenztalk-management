@@ -1,4 +1,4 @@
-@import "../../styles/variables.scss";
+@import "@/styles/variables.scss";
 
 .layout {
   display: flex;
@@ -21,6 +21,8 @@
 
 .content {
   flex-grow: 1;
+  min-height: 0;
+  overflow: hidden;
   border-radius: 12px;
   padding: 24px;
   background-color: $shadow-color;

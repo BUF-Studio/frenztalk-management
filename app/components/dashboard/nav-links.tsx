@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "../../styles/components/dashboard/NavLinks.module.scss";
+import styles from "@/styles/components/dashboard/NavLinks.module.scss";
 import clsx from "clsx";
 import { useAuth } from "@/lib/context/AuthContext";
 import { UserRole } from "@/lib/enums";
@@ -48,7 +48,6 @@ const adminLinks = [
     href: "/settings",
     // icon: CogIcon,
   },
-
 ];
 
 export default function NavLinks() {
@@ -57,7 +56,7 @@ export default function NavLinks() {
 
   return (
     <div className={styles.linksContainer}>
-      {(role === UserRole.ADMIN? adminLinks: tutorLinks).map((link) => (
+      {(role === UserRole.ADMIN ? adminLinks : tutorLinks).map((link) => (
         <Link
           key={link.name}
           href={link.href}

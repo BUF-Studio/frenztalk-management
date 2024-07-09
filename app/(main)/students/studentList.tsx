@@ -9,13 +9,12 @@ const StudentList: React.FC = () => {
     const { students } = useStudents();
     const { setStudent } = useStudentPage();
 
-    //   const columns : { key: keyof Student; label: string }[] = [
-    //     { key: 'id', label: 'ID' },
-    //     { key: 'name', label: 'Name' },
-    //     { key: 'age', label: 'Age' },
-    //   ];
-    
-    const router = useRouter();
+  const columns: { key: keyof Student; label: string }[] = [
+    { key: "id", label: "ID" },
+    { key: "name", label: "Name" },
+    { key: "age", label: "Age" },
+  ];
+  const router = useRouter();
 
     const navi = (student: Student) => {
         console.log("setstudent");

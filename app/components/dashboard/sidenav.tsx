@@ -1,24 +1,25 @@
 import Link from "next/link";
 import NavLinks from "./nav-links";
 import { useAuth } from "@/lib/context/AuthContext";
-import styles from "../../styles/components/dashboard/SideNav.module.scss";
+import { useUser } from "@/lib/context/collection/userContext";
+import styles from "@/styles/components/dashboard/SideNav.module.scss";
 import Image from "next/image";
 
 export default function SideNav() {
-
   const { role } = useAuth();
+  const { user } = useUser();
 
-  const user = {
-    name: "Steve Jobs",
+  const userData = {
+    name: user?.name,
     profilePic: "/steveJobs.png",
     role: role,
   };
 
   const { signOut } = useAuth();
 
-  const handleSignOut = async() => {
+  const handleSignOut = async () => {
     await signOut();
-  }
+  };
 
   return (
     <div className={styles.sideNav}>
@@ -34,15 +35,15 @@ export default function SideNav() {
       <div className={styles.profileContainer}>
         <Link className={styles.profile} href="/">
           <Image
-            src={user.profilePic}
-            alt={`${user.name}'s profile picture`}
+            src={userData.profilePic}
+            alt={`${userData.name}'s profile picture`}
             width={40}
             height={40}
             className={styles.profilePic}
           />
           <div className={styles.profileInfo}>
-            <p className={styles.profileName}>{user.name}</p>
-            <p className={styles.profileEmail}>{user.role}</p>
+            <p className={styles.profileName}>{userData.name}</p>
+            <p className={styles.profileEmail}>{userData.role}</p>
           </div>
         </Link>
       </div>
@@ -50,7 +51,11 @@ export default function SideNav() {
         <NavLinks />
       </div>
       <div className={styles.spacer} />
-      <button type="button" className={styles.signOutButton} onClick={handleSignOut}>
+      <button
+        type="button"
+        className={styles.signOutButton}
+        onClick={handleSignOut}
+      >
         Sign Out
       </button>
     </div>

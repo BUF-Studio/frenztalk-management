@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   GoogleAuthProvider,
@@ -14,8 +14,8 @@ import type { User } from "firebase/auth";
 import { auth } from "./clientApp";
 // import { auth as adminAuth } from "./serverApp";
 
-export function onAuthStateChanged(cb: (user: User | null) => void){
-    return _onAuthStateChanged(auth, cb);
+export function onAuthStateChanged(cb: (user: User | null) => void) {
+  return _onAuthStateChanged(auth, cb);
 }
 
 // export const verifyIdToken = async (idToken: string) => {
@@ -43,7 +43,7 @@ export const signInWithEmail = async (email: string, password: string) => {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
 
     return userCredential.user;
@@ -58,7 +58,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     return userCredential.user;
   } catch (error) {
@@ -67,7 +67,7 @@ export const signUpWithEmail = async (email: string, password: string) => {
   }
 };
 
-export const deleteUserFromAuth = async(user : User) => {
+export const deleteUserFromAuth = async (user: User) => {
   try {
     await deleteUser(user);
   } catch (error) {
@@ -75,9 +75,9 @@ export const deleteUserFromAuth = async(user : User) => {
     throw error;
   }
   return;
-}
+};
 
-export const signOut = async() => {
+export const signOut = async () => {
   try {
     await firebaseSignOut(auth);
     console.log("Signed out successfully");
@@ -85,6 +85,4 @@ export const signOut = async() => {
     console.error("Error signing out:", error);
   }
   return;
-}
-
-
+};

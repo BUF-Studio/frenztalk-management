@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { deleteUserFromAuth, signUpWithEmail } from "@/lib/firebase/service/auth";
+import {
+  deleteUserFromAuth,
+  signUpWithEmail,
+} from "@/lib/firebase/service/auth";
 import { addUserToFirestore } from "@/lib/firebase/service/firestore";
 import { useRouter } from "next/navigation";
-import styles from "../../styles/auth/sign-up/Sign-up.module.scss";
+import styles from "@/styles/auth/sign-up/Sign-up.module.scss";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -39,7 +42,7 @@ const SignUp = () => {
 
   const handleSignIn = () => {
     router.push("/auth/sign-in");
-  }
+  };
 
   return (
     <div className={styles.formSectionContainer}>

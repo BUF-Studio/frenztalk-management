@@ -1,26 +1,19 @@
 "use client";
 
-import { useStudentPage } from '@/lib/context/page/studentPageContext';
-import { addStudent, updateStudent } from '@/lib/firebase/student';
-import { Student } from '@/lib/models/student';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
+import { addStudent, updateStudent } from "@/lib/firebase/student";
+import { Student } from "@/lib/models/student";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-
-
-
-const StudentForm= () => {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState<number | ''>('');
-  const [email, setEmail] = useState('');
+const StudentForm = () => {
+  const [name, setName] = useState("");
+  const [age, setAge] = useState<number | "">("");
+  const [email, setEmail] = useState("");
   const { student, setStudent } = useStudentPage();
 
-
-
   const router = useRouter();
-
-
 
   useEffect(() => {
     if (student) {
@@ -29,38 +22,43 @@ const StudentForm= () => {
     }
   }, [student]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     // const router = useRouter();
     e.preventDefault();
     console.log({ name, age, email });
 
-    if (age === '' || isNaN(age)) {
-      alert('Please enter a valid age.');
+    if (age === "" || isNaN(age)) {
+      alert("Please enter a valid age.");
       return;
     }
 
-
     try {
       if (student) {
-        const newStudent = new Student(student.studentId, name, age, 'Active', student.subjectsId, student.tutorsId)
-        await updateStudent(newStudent)
+        const newStudent = new Student(
+          student.studentId,
+          name,
+          age,
+          "Active",
+          student.subjectsId,
+          student.tutorsId,
+        );
+        await updateStudent(newStudent);
       } else {
-        const newStudent = new Student(null, name, age, 'Active', [], [])
-        await addStudent(newStudent)
+        const newStudent = new Student(null, name, age, "Active", [], []);
+        await addStudent(newStudent);
       }
-      setStudent(null)
-      router.back()
+      setStudent(null);
+      router.back();
     } catch (error) {
-      console.error('Failed');
+      console.error("Failed");
       console.error(error);
     }
   };
 
   const back = () => {
-    setStudent(null)
-    router.push('/students')
-  }
+    setStudent(null);
+    router.push("/students");
+  };
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 shadow-lg">
@@ -80,7 +78,9 @@ const StudentForm= () => {
           <input
             type="number"
             value={age}
-            onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : '')}
+            onChange={(e) =>
+              setAge(e.target.value ? parseInt(e.target.value) : "")
+            }
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
         </div>

@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AppProvider from "./appProviders";
 import SideNav from "./components/dashboard/sidenav";
+import { AuthContextProvider } from "@/lib/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,17 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppProvider>
-          <div className="flex">
-            
-            <SideNav />
-            <main className="flex-1 p-4">
-              {children}
-            </main>
-          </div>
-        </AppProvider>
-
-
+        <AuthContextProvider>
+          <AppProvider>
+            <div className="flex">
+              {/* <Sidebar /> */}
+              <main className="flex-1">{children}</main>
+            </div>
+          </AppProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );

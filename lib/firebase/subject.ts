@@ -1,14 +1,12 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData } from "./service/firestoreService";
 import { Subject } from "../models/subject";
 
 const PATH = "subjects";
 
-export const addSubject = async (
-  subject: Subject
-): Promise<void> => {
+export const addSubject = async (subject: Subject): Promise<void> => {
   try {
-    const path = PATH
+    const path = PATH;
     const data = subject.toMap();
     await addData(path, data);
     console.log("Subject added to Firestore");
@@ -19,7 +17,7 @@ export const addSubject = async (
 
 export const updateSubject = async (
   // subjectId: string,
-  subject: Subject
+  subject: Subject,
 ): Promise<void> => {
   try {
     const path = `${PATH}/${subject.subjectId}`;
@@ -27,21 +25,24 @@ export const updateSubject = async (
     await setData(path, data);
     console.log(`Subject ${subject.subjectId} updated in Firestore`);
   } catch (error) {
-    console.error(`Error setting subject ${subject.subjectId} in Firestore:`, error);
+    console.error(
+      `Error setting subject ${subject.subjectId} in Firestore:`,
+      error,
+    );
   }
 };
 
-
 export const subjectsStream = (onUpdate: (updatedData: Subject[]) => void) => {
-  const builder = (data: Record<string, any>, id: string) => Subject.fromMap(data, id);
+  const builder = (data: Record<string, any>, id: string) =>
+    Subject.fromMap(data, id);
 
-  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
+  let queryBuilder:
+    | ((query: Query<DocumentData>) => Query<DocumentData>)
+    | undefined;
 
   // if (tutorId) {
   //   queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', 'array-contains', tutorId));
   // }
-
-
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
@@ -52,4 +53,4 @@ export const subjectsStream = (onUpdate: (updatedData: Subject[]) => void) => {
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};

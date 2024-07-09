@@ -1,13 +1,11 @@
 import { Tutor } from "../models/tutor";
-import { addData, collectionStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData } from "./service/firestoreService";
 
 const PATH = "tutors";
 
-export const addTutor = async (
-  tutor: Tutor
-): Promise<void> => {
+export const addTutor = async (tutor: Tutor): Promise<void> => {
   try {
-    const path = PATH
+    const path = PATH;
     const data = tutor.toMap();
     await addData(path, data);
     console.log("Tutor added to Firestore");
@@ -18,7 +16,7 @@ export const addTutor = async (
 
 export const setTutor = async (
   // tutorId: string,
-  tutor: Tutor
+  tutor: Tutor,
 ): Promise<void> => {
   try {
     const path = `${PATH}/${tutor.tutorId}`;
@@ -30,9 +28,9 @@ export const setTutor = async (
   }
 };
 
-export const tutorsStream = (onUpdate: (updatedData: Tutor[]) => void,) => {
-  const builder = (data: Record<string, any>, id: string) => Tutor.fromMap(data, id);
-
+export const tutorsStream = (onUpdate: (updatedData: Tutor[]) => void) => {
+  const builder = (data: Record<string, any>, id: string) =>
+    Tutor.fromMap(data, id);
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
@@ -42,4 +40,4 @@ export const tutorsStream = (onUpdate: (updatedData: Tutor[]) => void,) => {
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};

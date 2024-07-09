@@ -1,4 +1,3 @@
-
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -13,7 +12,8 @@ const initialContext: AvaSubjectsContextType = {
   avaSubjects: [],
 };
 // Create a context to hold the data
-const AvaSubjectsContext = createContext<AvaSubjectsContextType>(initialContext);
+const AvaSubjectsContext =
+  createContext<AvaSubjectsContextType>(initialContext);
 
 export const useAvaSubjects = () => useContext(AvaSubjectsContext);
 
@@ -23,10 +23,10 @@ function AvaSubjectsProvider({ children }: ScriptProps) {
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (avaSubjects: AvaSubject[]) => {
-      console.log(avaSubjects)
-      setAvaSubjects(avaSubjects)
-    }
-    const unsubscribe = avaSubjectsStream(onUpdate)
+      console.log(avaSubjects);
+      setAvaSubjects(avaSubjects);
+    };
+    const unsubscribe = avaSubjectsStream(onUpdate);
 
     return () => unsubscribe();
   }, []);
