@@ -1,15 +1,17 @@
 import Link from "next/link";
 import NavLinks from "./nav-links";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useUser } from "@/lib/context/collection/userContext";
 import styles from "../../styles/components/dashboard/SideNav.module.scss";
 import Image from "next/image";
 
 export default function SideNav() {
 
   const { role } = useAuth();
+  const { user } = useUser();
 
-  const user = {
-    name: "Steve Jobs",
+  const userData = {
+    name: user?.name,
     profilePic: "/steveJobs.png",
     role: role,
   };
@@ -34,15 +36,15 @@ export default function SideNav() {
       <div className={styles.profileContainer}>
         <Link className={styles.profile} href="/">
           <Image
-            src={user.profilePic}
-            alt={`${user.name}'s profile picture`}
+            src={userData.profilePic}
+            alt={`${userData.name}'s profile picture`}
             width={40}
             height={40}
             className={styles.profilePic}
           />
           <div className={styles.profileInfo}>
-            <p className={styles.profileName}>{user.name}</p>
-            <p className={styles.profileEmail}>{user.role}</p>
+            <p className={styles.profileName}>{userData.name}</p>
+            <p className={styles.profileEmail}>{userData.role}</p>
           </div>
         </Link>
       </div>

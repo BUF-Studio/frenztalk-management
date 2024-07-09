@@ -15,7 +15,7 @@ export class User {
 
     toMap(): Record<string, any> {
         return {
-            id: this.id,
+            id: this.userId,
             name: this.name,
             age: this.age,
         };

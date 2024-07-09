@@ -3,10 +3,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import StudentsProvider from "@/lib/context/collection/studentsContext";
-import TutorsProvider from "@/lib/context/collection/tutorContext";
-import InvoicesProvider from "@/lib/context/collection/invoiceContext";
-import StudentProvider from "@/lib/context/page/studentContext";
+import AppProvider from "./appProviders";
+import { AuthContextProvider } from "@/lib/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,16 +21,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <AuthContextProvider>
         <AppProvider>
           <div className="flex">
-            <Sidebar />
-            <main className="flex-1 p-4">
+            {/* <Sidebar /> */}
+            <main className="flex-1">
               {children}
             </main>
           </div>
         </AppProvider>
-
-
+      </AuthContextProvider>
       </body>
     </html>
   );
