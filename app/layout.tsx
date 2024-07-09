@@ -3,10 +3,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import StudentsProvider from "@/lib/context/collection/studentsContext";
-import TutorsProvider from "@/lib/context/collection/tutorContext";
-import InvoicesProvider from "@/lib/context/collection/invoiceContext";
-import StudentProvider from "@/lib/context/page/studentContext";
+import AppProvider from "./appProviders";
+import SideNav from "./components/dashboard/sidenav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +23,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <AppProvider>
           <div className="flex">
-            <Sidebar />
+            
+            <SideNav />
             <main className="flex-1 p-4">
               {children}
             </main>

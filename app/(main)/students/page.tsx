@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import StudentList from "./studentList";
-import StudentProvider from "@/lib/context/page/studentContext";
 import SearchBar from "@/app/components/dashboard/SearchBar";
 import { useState, useEffect } from "react";
 
