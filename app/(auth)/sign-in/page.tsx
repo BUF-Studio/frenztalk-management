@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { signInWithEmail, signInWithGoogle } from "@/lib/firebase/service/auth";
+import { useAuth } from "@/lib/context/AuthContext";
+// import { signInWithEmail, signInWithGoogle } from "auth";
+
 import { useRouter } from "next/navigation";
-import styles from "../../styles/Sign-in.module.scss";
-import GoogleSignInButton from "@/components/googleSignInButton";
+import styles from "../../styles/auth/sign-in/Sign-in.module.scss";
+import GoogleSignInButton from "@/app/components/sign-in/googleSignInButton";
 
 const SignIn = () => {
+  const { signInWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,6 @@ const SignIn = () => {
     try {
       await signInWithEmail(email, password);
       console.log("Signed in successfully");
-      sessionStorage.setItem("user", "true"); // Ensure user session is set
       router.push("/");
     } catch (error) {
       console.error("Error signing in with email and password:", error);
@@ -31,7 +33,6 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
       console.log("Signed in with Google successfully");
-      sessionStorage.setItem("user", "true");
       router.push("/");
     } catch (err) {
       console.error("Error signing in with Google:", err);
@@ -40,7 +41,7 @@ const SignIn = () => {
   };
 
   const handleSignUp = () => {
-    router.push("/auth/sign-up");
+    router.push("/sign-up");
   };
 
   return (

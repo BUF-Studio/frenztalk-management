@@ -28,6 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# google private key
+frenztalk-firebase-adminsdk-h68uw-fc6bb96aea.json
+
 # vercel
 .vercel
 

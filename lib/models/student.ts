@@ -1,7 +1,7 @@
 
 export class Student {
     constructor(
-        public studentId: string | null,
+        public id: string | number,
         public name: string,
         public age: number,
         public status: string,

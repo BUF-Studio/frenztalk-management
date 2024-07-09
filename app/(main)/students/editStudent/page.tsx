@@ -11,7 +11,7 @@ const EditStudentPage = () => {
     return (
         <div>
             <h1>Edit Student</h1>
-            <StudentForm></StudentForm>
+            <StudentForm/>
         </div>
     );
 };

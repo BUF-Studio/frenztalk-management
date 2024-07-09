@@ -1,16 +1,12 @@
 "use client";
 
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "./sidebar";
 import StudentsProvider from "@/lib/context/collection/studentsContext";
 import TutorsProvider from "@/lib/context/collection/tutorContext";
 import InvoicesProvider from "@/lib/context/collection/invoiceContext";
-import UserProvider from "@/lib/context/collection/userContext";
-import StudentProvider from "@/lib/context/page/studentPageContext";
-import AppProvider from "./appProviders";
+import StudentProvider from "@/lib/context/page/studentContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +20,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body className={inter.className}>

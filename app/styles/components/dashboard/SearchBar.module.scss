@@ -1,0 +1,25 @@
+// components/SearchBar.module.scss
+.searchBar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    height: 44px;
+    padding: 12px 16px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #fff;
+  }
+  
+  .searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 0;
+  
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+  

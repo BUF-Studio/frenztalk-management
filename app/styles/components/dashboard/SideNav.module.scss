@@ -1,0 +1,91 @@
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 12px;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    padding: 8px;
+  }
+
+  .navContainer {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .spacer {
+    display: none;
+    height: auto;
+    width: 100%;
+    flex-grow: 1;
+  }
+
+  .profileContainer {
+    display: flex;
+    padding: 8px;
+
+    .profile {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      height: 3.25rem;
+      padding: 12px 8px;
+      border-radius: 0.75rem;
+
+      &:hover {
+        background-color: #e5e7eb;
+      }
+
+      .profilePic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .profileInfo {
+        display: flex;
+        flex-direction: column;
+
+        .profileName {
+          font-size: 16px;
+          font-weight: 500;
+          color: #111827;
+        }
+
+        .profileEmail {
+          font-size: 12px;
+          font-weight: 400;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .signOutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #f87171; // Tailwind's red-400
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #ef4444; // Tailwind's red-500
+    }
+  }
+}
