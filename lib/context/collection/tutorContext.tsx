@@ -1,4 +1,3 @@
-
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -23,10 +22,10 @@ function TutorsProvider({ children }: ScriptProps) {
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (tutors: Tutor[]) => {
-      console.log(tutors)
-      setTutors(tutors)
-    }
-    const unsubscribe = tutorsStream(onUpdate)
+      console.log(tutors);
+      setTutors(tutors);
+    };
+    const unsubscribe = tutorsStream(onUpdate);
 
     return () => unsubscribe();
   }, []);

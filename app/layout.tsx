@@ -22,15 +22,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthContextProvider>
-        <AppProvider>
-          <div className="flex">
-            {/* <Sidebar /> */}
-            <main className="flex-1">
-              {children}
-            </main>
-          </div>
-        </AppProvider>
-      </AuthContextProvider>
+          <AppProvider>
+            <div className="flex">
+              {/* <Sidebar /> */}
+              <main className="flex-1">{children}</main>
+            </div>
+          </AppProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );

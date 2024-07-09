@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState } from "react";
-import styles from "../../styles/components/dashboard/DataTable.module.scss";
+import styles from "@/styles/components/dashboard/DataTable.module.scss";
 
 type DataTableProps<T> = {
   data: T[];

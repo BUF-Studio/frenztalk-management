@@ -1,4 +1,3 @@
-
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -23,10 +22,10 @@ function InvoicesProvider({ children }: ScriptProps) {
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (invoices: Invoice[]) => {
-      console.log(invoices)
-      setInvoices(invoices)
-    }
-    const unsubscribe = invoicesStream(onUpdate)
+      console.log(invoices);
+      setInvoices(invoices);
+    };
+    const unsubscribe = invoicesStream(onUpdate);
 
     return () => unsubscribe();
   }, []);

@@ -1,28 +1,28 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData } from "./service/firestoreService";
 import { AvaSubject } from "../models/avaSubject";
 
 const PATH = "avaSubjects";
 
 export const addAvaSubject = async (
-  avaSubject: AvaSubject
+  avaSubject: AvaSubject,
 ): Promise<string> => {
   try {
-    const path = PATH
+    const path = PATH;
     const data = avaSubject.toMap();
     const id = await addData(path, data);
     console.log("AvaSubject added to Firestore");
-    return id
+    return id;
   } catch (error) {
     console.error("Error adding avaSubject to Firestore:", error);
-    
-    throw error
+
+    throw error;
   }
 };
 
 export const updateAvaSubject = async (
   // avaSubjectId: string,
-  avaSubject: AvaSubject
+  avaSubject: AvaSubject,
 ): Promise<void> => {
   try {
     const path = `${PATH}/${avaSubject.avaSubjectId}`;
@@ -30,21 +30,26 @@ export const updateAvaSubject = async (
     await setData(path, data);
     console.log(`AvaSubject ${avaSubject.avaSubjectId} updated in Firestore`);
   } catch (error) {
-    console.error(`Error setting avaSubject ${avaSubject.avaSubjectId} in Firestore:`, error);
+    console.error(
+      `Error setting avaSubject ${avaSubject.avaSubjectId} in Firestore:`,
+      error,
+    );
   }
 };
 
+export const avaSubjectsStream = (
+  onUpdate: (updatedData: AvaSubject[]) => void,
+) => {
+  const builder = (data: Record<string, any>, id: string) =>
+    AvaSubject.fromMap(data, id);
 
-export const avaSubjectsStream = (onUpdate: (updatedData: AvaSubject[]) => void) => {
-  const builder = (data: Record<string, any>, id: string) => AvaSubject.fromMap(data, id);
-
-  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
+  let queryBuilder:
+    | ((query: Query<DocumentData>) => Query<DocumentData>)
+    | undefined;
 
   // if (tutorId) {
   //   queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', 'array-contains', tutorId));
   // }
-
-
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
@@ -55,4 +60,4 @@ export const avaSubjectsStream = (onUpdate: (updatedData: AvaSubject[]) => void)
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};

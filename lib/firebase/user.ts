@@ -1,14 +1,17 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
 import { User } from "../models/user";
-import { addData, collectionStream, documentStream, setData, } from "./service/firestoreService";
+import {
+  addData,
+  collectionStream,
+  documentStream,
+  setData,
+} from "./service/firestoreService";
 
 const PATH = "users";
 
-export const addUser = async (
-  user: User
-): Promise<void> => {
+export const addUser = async (user: User): Promise<void> => {
   try {
-    const path = PATH
+    const path = PATH;
     const data = user.toMap();
     await addData(path, data);
     console.log("User added to Firestore");
@@ -19,7 +22,7 @@ export const addUser = async (
 
 export const updateUser = async (
   // userId: string,
-  user: User
+  user: User,
 ): Promise<void> => {
   try {
     const path = `${PATH}/${user.userId}`;
@@ -31,17 +34,17 @@ export const updateUser = async (
   }
 };
 
-
 export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
-  const builder = (data: Record<string, any>, id: string) => User.fromMap(data, id);
+  const builder = (data: Record<string, any>, id: string) =>
+    User.fromMap(data, id);
 
-  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
+  let queryBuilder:
+    | ((query: Query<DocumentData>) => Query<DocumentData>)
+    | undefined;
 
   // if (tutorId) {
   //   queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', 'array-contains', tutorId));
   // }
-
-
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(
@@ -52,11 +55,14 @@ export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};
 
-export const userStream = (onUpdate: (updatedData: User) => void, userId: string) => {
-  const builder = (data: Record<string, any>, id: string) => User.fromMap(data, id);
-
+export const userStream = (
+  onUpdate: (updatedData: User) => void,
+  userId: string,
+) => {
+  const builder = (data: Record<string, any>, id: string) =>
+    User.fromMap(data, id);
 
   const path = `${PATH}/${userId}`;
   // Subscribe to the collection stream
@@ -67,4 +73,4 @@ export const userStream = (onUpdate: (updatedData: User) => void, userId: string
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};

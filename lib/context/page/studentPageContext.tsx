@@ -10,10 +10,11 @@ type StudentPageContextType = {
 
 const initialContext: StudentPageContextType = {
   student: null,
-  setStudent: () => { },
+  setStudent: () => {},
 };
 // Create a context to hold the data
-const StudentPageContext = createContext<StudentPageContextType>(initialContext);
+const StudentPageContext =
+  createContext<StudentPageContextType>(initialContext);
 
 export const useStudentPage = () => useContext(StudentPageContext);
 

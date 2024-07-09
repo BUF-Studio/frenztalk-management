@@ -1,4 +1,3 @@
-
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -23,10 +22,10 @@ function SubjectsProvider({ children }: ScriptProps) {
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (subjects: Subject[]) => {
-      console.log(subjects)
-      Subjects(subjects)
-    }
-    const unsubscribe = subjectsStream(onUpdate)
+      console.log(subjects);
+      Subjects(subjects);
+    };
+    const unsubscribe = subjectsStream(onUpdate);
 
     return () => unsubscribe();
   }, []);

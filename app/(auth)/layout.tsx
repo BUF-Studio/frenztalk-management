@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "../styles/auth/Auth.module.scss";
+import styles from "@/styles/auth/Auth.module.scss";
 
 export default function AuthLayout({
   children,
@@ -18,9 +18,7 @@ export default function AuthLayout({
         />
       </div>
       <div className={styles.formSection}>
-        <div className={styles.formSectionContainer}>
-            {children}
-        </div>
+        <div className={styles.formSectionContainer}>{children}</div>
       </div>
     </div>
   );

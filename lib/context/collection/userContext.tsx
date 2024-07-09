@@ -2,7 +2,13 @@ import { userStream } from "@/lib/firebase/user";
 import { User } from "@/lib/models/user";
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
-import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type UserContextType = {
   user: User | null | undefined;
@@ -18,7 +24,6 @@ type UserProviderProps = {
   children: ReactNode;
   userId: string;
 };
-
 
 export const useUser = () => useContext(UserContext);
 
@@ -38,11 +43,8 @@ function UserProvider({ children, userId }: UserProviderProps) {
     };
   }, [userId]);
 
-
   return (
-    <UserContext.Provider value={{ user }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
   );
 }
 

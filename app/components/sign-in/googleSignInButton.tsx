@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import styles from "../../styles/components/auth/sign-in/GoogleSignInButton.module.scss";
+import styles from "@/styles/components/auth/sign-in/GoogleSignInButton.module.scss";
 
 type GoogleSignInButtonProps = {
   onClick: () => void;

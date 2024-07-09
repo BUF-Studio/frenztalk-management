@@ -49,7 +49,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       console.log("userRole", userData.role);
       return userData.role as UserRole;
     },
-    []
+    [],
   );
 
   useEffect(() => {

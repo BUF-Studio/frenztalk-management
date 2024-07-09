@@ -1,14 +1,16 @@
 // components/SearchBar.tsx
-import { useState, useEffect, type ChangeEvent } from 'react';
-import styles from "../../styles/components/dashboard/SearchBar.module.scss";
+import { useState, useEffect, type ChangeEvent } from "react";
+import styles from "@/styles/components/dashboard/SearchBar.module.scss";
 
 interface SearchBarProps {
   onSearch: (keyword: string) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [keyword, setKeyword] = useState<string>('');
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [keyword, setKeyword] = useState<string>("");
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -18,7 +20,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     setTypingTimeout(
       setTimeout(() => {
         onSearch(e.target.value);
-      }, 1000)
+      }, 1000),
     );
   };
 
@@ -32,12 +34,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   return (
     <div className={styles.searchBar}>
-      <input 
+      <input
         className={styles.searchInput}
-        type="text" 
-        value={keyword} 
-        onChange={handleChange} 
-        placeholder="Search keyword" 
+        type="text"
+        value={keyword}
+        onChange={handleChange}
+        placeholder="Search keyword"
       />
     </div>
   );

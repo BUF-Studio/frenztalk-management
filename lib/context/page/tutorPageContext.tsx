@@ -10,7 +10,7 @@ type TutorPageContextType = {
 
 const initialContext: TutorPageContextType = {
   tutor: null,
-  setTutor: () => { },
+  setTutor: () => {},
 };
 // Create a context to hold the data
 const TutorPageContext = createContext<TutorPageContextType>(initialContext);

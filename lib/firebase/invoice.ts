@@ -1,14 +1,12 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
 import { Invoice } from "../models/invoice";
-import { addData, collectionStream, setData, } from "./service/firestoreService";
+import { addData, collectionStream, setData } from "./service/firestoreService";
 
 const PATH = "invoices";
 
-export const addInvoice = async (
-  invoice: Invoice
-): Promise<void> => {
+export const addInvoice = async (invoice: Invoice): Promise<void> => {
   try {
-    const path = PATH
+    const path = PATH;
     const data = invoice.toMap();
     await addData(path, data);
     console.log("Invoice added to Firestore");
@@ -19,7 +17,7 @@ export const addInvoice = async (
 
 export const setInvoice = async (
   // invoiceId: string,
-  invoice: Invoice
+  invoice: Invoice,
 ): Promise<void> => {
   try {
     const path = `${PATH}/${invoice.invoiceId}`;
@@ -27,16 +25,26 @@ export const setInvoice = async (
     await setData(path, data);
     console.log(`Invoice ${invoice.invoiceId} updated in Firestore`);
   } catch (error) {
-    console.error(`Error setting invoice ${invoice.invoiceId} in Firestore:`, error);
+    console.error(
+      `Error setting invoice ${invoice.invoiceId} in Firestore:`,
+      error,
+    );
   }
 };
 
-export const invoicesStream = (onUpdate: (updatedData: Invoice[]) => void, tutorId?: string) => {
-  const builder = (data: Record<string, any>, id: string) => Invoice.fromMap(data, id);
-  let queryBuilder: ((query: Query<DocumentData>) => Query<DocumentData>) | undefined;
+export const invoicesStream = (
+  onUpdate: (updatedData: Invoice[]) => void,
+  tutorId?: string,
+) => {
+  const builder = (data: Record<string, any>, id: string) =>
+    Invoice.fromMap(data, id);
+  let queryBuilder:
+    | ((query: Query<DocumentData>) => Query<DocumentData>)
+    | undefined;
 
   if (tutorId) {
-    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
+    queryBuilder = (q: Query<DocumentData>) =>
+      query(q, where("tutorId", "==", tutorId));
   }
 
   // Subscribe to the collection stream
@@ -48,4 +56,4 @@ export const invoicesStream = (onUpdate: (updatedData: Invoice[]) => void, tutor
   );
   // Cleanup function
   return () => unsubscribe();
-}
+};
