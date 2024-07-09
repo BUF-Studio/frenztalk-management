@@ -1,4 +1,4 @@
-import { DocumentData, Query, query, where } from "firebase/firestore";
+import { type DocumentData, type Query, query, where } from "firebase/firestore";
 import { addData, collectionStream, setData } from "./service/firestoreService";
 import { AvaSubject } from "../models/avaSubject";
 

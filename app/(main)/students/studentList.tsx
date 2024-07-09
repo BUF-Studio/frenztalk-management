@@ -6,8 +6,8 @@ import { DataTable } from "@/app/components/dashboard/DataTable";
 import type React from "react";
 
 const StudentList: React.FC = () => {
-    const { students } = useStudents();
-    const { setStudent } = useStudentPage();
+  const { students } = useStudents();
+  const { setStudent } = useStudentPage();
 
   const columns: { key: keyof Student; label: string }[] = [
     { key: "id", label: "ID" },
@@ -16,33 +16,21 @@ const StudentList: React.FC = () => {
   ];
   const router = useRouter();
 
-    const navi = (student: Student) => {
-        console.log("setstudent");
-        console.log(student);
-        setStudent(student);
-        router.push("/students/editStudent");
-    };
+  const navi = (student: Student) => {
+    console.log("setstudent");
+    console.log(student);
+    setStudent(student);
+    router.push("/students/editStudent");
+  };
 
-    return (
-        <div>
-            <ul>
-                {students.map((student) => (
-
-                    <div onClick={() => navi(student)} key={student.studentId}>
-                        <li>
-                            {student.name} - Age: {student.age}
-                        </li>
-                    </div>
-                ))}
-            </ul>
-            {/* <DataTable
-        data={students}
-        columns={columns}
-        onEdit={() => {}}
-        onDelete={() => {}}
-      /> */}
-        </div>
-    );
+  return (
+    <DataTable
+      data={students}
+      columns={columns}
+      onEdit={() => {}}
+      onDelete={() => {}}
+    />
+  );
 };
 
 export default StudentList;

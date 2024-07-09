@@ -1,3 +1,5 @@
+@import '@/styles/variables.scss';
+
 .mainContainer {
   display: flex;
   width: 100%;
@@ -7,6 +9,41 @@
   gap: 12px;
   align-items: flex-start;
   justify-content: flex-start;
-  box-sizing: border-box;
-  overflow: auto; // Prevent content overflow here
+  overflow: scroll;
+
+  .headerContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+
+    .addStudentButton {
+      width: 360px;
+      height: 40px;
+      max-width: 120px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-weight: 400;
+      background-color: $primary-color;
+      color: white;
+      border: none;
+    }
+  }
+
+  .contentContainer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 }

@@ -9,27 +9,29 @@ type DataTableProps<T> = {
   onDelete: (item: T) => void;
 };
 
-export const DataTable = <T extends { id: string | number }>({
+export const DataTable = <T extends { id: string | null }>({
   data,
   columns,
   onEdit,
   onDelete,
 }: DataTableProps<T>) => {
+  const filteredColumns = columns.filter((column) => column.key !== "id");
+
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table}>
         <thead>
           <tr>
-            {columns.map((column) => (
+            {filteredColumns.map((column) => (
               <th key={String(column.key)}>{column.label}</th>
             ))}
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {data.map((item, index) => (
             <tr key={String(item.id)}>
-              {columns.map((column) => (
+              {filteredColumns.map((column) => (
                 <td key={String(column.key)}>
                   {item[column.key] as React.ReactNode}
                 </td>

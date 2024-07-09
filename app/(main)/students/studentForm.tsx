@@ -1,19 +1,19 @@
 "use client";
 
-import { useStudentPage } from "@/lib/context/page/studentPageContext";
-import { addStudent, updateStudent } from "@/lib/firebase/student";
-import { Student } from "@/lib/models/student";
-import Link from "next/link";
+import type { Student } from "@/lib/models/student";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
-const StudentForm = () => {
+interface StudentFormProps {
+  onSubmit: (formData: { name: string; age: number}) => Promise<void>;
+  student?: Student | null;
+  onCancel: () => void;
+}
+
+const StudentForm: React.FC<StudentFormProps> = ({ onSubmit, student, onCancel }) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState<number | "">("");
-  const [email, setEmail] = useState("");
-  const { student, setStudent } = useStudentPage();
-
-  const router = useRouter();
 
   useEffect(() => {
     if (student) {
@@ -23,46 +23,23 @@ const StudentForm = () => {
   }, [student]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // const router = useRouter();
     e.preventDefault();
-    console.log({ name, age, email });
 
-    if (age === "" || isNaN(age)) {
+    if (age === "" || Number.isNaN(age)) {
       alert("Please enter a valid age.");
       return;
     }
 
     try {
-      if (student) {
-        const newStudent = new Student(
-          student.studentId,
-          name,
-          age,
-          "Active",
-          student.subjectsId,
-          student.tutorsId,
-        );
-        await updateStudent(newStudent);
-      } else {
-        const newStudent = new Student(null, name, age, "Active", [], []);
-        await addStudent(newStudent);
-      }
-      setStudent(null);
-      router.back();
+      await onSubmit({ name, age: Number(age) });
     } catch (error) {
-      console.error("Failed");
-      console.error(error);
+      console.error("Failed to submit the form", error);
     }
-  };
-
-  const back = () => {
-    setStudent(null);
-    router.push("/students");
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 shadow-lg">
-      <h2 className="text-2xl mb-4">Add Student</h2>
+      <h2 className="text-2xl mb-4">{student ? "Edit Student" : "Add Student"}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700">Name</label>
@@ -78,12 +55,11 @@ const StudentForm = () => {
           <input
             type="number"
             value={age}
-            onChange={(e) =>
-              setAge(e.target.value ? parseInt(e.target.value) : "")
-            }
+            onChange={(e) => setAge(e.target.value ? Number.parseInt(e.target.value) : "")}
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
         </div>
+        {/* Uncomment if email is needed */}
         {/* <div className="mb-4">
           <label className="block text-gray-700">Email</label>
           <input
@@ -93,14 +69,13 @@ const StudentForm = () => {
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
         </div> */}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded mt-4"
-        >
-          Add Student
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded mt-4">
+          {student ? "Update Student" : "Add Student"}
         </button>
       </form>
-      <button onClick={() => back()}>Back</button>
+      <button type="button" onClick={onCancel} className="w-full bg-gray-500 text-white p-2 rounded mt-4">
+        Back
+      </button>
     </div>
   );
 };
