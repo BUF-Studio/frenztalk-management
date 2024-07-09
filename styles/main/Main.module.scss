@@ -22,7 +22,7 @@
 .content {
   flex-grow: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   border-radius: 12px;
   padding: 24px;
   background-color: $shadow-color;
