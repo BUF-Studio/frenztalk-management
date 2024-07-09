@@ -19,14 +19,13 @@ export class Tutor {
     );
   }
 
-  toMap(): Record<string, any> {
-    return {
-      // tutorId: this.tutorId,
-      name: this.name,
-      subjects: this.subjects,
-      des: this.des,
-      pic: this.pic,
-      freeze: this.freeze,
-    };
-  }
+    toMap(): Record<string, any> {
+        return {
+            name: this.name,
+            subjects: this.subjects,
+            des: this.des,
+            pic: this.pic,
+            freeze: this.freeze,
+        };
+    }
 }

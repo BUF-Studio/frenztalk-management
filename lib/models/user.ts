@@ -9,11 +9,10 @@ export class User {
     return new User(id, data.name, data.age);
   }
 
-  toMap(): Record<string, any> {
-    return {
-      id: this.userId,
-      name: this.name,
-      age: this.age,
-    };
-  }
+    toMap(): Record<string, any> {
+        return {
+            name: this.name,
+            age: this.age,
+        };
+    }
 }

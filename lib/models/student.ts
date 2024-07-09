@@ -1,12 +1,12 @@
 export class Student {
-  constructor(
-    public id: string | number,
-    public name: string,
-    public age: number,
-    public status: string,
-    public subjectsId: string[],
-    public tutorsId: string[],
-  ) {}
+    constructor(
+        public studentId: string | null,
+        public name: string,
+        public age: number,
+        public status: string,
+        public subjectsId: string[],
+        public tutorsId: string[],
+    ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
     return new Student(
@@ -19,14 +19,13 @@ export class Student {
     );
   }
 
-  toMap(): Record<string, any> {
-    return {
-      // studentId: this.studentId,
-      name: this.name,
-      age: this.age,
-      status: this.status,
-      subjectsId: this.subjectsId,
-      tutorsId: this.tutorsId,
-    };
-  }
+    toMap(): Record<string, any> {
+        return {
+            name: this.name,
+            age: this.age,
+            status: this.status,
+            subjectsId: this.subjectsId,
+            tutorsId: this.tutorsId,
+        };
+    }
 }

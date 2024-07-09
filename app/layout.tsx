@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AppProvider from "./appProviders";
+import SideNav from "./components/dashboard/sidenav";
 import { AuthContextProvider } from "@/lib/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
