@@ -1,20 +1,37 @@
 "use client";
 
-import Link from 'next/link';
-import StudentList from './studentList';
-import StudentProvider from '@/lib/context/page/studentContext';
+import Link from "next/link";
+import StudentList from "./studentList";
+import StudentProvider from "@/lib/context/page/studentContext";
+import SearchBar from "@/app/components/dashboard/SearchBar";
+import { useState, useEffect } from "react";
 
 const StudentPage = () => {
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("registered");
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null
+  );
 
-    return (
-        <div>
-                <h1>Student</h1>
-                <StudentList/>
-                <Link href={'/students/addStudent'}>Add Student</Link>
+  useEffect(() => {
+    console.log("searchKeyword", searchKeyword);
+  }, [searchKeyword]);
 
-        </div>
-        // </StudentsProvider>
-    );
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  return (
+    <div>
+      <SearchBar onSearch={handleSearch} />
+      <StudentList />
+    </div>
+    // </StudentsProvider>
+  );
 };
 
 export default StudentPage;

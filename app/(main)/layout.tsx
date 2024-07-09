@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   if (pathname.includes("/invoice")) {
     currentLocation = "Invoices";
   } else if (pathname.includes("/tutors")) {
-    currentLocation = "Tutor";
+    currentLocation = "Tutors";
   } else if (pathname.includes("/students")) {
     currentLocation = "Students";
   } else if (pathname.includes("/settings")) {

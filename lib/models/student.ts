@@ -1,7 +1,7 @@
 
 export class Student {
     constructor(
-        public studentId: string | null,
+        public id: string | number,
         public name: string,
         public age: number,
     ) { }
@@ -16,7 +16,7 @@ export class Student {
 
     toMap(): Record<string, any> {
         return {
-            studentId: this.studentId,
+            id: this.id,
             name: this.name,
             age: this.age,
         };

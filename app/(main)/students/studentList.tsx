@@ -1,42 +1,48 @@
-import { useStudents } from '@/lib/context/collection/studentsContext';
-import { useStudent } from '@/lib/context/page/studentContext';
-import type { Student } from '@/lib/models/student';
-import { useRouter } from 'next/navigation';
-import type React from 'react';
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { useStudent } from "@/lib/context/page/studentContext";
+import type { Student } from "@/lib/models/student";
+import { useRouter } from "next/navigation";
+import { DataTable } from "@/app/components/dashboard/DataTable";
+import type React from "react";
 
 const StudentList: React.FC = () => {
-    const { students } = useStudents();
-    const { setStudent } = useStudent();
-    const router = useRouter();
+  const { students } = useStudents();
+  const { setStudent } = useStudent();
 
-    const navi = (student: Student) => {
-        console.log('setstudent')
-        console.log(student)
-        setStudent(student)
-        router.push('/students/editStudent')
+  const columns : { key: keyof Student; label: string }[] = [
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Name' },
+    { key: 'age', label: 'Age' },
+  ];
+  const router = useRouter();
 
-    }
+  const navi = (student: Student) => {
+    console.log("setstudent");
+    console.log(student);
+    setStudent(student);
+    router.push("/students/editStudent");
+  };
 
-
-    return (
-        <div>
-            <h1>Student List</h1>
-            <ul>
-
-                {students.map((student) => (
-
-
-                    <div onClick={() => navi(student)} key={student.studentId}>
-                        <li >
-                            {student.name} - Age: {student.age}
-                        </li>
-                    </div>
-
-
-                ))}
-            </ul>
-        </div>
-    );
+  return (
+    <div>
+      {/* <ul>
+        {students.map((student) => (
+            
+          <div onClick={() => navi(student)} key={student.studentId}>
+            <li>
+              {student.name} - Age: {student.age}
+            </li>
+          </div>
+        ))}
+      </ul> */}
+      <DataTable
+        data={students}
+        columns={columns}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    </div>
+  );
 };
 
-export default StudentList
+export default StudentList;
