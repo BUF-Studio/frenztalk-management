@@ -1,6 +1,6 @@
 export class AvaSubject {
   constructor(
-    public avaSubjectId: string | null,
+    public id: string | null,
     public name: string,
   ) {}
 

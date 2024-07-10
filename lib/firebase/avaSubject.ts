@@ -21,17 +21,17 @@ export const addAvaSubject = async (
 };
 
 export const updateAvaSubject = async (
-  // avaSubjectId: string,
+  // id: string,
   avaSubject: AvaSubject,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${avaSubject.avaSubjectId}`;
+    const path = `${PATH}/${avaSubject.id}`;
     const data = avaSubject.toMap();
     await setData(path, data);
-    console.log(`AvaSubject ${avaSubject.avaSubjectId} updated in Firestore`);
+    console.log(`AvaSubject ${avaSubject.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting avaSubject ${avaSubject.avaSubjectId} in Firestore:`,
+      `Error setting avaSubject ${avaSubject.id} in Firestore:`,
       error,
     );
   }

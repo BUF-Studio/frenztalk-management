@@ -16,17 +16,17 @@ export const addInvoice = async (invoice: Invoice): Promise<void> => {
 };
 
 export const setInvoice = async (
-  // invoiceId: string,
+  // id: string,
   invoice: Invoice,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${invoice.invoiceId}`;
+    const path = `${PATH}/${invoice.id}`;
     const data = invoice.toMap();
     await setData(path, data);
-    console.log(`Invoice ${invoice.invoiceId} updated in Firestore`);
+    console.log(`Invoice ${invoice.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting invoice ${invoice.invoiceId} in Firestore:`,
+      `Error setting invoice ${invoice.id} in Firestore:`,
       error,
     );
   }

@@ -21,16 +21,16 @@ export const addUser = async (user: User): Promise<void> => {
 };
 
 export const updateUser = async (
-  // userId: string,
+  // id: string,
   user: User,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${user.userId}`;
+    const path = `${PATH}/${user.id}`;
     const data = user.toMap();
     await setData(path, data);
-    console.log(`User ${user.userId} updated in Firestore`);
+    console.log(`User ${user.id} updated in Firestore`);
   } catch (error) {
-    console.error(`Error setting user ${user.userId} in Firestore:`, error);
+    console.error(`Error setting user ${user.id} in Firestore:`, error);
   }
 };
 
@@ -59,12 +59,12 @@ export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
 
 export const userStream = (
   onUpdate: (updatedData: User) => void,
-  userId: string,
+  id: string,
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     User.fromMap(data, id);
 
-  const path = `${PATH}/${userId}`;
+  const path = `${PATH}/${id}`;
   // Subscribe to the collection stream
   const unsubscribe = documentStream(
     path, // Firestore collection path

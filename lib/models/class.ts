@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export class Class {
   constructor(
-    public classId: string | null,
+    public id: string | null,
     public subjectId: string,
     public startTime: Timestamp | null,
     public endTime: Timestamp | null,

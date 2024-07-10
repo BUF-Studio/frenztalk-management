@@ -16,17 +16,17 @@ export const addSubject = async (subject: Subject): Promise<void> => {
 };
 
 export const updateSubject = async (
-  // subjectId: string,
+  // id: string,
   subject: Subject,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${subject.subjectId}`;
+    const path = `${PATH}/${subject.id}`;
     const data = subject.toMap();
     await setData(path, data);
-    console.log(`Subject ${subject.subjectId} updated in Firestore`);
+    console.log(`Subject ${subject.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting subject ${subject.subjectId} in Firestore:`,
+      `Error setting subject ${subject.id} in Firestore:`,
       error,
     );
   }

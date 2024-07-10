@@ -15,16 +15,16 @@ export const addTutor = async (tutor: Tutor): Promise<void> => {
 };
 
 export const setTutor = async (
-  // tutorId: string,
+  // id: string,
   tutor: Tutor,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${tutor.tutorId}`;
+    const path = `${PATH}/${tutor.id}`;
     const data = tutor.toMap();
     await setData(path, data);
-    console.log(`Tutor ${tutor.tutorId} updated in Firestore`);
+    console.log(`Tutor ${tutor.id} updated in Firestore`);
   } catch (error) {
-    console.error(`Error setting tutor ${tutor.tutorId} in Firestore:`, error);
+    console.error(`Error setting tutor ${tutor.id} in Firestore:`, error);
   }
 };
 

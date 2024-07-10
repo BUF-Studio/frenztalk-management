@@ -1,6 +1,6 @@
 export class Subject {
   constructor(
-    public subjectId: string | null,
+    public id: string | null,
     public tutorId: string,
     public avaSubjectId: string,
   ) {}

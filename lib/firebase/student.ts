@@ -20,13 +20,13 @@ export const updateStudent = async (
   student: Student,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${student.studentId}`;
+    const path = `${PATH}/${student.id}`;
     const data = student.toMap();
     await setData(path, data);
-    console.log(`Student ${student.studentId} updated in Firestore`);
+    console.log(`Student ${student.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting student ${student.studentId} in Firestore:`,
+      `Error setting student ${student.id} in Firestore:`,
       error,
     );
   }

@@ -1,6 +1,6 @@
 export class Tutor {
   constructor(
-    public tutorId: string | null,
+    public id: string | null,
     public name: string,
     public subjects: string[],
     public des: string,
