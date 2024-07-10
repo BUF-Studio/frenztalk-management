@@ -39,6 +39,16 @@ const adminLinks = [
     // icon: UserGroupIcon,
   },
   {
+    name: "Subjects",
+    href: "/subjects",
+    // icon: UserGroupIcon,
+  },
+  {
+    name: "Classes",
+    href: "/tuition",
+    // icon: UserGroupIcon,
+  },
+  {
     name: "Invoices",
     href: "/invoice",
     // icon: CogIcon,

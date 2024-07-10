@@ -103,7 +103,7 @@ const EditTutor = () => {
 
     return (
         <div>
-            <h1>Edit Tutor</h1>
+            <h1>Edit Tuition</h1>
             <div>
                 <label>
                     Name:

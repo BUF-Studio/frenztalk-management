@@ -14,7 +14,7 @@ const initialContext: SubjectsContextType = {
 // Create a context to hold the data
 const SubjectsContext = createContext<SubjectsContextType>(initialContext);
 
-export const Subjects = () => useContext(SubjectsContext);
+export const useSubjects = () => useContext(SubjectsContext);
 
 function SubjectsProvider({ children }: ScriptProps) {
   const [subjects, Subjects] = useState<Subject[]>([]);

@@ -9,7 +9,7 @@ const InvoiceList: React.FC = () => {
       <h1>Invoice List</h1>
       <ul>
         {invoices.map((invoice) => (
-          <li key={invoice.invoiceId}>
+          <li key={invoice.id}>
             {invoice.name} - Age: {invoice.age}
           </li>
         ))}

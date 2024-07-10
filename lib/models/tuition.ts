@@ -1,17 +1,19 @@
 import { Timestamp } from "firebase/firestore";
 
-export class Class {
+export class Tuition {
   constructor(
     public id: string | null,
+    public name: string,
     public subjectId: string,
     public startTime: Timestamp | null,
     public endTime: Timestamp | null,
     public status: string,
-  ) {}
+  ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
-    return new Class(
+    return new Tuition(
       id,
+      data.name,
       data.subjectId,
       data.startTime,
       data.endTime,
@@ -22,6 +24,7 @@ export class Class {
   toMap(): Record<string, any> {
     return {
       // studentId: this.studentId,
+      name: this.name,
       subjectId: this.subjectId,
       startTime: this.startTime,
       endTime: this.endTime,
