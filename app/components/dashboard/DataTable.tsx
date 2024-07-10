@@ -19,43 +19,45 @@ export const DataTable = <T extends { id: string | null }>({
 
   return (
     <div className={styles.tableContainer}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            {filteredColumns.map((column) => (
-              <th key={String(column.key)}>{column.label}</th>
-            ))}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={String(item.id)}>
+      <div className={styles.scrollContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
               {filteredColumns.map((column) => (
-                <td key={String(column.key)}>
-                  {item[column.key] as React.ReactNode}
-                </td>
+                <th key={String(column.key)}>{column.label}</th>
               ))}
-              <td>
-                <button
-                  type="button"
-                  className={styles.actionButton}
-                  onClick={() => onEdit(item)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.actionButton} ${styles.delete}`}
-                  onClick={() => onDelete(item)}
-                >
-                  Delete
-                </button>
-              </td>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
+              <tr key={String(item.id)}>
+                {filteredColumns.map((column) => (
+                  <td key={String(column.key)}>
+                    {item[column.key] as React.ReactNode}
+                  </td>
+                ))}
+                <td>
+                  <button
+                    type="button"
+                    className={styles.actionButton}
+                    onClick={() => onEdit(item)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.actionButton} ${styles.delete}`}
+                    onClick={() => onDelete(item)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

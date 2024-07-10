@@ -43,7 +43,14 @@ const StudentPage = () => {
         );
         await updateStudent(updatedStudent);
       } else {
-        const newStudent = new Student(null, formData.name, formData.age, "Active", [], []);
+        const newStudent = new Student(
+          null,
+          formData.name,
+          formData.age,
+          "Active",
+          [],
+          []
+        );
         await addStudent(newStudent);
       }
       setStudent(null);
@@ -56,17 +63,28 @@ const StudentPage = () => {
     <div className={styles.mainContainer}>
       <div className={styles.headerContainer}>
         <SearchBar onSearch={handleSearch} />
-        <button
-          type="submit"
-          className={styles.addStudentButton}
-          onClick={handleAddStudent}
-        >
-          Add Student
-        </button>
+        {!showAddForm && (
+          <button
+            type="submit"
+            className={styles.addStudentButton}
+            onClick={handleAddStudent}
+          >
+            Add Student
+          </button>
+        )}
       </div>
       <div className={styles.contentContainer}>
-        <StudentList />
-        {showAddForm && <StudentForm onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>}
+        <div className={styles.studentList}>
+          <StudentList />
+        </div>
+        {showAddForm && (
+          <div className={styles.studentForm}>
+            <StudentForm
+              onSubmit={handleFormSubmit}
+              onCancel={handleFormCancel}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

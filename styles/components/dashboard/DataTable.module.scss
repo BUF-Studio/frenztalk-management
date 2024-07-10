@@ -2,50 +2,58 @@
 
 .tableContainer {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   padding: 12px;
   background-color: white;
   border-radius: 12px;
   border: 1px solid #ddd;
-  overflow: visible;
+  position: relative; /* Ensure relative positioning for stacking context */
+}
+
+.scrollContainer {
+  height: 100%;
+  overflow: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  table-layout: fixed;
-  overflow-x: auto;
 
   thead {
-    background-color: inherit;
+    background-color: white;
+    position: sticky;
+    top: 0; /* Stick the thead to the top */
+    z-index: 2; /* Ensure thead is above tbody content */
   }
 
   th,
   td {
     font-size: 14px;
-    padding: 0 20px;
+    padding: 8px 20px; /* Increase padding for better readability */
     overflow: hidden; /* Ensure text overflow doesn't break layout */
     text-overflow: ellipsis; /* Show ellipsis for overflowed text */
     white-space: nowrap; /* Prevent text wrapping */
+    position: relative; /* Ensure relative positioning for stacking context */
+    z-index: 1; /* Set the z-index for tbody content */
   }
 
   th {
-    /* background-color: #f4f4f4; */
     color: #333;
-    padding-bottom: 12px;
+    font-weight: bold; /* Make header text bold */
   }
 
   tbody tr {
     border-bottom: 1px solid #ddd; /* Add a line at the bottom of each row */
-    
+
     &:nth-child(even) {
-      background-color: transparent; /* Remove background color for even rows */
+      background-color: #f9f9f9; /* Alternate row background color */
     }
 
     &:hover {
-      background-color: #ddd; /* Remove hover background color */
+      background-color: #f0f0f0; /* Hover background color */
     }
   }
 
@@ -58,7 +66,7 @@
   background-color: #007bff;
   border: none;
   color: white;
-  padding: 10px;
+  padding: 8px 12px; /* Adjust padding for buttons */
   text-align: center;
   text-decoration: none;
   display: inline-block;

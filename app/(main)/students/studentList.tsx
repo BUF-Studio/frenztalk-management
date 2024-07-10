@@ -13,6 +13,7 @@ const StudentList: React.FC = () => {
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
     { key: "age", label: "Age" },
+    { key: "status", label: "Status"}
   ];
   const router = useRouter();
 
@@ -23,12 +24,16 @@ const StudentList: React.FC = () => {
     router.push("/students/editStudent");
   };
 
+  function handleOnDelete(item: Student): void {
+    console.log(`Delete ${item.id}`);
+  }
+
   return (
     <DataTable
       data={students}
       columns={columns}
       onEdit={() => {}}
-      onDelete={() => {}}
+      onDelete={handleOnDelete}
     />
   );
 };

@@ -4,14 +4,19 @@ import type { Student } from "@/lib/models/student";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
+import styles from "@/styles/main/students/StudentForm.module.scss";
 
 interface StudentFormProps {
-  onSubmit: (formData: { name: string; age: number}) => Promise<void>;
+  onSubmit: (formData: { name: string; age: number }) => Promise<void>;
   student?: Student | null;
   onCancel: () => void;
 }
 
-const StudentForm: React.FC<StudentFormProps> = ({ onSubmit, student, onCancel }) => {
+const StudentForm: React.FC<StudentFormProps> = ({
+  onSubmit,
+  student,
+  onCancel,
+}) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState<number | "">("");
 
@@ -38,44 +43,44 @@ const StudentForm: React.FC<StudentFormProps> = ({ onSubmit, student, onCancel }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 shadow-lg">
-      <h2 className="text-2xl mb-4">{student ? "Edit Student" : "Add Student"}</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Name</label>
+    <div className={styles.studentFormContainer}>
+      <h2 className={styles.studentFormHeader}>
+        {student ? "Edit Student" : "Add Student"}
+      </h2>
+      <p className={styles.formSectionTitle}>Student Information</p>
+      <form onSubmit={handleSubmit} className={styles.studentForm}>
+        <div className={styles.formGroup}>
+          <label>Student name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mt-1"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Age</label>
+        <div className={styles.formGroup}>
+          <label>Student age</label>
           <input
             type="number"
             value={age}
-            onChange={(e) => setAge(e.target.value ? Number.parseInt(e.target.value) : "")}
-            className="w-full p-2 border border-gray-300 rounded mt-1"
+            onChange={(e) =>
+              setAge(e.target.value ? Number.parseInt(e.target.value) : "")
+            }
           />
         </div>
-        {/* Uncomment if email is needed */}
-        {/* <div className="mb-4">
-          <label className="block text-gray-700">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mt-1"
-          />
-        </div> */}
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded mt-4">
-          {student ? "Update Student" : "Add Student"}
-        </button>
+        <div className={styles.spacer} />
+        <div className={styles.buttonsContainer}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className={`${styles.formButton} ${styles.cancelButton}`}
+          >
+            Cancel
+          </button>
+          <button type="submit" className={styles.formButton}>
+            Confirm
+          </button>
+        </div>
       </form>
-      <button type="button" onClick={onCancel} className="w-full bg-gray-500 text-white p-2 rounded mt-4">
-        Back
-      </button>
     </div>
   );
 };
