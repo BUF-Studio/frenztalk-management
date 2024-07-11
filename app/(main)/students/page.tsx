@@ -8,11 +8,22 @@ import StudentForm from "./studentForm";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { Student } from "@/lib/models/student";
 import { addStudent, updateStudent } from "@/lib/firebase/student";
+import { DataTable } from "@/app/components/dashboard/DataTable";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { set } from "firebase/database";
 
 const StudentPage = () => {
+  const { students } = useStudents();
   const { student, setStudent } = useStudentPage();
   const [searchKeyword, setSearchKeyword] = useState<string>("");
-  const [showAddForm, setShowAddForm] = useState<boolean>(false); // State to manage form visibility
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+
+  const columns: { key: keyof Student; label: string }[] = [
+    { key: "id", label: "ID" },
+    { key: "name", label: "Name" },
+    { key: "age", label: "Age" },
+    { key: "status", label: "Status" },
+  ];
 
   useEffect(() => {
     console.log("searchKeyword", searchKeyword);
@@ -26,18 +37,28 @@ const StudentPage = () => {
     setShowAddForm(true);
   };
 
+  function handleOnEdit(item: Student): void {
+    setShowAddForm(true);
+    setStudent(item);
+  }
+
   const handleFormCancel = () => {
     setShowAddForm(false); // Hide the form when cancel button is clicked
+    setStudent(null); // Reset the student state
   };
 
-  const handleFormSubmit = async (formData: { name: string; age: number }) => {
+  const handleFormSubmit = async (formData: {
+    name: string;
+    age: number;
+    status: string;
+  }) => {
     try {
       if (student) {
         const updatedStudent = new Student(
           student.id,
           formData.name,
           formData.age,
-          "Active",
+          formData.status,
           student.subjectsId,
           student.tutorsId
         );
@@ -47,13 +68,14 @@ const StudentPage = () => {
           null,
           formData.name,
           formData.age,
-          "Active",
+          formData.status,
           [],
           []
         );
         await addStudent(newStudent);
       }
       setStudent(null);
+      setShowAddForm(false);
     } catch (error) {
       console.error("Failed to add/update student", error);
     }
@@ -75,11 +97,17 @@ const StudentPage = () => {
       </div>
       <div className={styles.contentContainer}>
         <div className={styles.studentList}>
-          <StudentList />
+          <DataTable
+            data={students}
+            columns={columns}
+            onEdit={handleOnEdit}
+            onDelete={() => console.log("Delete")}
+          />
         </div>
         {showAddForm && (
           <div className={styles.studentForm}>
             <StudentForm
+              student={student}
               onSubmit={handleFormSubmit}
               onCancel={handleFormCancel}
             />

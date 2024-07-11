@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import styles from "@/styles/main/students/StudentForm.module.scss";
 
 interface StudentFormProps {
-  onSubmit: (formData: { name: string; age: number }) => Promise<void>;
+  onSubmit: (formData: { name: string; age: number; status: string }) => Promise<void>;
   student?: Student | null;
   onCancel: () => void;
 }
@@ -19,11 +19,13 @@ const StudentForm: React.FC<StudentFormProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState<number | "">("");
+  const [status, setStatus] = useState("active");
 
   useEffect(() => {
     if (student) {
       setName(student.name);
       setAge(student.age);
+      setStatus(student.status || "active");
     }
   }, [student]);
 
@@ -36,7 +38,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
     }
 
     try {
-      await onSubmit({ name, age: Number(age) });
+      await onSubmit({ name, age: Number(age), status });
     } catch (error) {
       console.error("Failed to submit the form", error);
     }
@@ -50,7 +52,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
       <p className={styles.formSectionTitle}>Student Information</p>
       <form onSubmit={handleSubmit} className={styles.studentForm}>
         <div className={styles.formGroup}>
-          <label>Student name</label>
+          <label>Name</label>
           <input
             type="text"
             value={name}
@@ -58,7 +60,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label>Student age</label>
+          <label>Age</label>
           <input
             type="number"
             value={age}
@@ -66,6 +68,17 @@ const StudentForm: React.FC<StudentFormProps> = ({
               setAge(e.target.value ? Number.parseInt(e.target.value) : "")
             }
           />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className={styles.statusDropdown}
+          >
+            <option value="active">Active</option>
+            <option value="frozen">Frozen</option>
+          </select>
         </div>
         <div className={styles.spacer} />
         <div className={styles.buttonsContainer}>
