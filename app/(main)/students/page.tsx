@@ -9,7 +9,6 @@ import { Student } from "@/lib/models/student";
 import { addStudent, updateStudent, deleteStudent } from "@/lib/firebase/student";
 import { DataTable } from "@/app/components/dashboard/DataTable";
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import { set } from "firebase/database";
 
 const StudentPage = () => {
   const { students } = useStudents();
