@@ -39,6 +39,12 @@ const EditSubject = () => {
             setSubjectId(selectedId);
         }
     };
+    const handleStudentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = event.target.value;
+        if (selectedId !== '') {
+            setStudentId(selectedId);
+        }
+    };
     // const handleTutorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     //     const selectedId = event.target.value;
     //     if (selectedId !== '') {
@@ -127,7 +133,7 @@ const EditSubject = () => {
                     Student:
                     <select
                         value={studentId ?? ''}
-                        onChange={handleSubjectChange}
+                        onChange={handleStudentChange}
                     >
                         <option value="">Select a Student</option>
                         {students
