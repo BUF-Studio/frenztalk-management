@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import styles from "@/styles/components/dashboard/DataTable.module.scss";
+import Badge from "./Badge";
 
 type DataTableProps<T> = {
   data: T[];
@@ -34,7 +35,11 @@ export const DataTable = <T extends { id: string | null }>({
               <tr key={String(item.id)}>
                 {filteredColumns.map((column) => (
                   <td key={String(column.key)}>
-                    {item[column.key] as React.ReactNode}
+                    {column.key === "status" ? (
+                      <Badge status={item[column.key] as string} />
+                    ) : (
+                      item[column.key] as React.ReactNode
+                    )}
                   </td>
                 ))}
                 <td>
