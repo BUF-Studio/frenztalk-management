@@ -29,6 +29,19 @@
     z-index: 2; /* Ensure thead is above tbody content */
   }
 
+  .blink {
+    animation: blink-animation 1s ease-in-out;
+  }
+  
+  @keyframes blink-animation {
+    0%, 100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba($color: $primary-color, $alpha: 0.2); /* or any highlight color */
+    }
+  }
+
   th,
   td {
     font-size: 14px;

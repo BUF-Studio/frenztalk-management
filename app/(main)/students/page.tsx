@@ -1,13 +1,12 @@
 "use client";
 
-import StudentList from "./studentList";
 import SearchBar from "@/app/components/dashboard/SearchBar";
 import { useState, useEffect } from "react";
 import styles from "@/styles/main/students/Page.module.scss";
 import StudentForm from "./studentForm";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { Student } from "@/lib/models/student";
-import { addStudent, updateStudent } from "@/lib/firebase/student";
+import { addStudent, updateStudent, deleteStudent } from "@/lib/firebase/student";
 import { DataTable } from "@/app/components/dashboard/DataTable";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { set } from "firebase/database";
@@ -17,6 +16,7 @@ const StudentPage = () => {
   const { student, setStudent } = useStudentPage();
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [changedIds, setChangedIds] = useState<string[]>([]);
 
   const columns: { key: keyof Student; label: string }[] = [
     { key: "id", label: "ID" },
@@ -42,6 +42,11 @@ const StudentPage = () => {
     setStudent(item);
   }
 
+  function handleOnDelete(item: Student): void {
+    setShowAddForm(false);
+    deleteStudent(item);
+  }
+
   const handleFormCancel = () => {
     setShowAddForm(false); // Hide the form when cancel button is clicked
     setStudent(null); // Reset the student state
@@ -53,6 +58,7 @@ const StudentPage = () => {
     status: string;
   }) => {
     try {
+      let changedId = "";
       if (student) {
         const updatedStudent = new Student(
           student.id,
@@ -63,6 +69,7 @@ const StudentPage = () => {
           student.tutorsId
         );
         await updateStudent(updatedStudent);
+        changedId = student.id || "";
       } else {
         const newStudent = new Student(
           null,
@@ -72,10 +79,15 @@ const StudentPage = () => {
           [],
           []
         );
-        await addStudent(newStudent);
+        changedId = await addStudent(newStudent);
       }
       setStudent(null);
       setShowAddForm(false);
+
+      setChangedIds((prev) => [...prev, changedId]);
+      setTimeout(() => {
+        setChangedIds((prev) => prev.filter((id) => id !== changedId));
+      }, 1000);
     } catch (error) {
       console.error("Failed to add/update student", error);
     }
@@ -101,7 +113,8 @@ const StudentPage = () => {
             data={students}
             columns={columns}
             onEdit={handleOnEdit}
-            onDelete={() => console.log("Delete")}
+            onDelete={handleOnDelete}
+            changedIds={changedIds}
           />
         </div>
         {showAddForm && (

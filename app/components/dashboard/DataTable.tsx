@@ -8,6 +8,7 @@ type DataTableProps<T> = {
   columns: { key: keyof T; label: string }[];
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
+  changedIds: string[];
 };
 
 export const DataTable = <T extends { id: string | null }>({
@@ -15,6 +16,7 @@ export const DataTable = <T extends { id: string | null }>({
   columns,
   onEdit,
   onDelete,
+  changedIds,
 }: DataTableProps<T>) => {
   const filteredColumns = columns.filter((column) => column.key !== "id");
 
@@ -32,13 +34,18 @@ export const DataTable = <T extends { id: string | null }>({
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={String(item.id)}>
+              <tr
+                key={String(item.id)}
+                className={
+                  changedIds?.includes(String(item.id)) ? styles.blink : ""
+                }
+              >
                 {filteredColumns.map((column) => (
                   <td key={String(column.key)}>
                     {column.key === "status" ? (
                       <Badge status={item[column.key] as string} />
                     ) : (
-                      item[column.key] as React.ReactNode
+                      (item[column.key] as React.ReactNode)
                     )}
                   </td>
                 ))}

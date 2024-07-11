@@ -1,23 +1,35 @@
-import { DocumentData, Query, query, where } from "firebase/firestore";
+import {
+  type DocumentData,
+  type Query,
+  query,
+  where,
+} from "firebase/firestore";
 import { Student } from "../models/student";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import {
+  addData,
+  collectionStream,
+  setData,
+  deleteData,
+} from "./service/firestoreService";
 
 const PATH = "students";
 
-export const addStudent = async (student: Student): Promise<void> => {
+export const addStudent = async (student: Student): Promise<string> => {
   try {
     const path = PATH;
     const data = student.toMap();
-    await addData(path, data);
+    const id = await addData(path, data);
     console.log("Student added to Firestore");
+    return id;
   } catch (error) {
     console.error("Error adding student to Firestore:", error);
+    throw error;
   }
 };
 
 export const updateStudent = async (
   // studentId: string,
-  student: Student,
+  student: Student
 ): Promise<void> => {
   try {
     const path = `${PATH}/${student.id}`;
@@ -25,16 +37,23 @@ export const updateStudent = async (
     await setData(path, data);
     console.log(`Student ${student.id} updated in Firestore`);
   } catch (error) {
-    console.error(
-      `Error setting student ${student.id} in Firestore:`,
-      error,
-    );
+    console.error(`Error setting student ${student.id} in Firestore:`, error);
+  }
+};
+
+export const deleteStudent = async (student: Student) => {
+  try {
+    const path = `${PATH}/${student.id}`;
+    await deleteData(path);
+    console.log(`Student ${student.id} deleted in Firestore`);
+  } catch (error) {
+    console.error(`Error deleting student ${student.id} in Firestore:`, error);
   }
 };
 
 export const studentsStream = (
   onUpdate: (updatedData: Student[]) => void,
-  tutorId?: string,
+  tutorId?: string
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     Student.fromMap(data, id);
@@ -53,7 +72,7 @@ export const studentsStream = (
     PATH, // Firestore collection path
     builder,
     onUpdate,
-    queryBuilder,
+    queryBuilder
   );
   // Cleanup function
   return () => unsubscribe();
