@@ -5,9 +5,11 @@ import SearchBar from "@/app/components/dashboard/SearchBar";
 import { useState, useEffect } from "react";
 import styles from "@/styles/main/tutors/Page.module.scss";
 import type { Tutor } from "@/lib/models/tutor";
+import { addTutor, setTutor as updateTutor } from "@/lib/firebase/tutor";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 import { DataTable } from "@/app/components/dashboard/DataTable";
+import TutorForm from "./tutorForm";
 
 const TutorPage = () => {
   const { tutors } = useTutors();
@@ -43,12 +45,11 @@ const TutorPage = () => {
 
   function handleOnDelete(item: Tutor): void {
     setShowForm(false);
-    deleteTutor(item);
   }
 
   const handleFormCancel = () => {
-    setShowAddForm(false); // Hide the form when cancel button is clicked
-    setStudent(null); // Reset the student state
+    setShowForm(false); // Hide the form when cancel button is clicked
+    setTutor(null); // Reset the student state
   };
 
 
@@ -78,11 +79,14 @@ const TutorPage = () => {
         </div>
         {showForm && (
           <div className={styles.studentForm}>
-            <StudentForm
+            <TutorForm
+              
+            />
+            {/* <StudentForm
               student={student}
               onSubmit={handleFormSubmit}
               onCancel={handleFormCancel}
-            />
+            /> */}
           </div>
         )}
       </div>

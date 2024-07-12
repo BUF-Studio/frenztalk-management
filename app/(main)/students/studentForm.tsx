@@ -74,7 +74,6 @@ const StudentForm: React.FC<StudentFormProps> = ({
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className={styles.statusDropdown}
           >
             <option value="active">Active</option>
             <option value="frozen">Frozen</option>
