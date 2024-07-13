@@ -8,6 +8,7 @@ import { addTutor } from "@/lib/firebase/tutor";
 import { AvaSubject } from "@/lib/models/avaSubject";
 import { Tutor } from "@/lib/models/tutor";
 import { useRouter } from "next/navigation";
+import type React from "react";
 import { useEffect, useState } from "react";
 import styles from "@/styles/main/tutors/TutorForm.module.scss";
 
@@ -15,13 +16,14 @@ interface TutorFormProps {
   onSubmit: (formData: {
     name: string;
     description: string;
-    subject: string[];
+    subjects: string[];
+    pic: string;
     freezeAccount: boolean;
   }) => Promise<void>;
   onCancel: () => void;
 }
 
-const TutorForm = () => {
+const TutorForm: React.FC<TutorFormProps> = ({ onSubmit, onCancel }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [subjects, setSubjects] = useState<string[]>([]);
@@ -69,44 +71,59 @@ const TutorForm = () => {
     }
   };
 
-  const handleConfirm = async () => {
-    try {
-      if (tutor) {
-        const updatedTutor = new Tutor(
-          tutor.id,
-          name,
-          subjects,
-          description,
-          "pic",
-          freezeAccount
-        );
-        await setTutor(updatedTutor);
-      } else {
-        const newTutor = new Tutor(
-          null,
-          name,
-          subjects,
-          description,
-          "pic",
-          freezeAccount
-        );
-        await addTutor(newTutor);
-      }
-      setTutor(null);
-      router.push("/tutors");
-    } catch (error) {
-      console.error("Failed to add/update tutor", error);
-    }
+  const handleRemoveSubject = (id: string) => {
+    setSubjects((prevSubjects) => prevSubjects.filter((sub) => sub !== id));
   };
 
-  const handleCancel = () => {
-    setTutor(null);
-    router.push("/tutors");
-  };
+  //   const handleConfirm = async () => {
+  //     try {
+  //       if (tutor) {
+  //         const updatedTutor = new Tutor(
+  //           tutor.id,
+  //           name,
+  //           subjects,
+  //           description,
+  //           "pic",
+  //           freezeAccount
+  //         );
+  //         await setTutor(updatedTutor);
+  //       } else {
+  //         const newTutor = new Tutor(
+  //           null,
+  //           name,
+  //           subjects,
+  //           description,
+  //           "pic",
+  //           freezeAccount
+  //         );
+  //         await addTutor(newTutor);
+  //       }
+  //       setTutor(null);
+  //       router.push("/tutors");
+  //     } catch (error) {
+  //       console.error("Failed to add/update tutor", error);
+  //     }
+  //   };
 
   const getSubjectName = (id: string): string => {
     const subject = avaSubjects.find((sub) => sub.id === id);
     return subject?.name || "";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await onSubmit({
+        name: name,
+        description,
+        subjects,
+        pic: "",
+        freezeAccount,
+      });
+    } catch (error) {
+      console.error("Failed to submit the form", error);
+    }
   };
 
   return (
@@ -114,8 +131,8 @@ const TutorForm = () => {
       <h2 className={styles.tutorFormHeader}>
         {tutor ? "Edit Tutor" : "Add Tutor"}
       </h2>
-      <p className={styles.formSectionTitle}>Tutor Information</p>
       <form className={styles.tutorForm}>
+        <p className={styles.formSectionTitle}>Tutor Information</p>
         <div className={styles.formGroup}>
           <label>Name</label>
           <input
@@ -132,28 +149,47 @@ const TutorForm = () => {
           />
         </div>
         <div className={styles.formGroup}>
-          <label>Subjects</label>
-          <ul>
+          <p className={styles.formSectionTitle}>Available Subjects</p>
+          <>
             {subjects.map((sub) => (
-              <li key={sub}>{getSubjectName(sub)}</li>
+              <div key={sub} className={styles.subjectContainer}>
+                {getSubjectName(sub)}
+                <button
+                  type="button"
+                  className={styles.removeButton}
+                  onClick={() => handleRemoveSubject(sub)}
+                >
+                  ×
+                </button>
+              </div>
             ))}
-          </ul>
+          </>
         </div>
         <div className={styles.formGroup}>
-          <label>Add Existing Subject</label>
-          <select value={addSubject?.id || ""} onChange={handleSubjectChange}>
-            <option value="">Select a subject</option>
-            {avaSubjects
-              .filter((subject) => !subjects.includes(subject.id || ""))
-              .map((subject) => (
-                <option key={subject.id} value={subject.id || ""}>
-                  {subject.name}
-                </option>
-              ))}
-          </select>
-          <button type="button" onClick={handleAddSubject}>
-            Add Subject
-          </button>
+          <label>Existing Subject</label>
+          <div className={styles.addSubjectContainer}>
+            <select
+              value={addSubject?.id || ""}
+              onChange={handleSubjectChange}
+              className={styles.addSubjectDropDown}
+            >
+              <option value="">Select a subject</option>
+              {avaSubjects
+                .filter((subject) => !subjects.includes(subject.id || ""))
+                .map((subject) => (
+                  <option key={subject.id} value={subject.id || ""}>
+                    {subject.name}
+                  </option>
+                ))}
+            </select>
+            <button
+              type="button"
+              onClick={handleAddSubject}
+              className={styles.addSubjectButton}
+            >
+              Add
+            </button>
+          </div>
         </div>
         <div className={styles.formGroup}>
           <label>Add New Subject</label>
@@ -169,36 +205,43 @@ const TutorForm = () => {
             value={newSubjectLevel}
             onChange={(e) => setNewSubjectLevel(e.target.value)}
           />
-          <button type="button" onClick={handleAddNewSubject}>
+          <button
+            type="button"
+            onClick={handleAddNewSubject}
+            className={styles.addNewSubjectButton}
+          >
             Add New Subject
           </button>
         </div>
+        <hr />
         <div className={styles.formGroup}>
-          <label>Freeze Account</label>
-          <input
-            type="checkbox"
-            checked={freezeAccount}
-            onChange={(e) => setFreezeAccount(e.target.checked)}
-          />
+          <div className={styles.freezeAccountContainer}>
+            <p>Freeze Account</p>
+            <input
+              type="checkbox"
+              checked={freezeAccount}
+              onChange={(e) => setFreezeAccount(e.target.checked)}
+            />
+          </div>
         </div>
         <div className={styles.spacer} />
-        <div className={styles.buttonsContainer}>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className={`${styles.formButton} ${styles.cancelButton}`}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className={styles.formButton}
-          >
-            Confirm
-          </button>
-        </div>
       </form>
+      <div className={styles.buttonsContainer}>
+        <button
+          type="button"
+          onClick={onCancel}
+          className={`${styles.formButton} ${styles.cancelButton}`}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className={styles.formButton}
+          onClick={handleSubmit}
+        >
+          Confirm
+        </button>
+      </div>
     </div>
   );
 };

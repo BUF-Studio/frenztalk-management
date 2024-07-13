@@ -3,20 +3,22 @@ import { addData, collectionStream, setData } from "./service/firestoreService";
 
 const PATH = "tutors";
 
-export const addTutor = async (tutor: Tutor): Promise<void> => {
+export const addTutor = async (tutor: Tutor): Promise<string> => {
   try {
     const path = PATH;
     const data = tutor.toMap();
-    await addData(path, data);
+    const id = await addData(path, data);
     console.log("Tutor added to Firestore");
+    return id;
   } catch (error) {
     console.error("Error adding tutor to Firestore:", error);
+    throw error;
   }
 };
 
 export const setTutor = async (
   // id: string,
-  tutor: Tutor,
+  tutor: Tutor
 ): Promise<void> => {
   try {
     const path = `${PATH}/${tutor.id}`;
@@ -36,7 +38,7 @@ export const tutorsStream = (onUpdate: (updatedData: Tutor[]) => void) => {
   const unsubscribe = collectionStream(
     PATH, // Firestore collection path
     builder,
-    onUpdate,
+    onUpdate
   );
   // Cleanup function
   return () => unsubscribe();

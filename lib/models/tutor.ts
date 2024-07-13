@@ -5,7 +5,7 @@ export class Tutor {
     public subjects: string[],
     public des: string,
     public pic: string,
-    public freeze: boolean,
+    public freeze: boolean
   ) {}
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -15,17 +15,17 @@ export class Tutor {
       data.subjects,
       data.des,
       data.pic,
-      data.freeze,
+      data.freeze
     );
   }
 
-    toMap(): Record<string, any> {
-        return {
-            name: this.name,
-            subjects: this.subjects,
-            des: this.des,
-            pic: this.pic,
-            freeze: this.freeze,
-        };
-    }
+  toMap(): Record<string, any> {
+    return {
+      name: this.name,
+      subjects: this.subjects,
+      des: this.des,
+      pic: this.pic,
+      freeze: this.freeze,
+    };
+  }
 }

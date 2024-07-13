@@ -6,9 +6,14 @@ import styles from "@/styles/main/students/Page.module.scss";
 import StudentForm from "./studentForm";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { Student } from "@/lib/models/student";
-import { addStudent, updateStudent, deleteStudent } from "@/lib/firebase/student";
+import {
+  addStudent,
+  updateStudent,
+  deleteStudent,
+} from "@/lib/firebase/student";
 import { DataTable } from "@/app/components/dashboard/DataTable";
 import { useStudents } from "@/lib/context/collection/studentsContext";
+import Badge from "@/app/components/dashboard/Badge";
 
 const StudentPage = () => {
   const { students } = useStudents();
@@ -23,6 +28,13 @@ const StudentPage = () => {
     { key: "age", label: "Age" },
     { key: "status", label: "Status" },
   ];
+
+  const renderStudentCell = (student: Student, columnKey: keyof Student) => {
+    if (columnKey === "status") {
+      return <Badge status={student.status as string} />;
+    }
+    return student[columnKey] as React.ReactNode;
+  };
 
   useEffect(() => {
     console.log("searchKeyword", searchKeyword);
@@ -111,9 +123,10 @@ const StudentPage = () => {
           <DataTable
             data={students}
             columns={columns}
-            onEdit={handleOnEdit}
-            onDelete={handleOnDelete}
+            // onEdit={handleOnEdit}
+            // onDelete={handleOnDelete}
             changedIds={changedIds}
+            renderCell={renderStudentCell}
           />
         </div>
         {showAddForm && (

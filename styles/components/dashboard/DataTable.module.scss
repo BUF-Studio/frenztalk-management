@@ -10,6 +10,7 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   position: relative; /* Ensure relative positioning for stacking context */
+  overflow: auto;
 }
 
 .scrollContainer {

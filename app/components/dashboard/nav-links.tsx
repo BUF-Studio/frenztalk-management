@@ -25,7 +25,12 @@ const tutorLinks = [
 const adminLinks = [
   {
     name: "Home",
-    href: "/",
+    href: "/tuition",
+    // icon: HomeIcon
+  },
+  {
+    name: "Class",
+    href: "/subject",
     // icon: HomeIcon
   },
   {
@@ -39,13 +44,8 @@ const adminLinks = [
     // icon: UserGroupIcon,
   },
   {
-    name: "Subjects",
-    href: "/subjects",
-    // icon: UserGroupIcon,
-  },
-  {
-    name: "Classes",
-    href: "/tuition",
+    name: "Users",
+    href: "/users",
     // icon: UserGroupIcon,
   },
   {
@@ -74,7 +74,7 @@ export default function NavLinks() {
             [styles.activeLink]: pathname === link.href,
           })}
         >
-          <p className="hidden md:block">{link.name}</p>
+          <p>{link.name}</p>
         </Link>
       ))}
     </div>

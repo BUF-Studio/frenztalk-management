@@ -1,5 +1,18 @@
 @import "@/styles/variables.scss";
 
+.tutorSection {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  .tutorPic {
+    width: 24px; /* Adjust as needed */
+    height: 24px; /* Adjust as needed */
+    border-radius: 50%;
+    background-color: #ccc; /* Grey color */
+  }
+}
+
 .mainContainer {
   display: flex;
   width: 100%;
@@ -19,7 +32,7 @@
     align-items: center;
     justify-content: space-between;
 
-    .addStudentButton {
+    .addTutorButton {
       width: 360px;
       height: 40px;
       max-width: 120px;
@@ -47,12 +60,13 @@
     align-items: flex-start;
     justify-content: flex-start;
 
-    .studentList {
+    .tutorList {
       flex: 596;
+      overflow: auto;
       height: 100%;
     }
 
-    .studentForm {
+    .tutorForms {
       flex: 340;
       height: 100%;
     }
