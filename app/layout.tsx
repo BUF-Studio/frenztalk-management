@@ -6,6 +6,7 @@ import "./globals.css";
 import AppProvider from "./appProviders";
 import SideNav from "./components/dashboard/sidenav";
 import { AuthContextProvider } from "@/lib/context/AuthContext";
+import { SnackbarProvider } from "@/lib/context/SnackbarContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +25,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthContextProvider>
           <AppProvider>
-            <div className="flex">
-              {/* <Sidebar /> */}
-              <main className="flex-1">{children}</main>
-            </div>
+            <SnackbarProvider>
+              <div className="flex">
+                {/* <Sidebar /> */}
+                <main className="flex-1">{children}</main>
+              </div>
+            </SnackbarProvider>
           </AppProvider>
         </AuthContextProvider>
       </body>

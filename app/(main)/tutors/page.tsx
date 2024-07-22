@@ -12,6 +12,7 @@ import { DataTable } from "@/app/components/dashboard/DataTable";
 import TutorForm from "./tutorForm";
 import Badge from "@/app/components/dashboard/Badge";
 import Image from "next/image";
+import { useSnackbar } from "@/lib/context/SnackbarContext";
 
 const TutorPage = () => {
   const { tutors } = useTutors();
@@ -20,6 +21,7 @@ const TutorPage = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [changedIds, setChangedIds] = useState<string[]>([]);
   const { avaSubjects } = useAvaSubjects();
+  const { showSnackbar } = useSnackbar();
 
   const columns: { key: keyof Tutor; label: string }[] = [
     { key: "id", label: "ID" },
@@ -111,6 +113,10 @@ const TutorPage = () => {
     return subject?.name || "";
   };
 
+  function handleOnDelete(item: Tutor): void {
+    showSnackbar("Tutor deleted successfully", "success");
+  }
+
   return (
     <div className={styles.mainContainer}>
       <div className={styles.headerContainer}>
@@ -132,7 +138,7 @@ const TutorPage = () => {
           <DataTable
             data={tutors}
             columns={columns}
-            onDelete={()=>console.log()}
+            onDelete={handleOnDelete}
             changedIds={changedIds}
             renderCell={renderTutorCell}
           />

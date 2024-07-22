@@ -29,8 +29,8 @@ const adminLinks = [
     // icon: HomeIcon
   },
   {
-    name: "Class",
-    href: "/subject",
+    name: "Subjects",
+    href: "/subjects",
     // icon: HomeIcon
   },
   {

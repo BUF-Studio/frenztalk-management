@@ -19,7 +19,7 @@ export const DataTable = <T extends { id: string | null }>({
   changedIds,
   renderCell,
 }: DataTableProps<T>) => {
-  const filteredColumns = columns;
+  const filteredColumns = columns.filter((column) => column.key !== "id");
 
   const defaultRenderCell = (item: T, columnKey: keyof T) => {
     const value = item[columnKey] as React.ReactNode;
