@@ -1,21 +1,27 @@
 import type React from "react";
 import styles from "@/styles/components/dashboard/DataTable.module.scss";
-import Badge from "./Badge";
+import { Button } from "@mui/material";
+
+export type Action<T> = {
+  label: string;
+  variant?: "text" | "contained" | "outlined";
+  color?: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning";
+  onClick: (item: T) => void;
+  shouldRender?: (item: T) => boolean;
+};
 
 type DataTableProps<T> = {
   data: T[];
   columns: { key: keyof T; label: string }[];
-  onEdit?: (item: T) => void;
-  onDelete?: (item: T) => void;
-  changedIds: string[];
+  actions: Action<T>[];
+  changedIds?: string[];
   renderCell?: (item: T, columnKey: keyof T) => React.ReactNode;
 };
 
 export const DataTable = <T extends { id: string | null }>({
   data,
   columns,
-  onEdit,
-  onDelete,
+  actions,
   changedIds,
   renderCell,
 }: DataTableProps<T>) => {
@@ -44,7 +50,7 @@ export const DataTable = <T extends { id: string | null }>({
               {filteredColumns.map((column) => (
                 <th key={String(column.key)}>{column.label}</th>
               ))}
-              {(onDelete || onEdit) && <th>Actions</th>}
+              {actions.length > 0 && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -60,25 +66,22 @@ export const DataTable = <T extends { id: string | null }>({
                     {renderCellContent(item, column)}
                   </td>
                 ))}
-                {(onDelete || onEdit) && (
-                  <td>
-                    {onEdit && (
-                      <button
-                        type="button"
-                        className={styles.actionButton}
-                        onClick={() => onEdit(item)}
-                      >
-                        Edit
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        type="button"
-                        className={`${styles.actionButton} ${styles.delete}`}
-                        onClick={() => onDelete(item)}
-                      >
-                        Delete
-                      </button>
+                {actions.length > 0  && (
+                  <td className={styles.actions}>
+                    {actions.map(
+                      (action, index) =>
+                        (!action.shouldRender || action.shouldRender(item)) && (
+                          <Button
+                            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                            key={index}
+                            variant={action.variant || "contained"}
+                            color={action.color || "primary"}
+                            onClick={() => action.onClick(item)}
+                            className={styles.actionButton}
+                          >
+                            {action.label}
+                          </Button>
+                        )
                     )}
                   </td>
                 )}

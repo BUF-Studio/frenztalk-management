@@ -1,6 +1,6 @@
-import { Tutor } from "@/lib/models/tutor";
+import type { Tutor } from "@/lib/models/tutor";
 import { AppProps } from "next/app";
-import { ScriptProps } from "next/script";
+import type { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type TutorPageContextType = {

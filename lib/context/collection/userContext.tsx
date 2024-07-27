@@ -1,9 +1,9 @@
 import { userStream } from "@/lib/firebase/user";
-import { User } from "@/lib/models/user";
+import type { User } from "@/lib/models/user";
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, {
-  ReactNode,
+  type ReactNode,
   createContext,
   useContext,
   useEffect,

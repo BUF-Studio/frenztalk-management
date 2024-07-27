@@ -8,11 +8,11 @@ import { Tutor } from "@/lib/models/tutor";
 import { addTutor, setTutor as updateTutor } from "@/lib/firebase/tutor";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import { DataTable } from "@/app/components/dashboard/DataTable";
+import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
 import TutorForm from "./tutorForm";
 import Badge from "@/app/components/dashboard/Badge";
 import Image from "next/image";
-import { useSnackbar } from "@/lib/context/SnackbarContext";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 
 const TutorPage = () => {
   const { tutors } = useTutors();
@@ -117,6 +117,8 @@ const TutorPage = () => {
     showSnackbar("Tutor deleted successfully", "success");
   }
 
+  const actions: Action<Tutor>[] = [];
+
   return (
     <div className={styles.mainContainer}>
       <div className={styles.headerContainer}>
@@ -138,7 +140,7 @@ const TutorPage = () => {
           <DataTable
             data={tutors}
             columns={columns}
-            onDelete={handleOnDelete}
+            actions={actions}
             changedIds={changedIds}
             renderCell={renderTutorCell}
           />

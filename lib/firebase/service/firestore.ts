@@ -13,9 +13,8 @@ import {
   type CollectionReference,
   Timestamp,
 } from "firebase/firestore";
-
-import { UserRole } from "../../enums";
 import { db } from "./clientApp";
+import { UserRole } from "@/lib/models/user";
 
 export const setData = async (
   path: string,

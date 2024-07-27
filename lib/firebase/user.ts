@@ -1,4 +1,9 @@
-import { DocumentData, Query, query, where } from "firebase/firestore";
+import {
+  type DocumentData,
+  type Query,
+  query,
+  where,
+} from "firebase/firestore";
 import { User } from "../models/user";
 import {
   addData,
@@ -6,6 +11,7 @@ import {
   documentStream,
   setData,
 } from "./service/firestoreService";
+import firebase from "firebase/compat/app";
 
 const PATH = "users";
 
@@ -21,8 +27,7 @@ export const addUser = async (user: User): Promise<void> => {
 };
 
 export const updateUser = async (
-  // id: string,
-  user: User,
+  user: User
 ): Promise<void> => {
   try {
     const path = `${PATH}/${user.id}`;
@@ -33,6 +38,20 @@ export const updateUser = async (
     console.error(`Error setting user ${user.id} in Firestore:`, error);
   }
 };
+
+export const softDeleteUser = async (user: User): Promise<void> => {
+  try {
+    const path = `${PATH}/${user.id}`;
+    const data = {
+      ...user.toMap(),
+      deletedAt: firebase.database.ServerValue.TIMESTAMP,
+    };
+    await setData(path, data);
+    console.log(`User ${user.id} soft deleted in Firestore`);
+  } catch (error) {
+    console.error(`Error soft deleting user ${user.id} in Firestore:`, error);
+  }
+}
 
 export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
   const builder = (data: Record<string, any>, id: string) =>
@@ -51,7 +70,7 @@ export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
     PATH, // Firestore collection path
     builder,
     onUpdate,
-    queryBuilder,
+    queryBuilder
   );
   // Cleanup function
   return () => unsubscribe();
@@ -59,7 +78,7 @@ export const usersStream = (onUpdate: (updatedData: User[]) => void) => {
 
 export const userStream = (
   onUpdate: (updatedData: User) => void,
-  id: string,
+  id: string
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     User.fromMap(data, id);
@@ -69,7 +88,7 @@ export const userStream = (
   const unsubscribe = documentStream(
     path, // Firestore collection path
     builder,
-    onUpdate,
+    onUpdate
   );
   // Cleanup function
   return () => unsubscribe();

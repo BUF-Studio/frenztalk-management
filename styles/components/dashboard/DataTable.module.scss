@@ -45,6 +45,7 @@
 
   th,
   td {
+    height: 52px;
     font-size: 14px;
     padding: 8px 20px; /* Increase padding for better readability */
     overflow: hidden; /* Ensure text overflow doesn't break layout */
@@ -77,21 +78,16 @@
 }
 
 .actionButton {
-  background-color: #007bff;
   border: none;
-  color: white;
   padding: 8px 12px; /* Adjust padding for buttons */
+  text-transform: none;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 14px;
+  font-size: 12px;
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 5px;
-
-  &:hover {
-    background-color: #0056b3;
-  }
 
   &.delete {
     background-color: #dc3545;

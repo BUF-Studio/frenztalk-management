@@ -6,7 +6,8 @@ import "./globals.css";
 import AppProvider from "./appProviders";
 import SideNav from "./components/dashboard/sidenav";
 import { AuthContextProvider } from "@/lib/context/AuthContext";
-import { SnackbarProvider } from "@/lib/context/SnackbarContext";
+import { SnackbarProvider } from "@/lib/context/component/SnackbarContext";
+import { AlertProvider } from "@/lib/context/component/AlertContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,16 +24,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthContextProvider>
-          <AppProvider>
-            <SnackbarProvider>
-              <div className="flex">
-                {/* <Sidebar /> */}
-                <main className="flex-1">{children}</main>
-              </div>
-            </SnackbarProvider>
-          </AppProvider>
-        </AuthContextProvider>
+        <AlertProvider>
+          <SnackbarProvider>
+            <AuthContextProvider>
+              <AppProvider>
+                <div className="flex">
+                  {/* <Sidebar /> */}
+                  <main className="flex-1">{children}</main>
+                </div>
+              </AppProvider>
+            </AuthContextProvider>
+          </SnackbarProvider>
+        </AlertProvider>
       </body>
     </html>
   );

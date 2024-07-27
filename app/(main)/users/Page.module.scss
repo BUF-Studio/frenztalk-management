@@ -1,0 +1,96 @@
+@import "@/styles/variables.scss";
+
+.tutorSection {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  .tutorPic {
+    width: 24px; /* Adjust as needed */
+    height: 24px; /* Adjust as needed */
+    border-radius: 50%;
+    background-color: #ccc; /* Grey color */
+  }
+}
+
+.mainContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  // background-color: aqua;
+
+  .headerContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+
+    .requestTab {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem; // Assuming the original had a small gap
+
+      .requestBadge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ef4444; // Equivalent to bg-red-500
+        color: #ffffff; // Equivalent to text-white
+        border-radius: 9999px; // Equivalent to rounded-full
+        width: 1.25rem; // Equivalent to w-5 (20px)
+        height: 1.25rem; // Equivalent to h-5 (20px)
+        font-size: 0.75rem; // Equivalent to text-xs
+        font-weight: 700; // Equivalent to font-bold
+      }
+    }
+
+    .addTutorButton {
+      width: 360px;
+      height: 40px;
+      max-width: 120px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-weight: 400;
+      background-color: $primary-color;
+      color: white;
+      border: none;
+    }
+  }
+
+  .contentContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100% - 52px);
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .tutorList {
+      flex: 596;
+      overflow: auto;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .tutorForms {
+      flex: 340;
+      height: 100%;
+    }
+  }
+}

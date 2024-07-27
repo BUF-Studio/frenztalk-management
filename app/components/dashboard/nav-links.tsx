@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import styles from "@/styles/components/dashboard/NavLinks.module.scss";
 import clsx from "clsx";
 import { useAuth } from "@/lib/context/AuthContext";
-import { UserRole } from "@/lib/enums";
+import { UserRole } from "@/lib/models/user";
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.

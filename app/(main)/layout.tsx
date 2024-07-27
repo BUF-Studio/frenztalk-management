@@ -5,7 +5,7 @@ import Header from "@/app/components/dashboard/Header";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/main/Main.module.scss";
 import ProtectedRoute from "@/lib/ProtectedRoute";
-import { UserRole } from "@/lib/enums";
+import { UserRole } from "@/lib/models/user";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,6 +19,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     currentLocation = "Students";
   } else if (pathname.includes("/settings")) {
     currentLocation = "Settings";
+  } else if (pathname.includes("/users")) {
+    currentLocation = "Users";
   }
 
   return (

@@ -11,7 +11,7 @@ import {
   updateStudent,
   deleteStudent,
 } from "@/lib/firebase/student";
-import { DataTable } from "@/app/components/dashboard/DataTable";
+import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import Badge from "@/app/components/dashboard/Badge";
 
@@ -104,6 +104,19 @@ const StudentPage = () => {
     }
   };
 
+  const actions: Action<Student>[] = [
+    {
+      label: "Edit",
+      onClick: handleOnEdit,
+      color: "primary",
+    },
+    {
+      label: "Delete",
+      onClick: handleOnDelete,
+      color: "error",
+    },
+  ];
+
   return (
     <div className={styles.mainContainer}>
       <div className={styles.headerContainer}>
@@ -123,8 +136,7 @@ const StudentPage = () => {
           <DataTable
             data={students}
             columns={columns}
-            // onEdit={handleOnEdit}
-            // onDelete={handleOnDelete}
+            actions={actions}
             changedIds={changedIds}
             renderCell={renderStudentCell}
           />

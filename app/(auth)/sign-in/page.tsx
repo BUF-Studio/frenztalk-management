@@ -7,25 +7,26 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import styles from "@/styles/auth/sign-in/Sign-in.module.scss";
 import GoogleSignInButton from "@/app/components/sign-in/googleSignInButton";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { getErrorMessage } from "@/utils/get-error-message";
 
 const SignIn = () => {
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const { showSnackbar } = useSnackbar();
   const router = useRouter();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     try {
       await signInWithEmail(email, password);
-      console.log("Signed in successfully");
+      showSnackbar("Signed in successfully", "success");
       router.push("/");
     } catch (error) {
+      showSnackbar(getErrorMessage(error), "error");
       console.error("Error signing in with email and password:", error);
-      setError("Failed to sign in. Please check your credentials.");
     }
   };
 
@@ -36,7 +37,6 @@ const SignIn = () => {
       router.push("/");
     } catch (err) {
       console.error("Error signing in with Google:", err);
-      setError("Failed to sign in with Google. Please try again.");
     }
   };
 
@@ -96,7 +96,6 @@ const SignIn = () => {
             Sign Up
           </button>
         </div>
-        {error && <p className={styles.error}>{error}</p>}
       </div>
     </div>
   );
