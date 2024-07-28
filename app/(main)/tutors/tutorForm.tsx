@@ -75,36 +75,6 @@ const TutorForm: React.FC<TutorFormProps> = ({ onSubmit, onCancel }) => {
     setSubjects((prevSubjects) => prevSubjects.filter((sub) => sub !== id));
   };
 
-  //   const handleConfirm = async () => {
-  //     try {
-  //       if (tutor) {
-  //         const updatedTutor = new Tutor(
-  //           tutor.id,
-  //           name,
-  //           subjects,
-  //           description,
-  //           "pic",
-  //           freezeAccount
-  //         );
-  //         await setTutor(updatedTutor);
-  //       } else {
-  //         const newTutor = new Tutor(
-  //           null,
-  //           name,
-  //           subjects,
-  //           description,
-  //           "pic",
-  //           freezeAccount
-  //         );
-  //         await addTutor(newTutor);
-  //       }
-  //       setTutor(null);
-  //       router.push("/tutors");
-  //     } catch (error) {
-  //       console.error("Failed to add/update tutor", error);
-  //     }
-  //   };
-
   const getSubjectName = (id: string): string => {
     const subject = avaSubjects.find((sub) => sub.id === id);
     return subject?.name || "";

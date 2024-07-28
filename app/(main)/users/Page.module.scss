@@ -1,18 +1,5 @@
 @import "@/styles/variables.scss";
 
-.tutorSection {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-  .tutorPic {
-    width: 24px; /* Adjust as needed */
-    height: 24px; /* Adjust as needed */
-    border-radius: 50%;
-    background-color: #ccc; /* Grey color */
-  }
-}
-
 .mainContainer {
   display: flex;
   width: 100%;
@@ -74,21 +61,18 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: calc(100% - 52px);
+    height: calc(100% - 60px); //Total Minus Height of the Header (Recommended to put larger value)
     gap: 12px;
     align-items: flex-start;
     justify-content: flex-start;
 
-    .tutorList {
+    .userList {
       flex: 596;
       overflow: auto;
       height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .tutorForms {
+    .userApprovalForms {
       flex: 340;
       height: 100%;
     }

@@ -24,6 +24,7 @@
   .content {
     flex-grow: 1;
     min-height: 0; /* Allows flexbox to work correctly with overflow */
+    max-height: 100%;
     overflow: hidden; /* Allow vertical scrolling if necessary */
     border-radius: 12px;
     padding: 24px;

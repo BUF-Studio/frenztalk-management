@@ -1,6 +1,6 @@
 @import "@/styles/variables.scss";
 
-.studentFormContainer {
+.userApprovalFormContainer {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -11,20 +11,20 @@
   border-radius: 12px;
 }
 
-.studentFormHeader {
+.userApprovalFormHeader {
   font-size: 20px;
 }
 
-.formSectionTitle {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.studentForm {
+.userApprovalForm {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 100%; /* Ensure the form takes the full height of its parent */
+  overflow: auto;
+
+  .formSectionTitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
 
   .formGroup {
     display: flex;
@@ -36,8 +36,92 @@
       color: #333;
     }
 
-    select,
-    input {
+    .subjectContainer {
+      background-color: #f7f7f8;
+      display: flex;
+      font-size: 16px;
+      flex-direction: row;
+      flex: 1;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px 12px;
+      justify-content: space-between;
+    }
+
+    .removeButton {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .removeButton:hover {
+      background-color: #ff7875;
+    }
+
+    .addSubjectContainer {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      align-items: flex-end;
+      
+
+      .chooseSubjectContainer{
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+      }
+
+      .addSubjectDropDown {
+        flex: 1;
+      }
+
+      .addSubjectButton {
+        background-color: $primary-color;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 120px;
+
+      }
+    }
+
+    .addNewSubjectButton {
+      background-color: $primary-color;
+      width: 100%;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input,
+    textarea,
+    select {
       padding: 10px;
       font-size: 14px;
       border: 1px solid #ccc;
@@ -49,41 +133,56 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
     }
+
+    textarea {
+      resize: vertical;
+    }
   }
 
-  .spacer {
-    flex: 1; /* Take up all available space */
-  }
-
-  .buttonsContainer {
+  .freezeAccountContainer {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
 
-    .formButton {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      color: white;
-      background-color: $primary-color;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: center;
-
-      &:hover {
-        background-color: darken($primary-color, 10%);
-      }
+    input {
+      width: 20px;
+      height: 20px;
     }
+  }
+}
 
-    .cancelButton {
-      border: 1px solid rgba($color: #000000, $alpha: 0.2);
-      color: black;
-      background-color: #fff;
+.spacer {
+  flex: 1; /* Take up all available space */
+}
 
-      &:hover {
-        background-color: #ddd;
-      }
+.buttonsContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  .formButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: $primary-color;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+
+  .cancelButton {
+    background-color: #6c757d;
+
+    &:hover {
+      background-color: darken(#6c757d, 10%);
     }
   }
 }

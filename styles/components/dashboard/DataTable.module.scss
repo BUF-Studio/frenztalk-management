@@ -47,7 +47,7 @@
   td {
     height: 52px;
     font-size: 14px;
-    padding: 8px 20px; /* Increase padding for better readability */
+    padding: 4px 20px; /* Increase padding for better readability */
     overflow: hidden; /* Ensure text overflow doesn't break layout */
     text-overflow: ellipsis; /* Show ellipsis for overflowed text */
     white-space: nowrap; /* Prevent text wrapping */
@@ -79,7 +79,6 @@
 
 .actionButton {
   border: none;
-  padding: 8px 12px; /* Adjust padding for buttons */
   text-transform: none;
   text-align: center;
   text-decoration: none;

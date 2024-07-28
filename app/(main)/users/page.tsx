@@ -207,14 +207,14 @@ const UserPage = () => {
       </div>
       <div className={styles.contentContainer}>
         <div
-          className={`${styles.tutorList} ${!showForm ? styles.fullWidth : ""}`}
+          className={`${styles.userList} ${!showForm ? styles.fullWidth : ""}`}
         >
           {tabValue === 0 && renderUserTable(true)}
           {tabValue === 1 && hasRequest && renderUserTable(false)}
           {tabValue === 1 && !hasRequest && <p>No requests found</p>}
         </div>
         {hasRequest && showForm && (
-          <div className={styles.tutorForms}>
+          <div className={styles.userApprovalForms}>
             <UserApprovalForm
               user={selectedUser}
               onSubmit={handleFormSubmit}
