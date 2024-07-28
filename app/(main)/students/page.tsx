@@ -76,7 +76,7 @@ const StudentPage = () => {
           formData.name,
           formData.age,
           formData.status,
-          student.subjectsId,
+          student.tuitionsId,
           student.tutorsId
         );
         await updateStudent(updatedStudent);
