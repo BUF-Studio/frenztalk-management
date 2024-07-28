@@ -4,8 +4,8 @@ import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
 import StudentTutorList from './studentTutorList';
-import StudentInvoiceList from './studentinvoiceList';
 import StudentTuitionList from './studentTuitionList';
+import StudentInvoiceList from './studentInvoiceList';
 
 
 

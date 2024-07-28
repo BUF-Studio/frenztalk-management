@@ -4,7 +4,8 @@ export class Tuition {
   constructor(
     public id: string | null,
     public name: string,
-    public subjectId: string,
+    public tutorId: string,
+    public studentId: string,
     public startTime: Timestamp | null,
     public endTime: Timestamp | null,
     public status: string,
@@ -14,7 +15,8 @@ export class Tuition {
     return new Tuition(
       id,
       data.name,
-      data.subjectId,
+      data.tutorId,
+      data.studentId,
       data.startTime,
       data.endTime,
       data.status,
@@ -25,7 +27,8 @@ export class Tuition {
     return {
       // studentId: this.studentId,
       name: this.name,
-      subjectId: this.subjectId,
+      tutorId: this.tutorId,
+      studentId: this.studentId,
       startTime: this.startTime,
       endTime: this.endTime,
       status: this.status,
