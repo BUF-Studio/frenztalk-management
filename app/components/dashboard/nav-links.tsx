@@ -29,11 +29,6 @@ const adminLinks = [
     // icon: HomeIcon
   },
   {
-    name: "Subjects",
-    href: "/subjects",
-    // icon: HomeIcon
-  },
-  {
     name: "Tutors",
     href: "/tutors",
     // icon: DocumentDuplicateIcon,
@@ -52,6 +47,11 @@ const adminLinks = [
     name: "Invoices",
     href: "/invoice",
     // icon: CogIcon,
+  },
+  {
+    name: "Academic Setup",
+    href: "/subjects",
+    // icon: HomeIcon
   },
   {
     name: "Settings",
