@@ -4,7 +4,7 @@ export class Student {
         public name: string,
         public age: number,
         public status: string,
-        public subjectsId: string[],
+        public tuitionsId: string[],
         public tutorsId: string[],
     ) { }
 
@@ -14,7 +14,7 @@ export class Student {
       data.name,
       data.age,
       data.status,
-      data.subjectsId,
+      data.tuitionsId,
       data.tutorsId,
     );
   }
@@ -24,7 +24,7 @@ export class Student {
             name: this.name,
             age: this.age,
             status: this.status,
-            subjectsId: this.subjectsId,
+            tuitionsId: this.tuitionsId,
             tutorsId: this.tutorsId,
         };
     }
