@@ -50,7 +50,7 @@ const adminLinks = [
   },
   {
     name: "Academic Setup",
-    href: "/subjects",
+    href: "/academic-setup",
     // icon: HomeIcon
   },
   {

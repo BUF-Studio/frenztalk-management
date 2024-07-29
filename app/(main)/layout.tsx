@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     currentLocation = "Settings";
   } else if (pathname.includes("/users")) {
     currentLocation = "Users";
-  } else if (pathname.includes("/subjects")) {
+  } else if (pathname.includes("/academic-setup")) {
     currentLocation = "Academic Setup";
   }
 

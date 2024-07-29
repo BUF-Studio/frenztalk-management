@@ -13,18 +13,27 @@
 
   .contentContainer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
-    height: calc(100% - 52px);
+    height: calc(100%);
     gap: 12px;
     align-items: flex-start;
     justify-content: flex-start;
+
+    .subcontentContainer {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 12px;
+      height: 100%;
+    }
 
     .card {
       background-color: white;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border: 1px solid #ddd;
+      flex: 1;
 
       .cardHeader {
         padding: 15px;
@@ -44,6 +53,12 @@
       .cardContent {
         padding: 15px;
 
+        .emptyMessage {
+          font-size: 14px;
+          color: #666;
+          text-align: center;
+        }
+
         .inputGroup {
           display: flex;
           align-items: center;
@@ -60,6 +75,11 @@
               margin-right: 10px;
             }
           }
+
+          .buttonGroup {
+            display: flex;
+            gap: 4px;
+          }
         }
       }
 
@@ -69,46 +89,51 @@
       }
     }
     .btn {
-        display: inline-flex;
-        align-items: center;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s;
-    
-        svg {
-          margin-right: 5px;
-        }
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
 
-        &.btnDelete {
-            background-color: #dc3545;
-            color: white;
+      &.btnDelete {
+        background-color: #dc3545;
+        color: white;
 
-            &:hover {
-              background-color: #c82333;
-            }
-          }
-    
-        &.btnAdd {
-          background-color: #28a745;
-          color: white;
-    
-          &:hover {
-            background-color: #218838;
-          }
+        &:hover {
+          background-color: #c82333;
         }
-    
-        &.btnSave {
-          background-color: #007bff;
-          color: white;
-          margin-top: 20px;
-    
-          &:hover {
-            background-color: #0056b3;
-          }
+      }
+
+      &.btnAdd {
+        background-color: $primary-color;
+        color: white;
+
+        &:hover {
+          background-color: $primary-color-dark;
         }
+      }
+
+      &.btnSave {
+        background-color: #007bff;
+        color: white;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+
+      &.btnNormal {
+        border: 1px solid #ccc;
+        background-color: white;
+        color: #333;
+
+        &:hover {
+          background-color: #f9f9f9;
+        }
+      }
     }
   }
 }

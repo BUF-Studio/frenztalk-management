@@ -2,7 +2,7 @@ import { type DocumentData, type Query, query, where } from "firebase/firestore"
 import { addData, collectionStream, setData } from "./service/firestoreService";
 import { EducationLevel } from "../models/educationLevel";
 
-const PATH = "educationLevels";
+const PATH = "educationLevel";
 
 export const addEducationLevel = async (
   educationLevel: EducationLevel,

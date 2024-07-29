@@ -1,5 +1,15 @@
-import { DocumentData, Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import {
+  type DocumentData,
+  type Query,
+  query,
+  where,
+} from "firebase/firestore";
+import {
+  addData,
+  collectionStream,
+  deleteData,
+  setData,
+} from "./service/firestoreService";
 import { Subject } from "../models/subject";
 
 const PATH = "subjects";
@@ -15,20 +25,24 @@ export const addSubject = async (subject: Subject): Promise<void> => {
   }
 };
 
-export const updateSubject = async (
-  // id: string,
-  subject: Subject,
-): Promise<void> => {
+export const updateSubject = async (subject: Subject): Promise<void> => {
   try {
     const path = `${PATH}/${subject.id}`;
     const data = subject.toMap();
     await setData(path, data);
     console.log(`Subject ${subject.id} updated in Firestore`);
   } catch (error) {
-    console.error(
-      `Error setting subject ${subject.id} in Firestore:`,
-      error,
-    );
+    console.error(`Error setting subject ${subject.id} in Firestore:`, error);
+  }
+};
+
+export const deleteSubject = async (subject: Subject) => {
+  try {
+    const path = `${PATH}/${subject.id}`;
+    await deleteData(path);
+    console.log(`Subject ${subject.id} deleted in Firestore`);
+  } catch (error) {
+    console.error(`Error deleting subject ${subject.id} in Firestore:`, error);
   }
 };
 
@@ -49,7 +63,7 @@ export const subjectsStream = (onUpdate: (updatedData: Subject[]) => void) => {
     PATH, // Firestore collection path
     builder,
     onUpdate,
-    queryBuilder,
+    queryBuilder
   );
   // Cleanup function
   return () => unsubscribe();
