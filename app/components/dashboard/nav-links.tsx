@@ -25,7 +25,7 @@ const tutorLinks = [
 const adminLinks = [
   {
     name: "Home",
-    href: "/tuition",
+    href: "/",
     // icon: HomeIcon
   },
   {
