@@ -38,7 +38,7 @@ const EducationLevelList = () => {
   };
 
   const renderLevel = (level: string) => (
-    <div className="mb-2 border border-gray-200 rounded">
+    <div className="mb-2 last:mb-0 border border-gray-200 rounded">
       <div className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer hover:bg-gray-100">
         <span className="flex-grow ml-2">{level}</span>
         <div className="flex space-x-2">
@@ -58,7 +58,7 @@ const EducationLevelList = () => {
   const renderEducationLevel = (educationLevel: EducationLevel) => (
     <div
       key={educationLevel.id}
-      className="mb-4 border border-gray-300 rounded shadow"
+      className="mb-4 last:mb-0 border border-gray-300 rounded shadow"
     >
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
       <div
@@ -101,8 +101,8 @@ const EducationLevelList = () => {
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
-        <h2>Subjects</h2>
-        <p>Manage your subjects here</p>
+        <h2>Education Level</h2>
+        <p>Manage your education levels here</p>
       </div>
       <div className={styles.cardContent}>
         {educationLevels.map(renderEducationLevel)}

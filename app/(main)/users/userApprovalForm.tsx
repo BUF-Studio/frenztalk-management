@@ -4,9 +4,10 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { type User, UserRole } from "@/lib/models/user";
 import styles from "@/styles/main/users/UserApprovalForm.module.scss";
-import { useAvaSubjects } from "@/lib/context/collection/avaSubjectContext";
-import { AvaSubject } from "@/lib/models/avaSubject";
-import { addAvaSubject } from "@/lib/firebase/avaSubject";
+import type { Subject } from "@/lib/models/subject";
+import type { EducationLevel } from "@/lib/models/educationLevel";
+import { subjectsStream } from "@/lib/firebase/subject";
+import { educationLevelStream } from "@/lib/firebase/educationLevel";
 
 interface UserApprovalFormProps {
   onSubmit: (formData: {
@@ -22,13 +23,30 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
   user,
   onCancel,
 }) => {
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [educationLevels, setEducationLevels] = useState<EducationLevel[]>([]);
   const [role, setRole] = useState<UserRole>(UserRole.NON_VERIFIED);
   const [description, setDescription] = useState("");
-  const [subjects, setSubjects] = useState<string[]>([]);
-  const { avaSubjects } = useAvaSubjects();
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [newSubjectName, setNewSubjectName] = useState("");
   const [newSubjectLevel, setNewSubjectLevel] = useState("");
-  const [addSubject, setAddSubject] = useState<AvaSubject | null>(null);
+
+  useEffect(() => {
+    const unsubscribeSubjects = subjectsStream((updatedSubjects) => {
+      setSubjects(updatedSubjects);
+    });
+
+    const unsubscribeEducationLevels = educationLevelStream(
+      (updatedEducationLevels) => {
+        setEducationLevels(updatedEducationLevels);
+      }
+    );
+
+    return () => {
+      unsubscribeSubjects();
+      unsubscribeEducationLevels();
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,19 +64,21 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
   };
 
   const getSubjectName = (id: string): string => {
-    const subject = avaSubjects.find((sub) => sub.id === id);
+    const subject = subjects.find((sub) => sub.id === id);
     return subject?.name || "";
   };
 
   const handleRemoveSubject = (id: string) => {
-    setSubjects((prevSubjects) => prevSubjects.filter((sub) => sub !== id));
+    setSelectedSubjects((prevSubjects) =>
+      prevSubjects.filter((sub) => sub !== id)
+    );
   };
 
   const handleAddNewSubject = async () => {
     const newSubject = new AvaSubject(null, newSubjectName, newSubjectLevel);
     const newSubjectId = await addAvaSubject(newSubject);
     if (newSubjectId) {
-      setSubjects((prevSubjects) => [...prevSubjects, newSubjectId]);
+      setSelectedSubjects((prevSubjects) => [...prevSubjects, newSubjectId]);
       setNewSubjectName("");
       setNewSubjectLevel("");
     }
@@ -66,7 +86,10 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
 
   const handleAddSubject = () => {
     if (addSubject) {
-      setSubjects((prevSubjects) => [...prevSubjects, addSubject.id || ""]);
+      setSelectedSubjects((prevSubjects) => [
+        ...prevSubjects,
+        addSubject.id || "",
+      ]);
       setAddSubject(null);
     }
   };
@@ -74,7 +97,7 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
     if (selectedId !== "") {
-      const selected = avaSubjects.find((subject) => subject.id === selectedId);
+      const selected = subjects.find((subject) => subject.id === selectedId);
       setAddSubject(selected || null);
     }
   };
@@ -95,8 +118,8 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
         <div className={styles.formGroup}>
           <label>Status</label>
           <select value={role} onChange={handleRoleChange}>
-            <option value={UserRole.NON_VERIFIED} selected disabled hidden>
-              Choose here
+            <option value={UserRole.NON_VERIFIED} disabled>
+              Choose a role
             </option>
             <option value={UserRole.TUTOR}>Tutor</option>
             <option value={UserRole.ADMIN}>Admin</option>
@@ -115,7 +138,7 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
             <div className={styles.formGroup}>
               <p className={styles.formSectionTitle}>Available Subjects</p>
               <>
-                {subjects.map((sub) => (
+                {selectedSubjects.map((sub) => (
                   <div key={sub} className={styles.subjectContainer}>
                     {getSubjectName(sub)}
                     <button
@@ -134,13 +157,18 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
                 <div className={styles.chooseSubjectContainer}>
                   <label>Subject</label>
                   <select
-                    value={addSubject?.id || ""}
+                    // value={addSubject?.id || ""}
                     onChange={handleSubjectChange}
                     className={styles.addSubjectDropDown}
                   >
-                    <option value="">Select a subject</option>
-                    {avaSubjects
-                      .filter((subject) => !subjects.includes(subject.id || ""))
+                    <option value="" disabled>
+                      Select a subject
+                    </option>
+                    {subjects
+                      .filter(
+                        (subject) =>
+                          !selectedSubjects.includes(subject.id || "")
+                      )
                       .map((subject) => (
                         <option key={subject.id} value={subject.id || ""}>
                           {subject.name}
@@ -152,18 +180,23 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
                 <div className={styles.chooseSubjectContainer}>
                   <label>Level</label>
                   <select
-                    value={""}
+                    value={"IGCSE-Secondary"}
                     onChange={handleSubjectChange}
                     className={styles.addSubjectDropDown}
                   >
-                    <option value="">Select a subject</option>
-                    {avaSubjects
-                      .filter((subject) => !subjects.includes(subject.id || ""))
-                      .map((subject) => (
-                        <option key={subject.id} value={subject.id || ""}>
-                          {subject.name}
-                        </option>
-                      ))}
+                    <option value="" disabled>
+                      Select a Level
+                    </option>
+                    {educationLevels.map((syllabus) => (
+                      <optgroup key={syllabus.id} label={syllabus.name}>
+                        {syllabus.levels.map((level, index) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                          <option key={index} value={`${syllabus.name}-${level}`}>
+                            {level}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
                 </div>
                 <button
@@ -174,28 +207,6 @@ const UserApprovalForm: React.FC<UserApprovalFormProps> = ({
                   Add
                 </button>
               </div>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Add New Subject</label>
-              <input
-                type="text"
-                placeholder="Name"
-                value={newSubjectName}
-                onChange={(e) => setNewSubjectName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Level"
-                value={newSubjectLevel}
-                onChange={(e) => setNewSubjectLevel(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={handleAddNewSubject}
-                className={styles.addNewSubjectButton}
-              >
-                Add New Subject
-              </button>
             </div>
           </>
         )}
