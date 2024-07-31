@@ -1,12 +1,21 @@
 "use client";
 
 import { useStudents } from '@/lib/context/collection/studentsContext';
+import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentList() {
     const { students } = useStudents();
+    const router = useRouter();
+    const { setStudent } = useStudentPage();
+
+    const addStudent = () => {
+        setStudent(null)
+        router.push('/back/students/add')
+    }
 
     return (
         <div>
@@ -20,6 +29,8 @@ export default function StudentList() {
                     </li>
                 ))}
             </ul>
+
+            <button onClick={addStudent}>Add Student</button>
         </div>
     );
 }

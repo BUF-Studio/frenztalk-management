@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 import Link from 'next/link';
 import { useTutors } from '@/lib/context/collection/tutorContext';
+import TutorForm from './tutorForm';
 
 export default function EditTutor({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -32,39 +33,11 @@ export default function EditTutor({ params }: { params: { id: string } }) {
   }
 
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    router.back();
-  };
 
   return (
     <div className="edit-page">
       <h2>Edit Tutor</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        {/* <div>
-          <label htmlFor="age">Age:</label>
-          <input
-            type="number"
-            id="age"
-            value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
-          />
-        </div> */}
-        <div>
-          <button type="submit">Save</button>
-          <button type="button" onClick={() => router.back()}>Cancel</button>
-        </div>
-      </form>
+      <TutorForm></TutorForm>
     </div>
   );
 }

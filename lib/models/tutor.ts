@@ -4,8 +4,8 @@ export class Tutor {
     public name: string,
     public subjects: string[],
     public des: string,
+    public status: string,
     public pic: string,
-    public freeze: boolean
   ) {}
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -14,8 +14,8 @@ export class Tutor {
       data.name,
       data.subjects,
       data.des,
+      data.status,
       data.pic,
-      data.freeze
     );
   }
 
@@ -24,8 +24,8 @@ export class Tutor {
       name: this.name,
       subjects: this.subjects,
       des: this.des,
+      status: this.status,
       pic: this.pic,
-      freeze: this.freeze,
     };
   }
 }

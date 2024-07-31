@@ -1,21 +1,21 @@
 "use client";
 
-import { useStudents } from '@/lib/context/collection/studentsContext';
+import { useTutors } from '@/lib/context/collection/tutorContext';
 import Link from 'next/link';
 
 
 
-export default function StudentList() {
-    const { students } = useStudents();
+export default function TutorList() {
+    const { tutors } = useTutors();
 
     return (
         <div>
-            <h1>Student List</h1>
+            <h1>Tutor List</h1>
             <ul>
-                {students.map((student) => (
-                    <li key={student.id}>
-                        <Link href={`/back/students/${student.id}`}>
-                            {student.name}
+                {tutors.map((tutor) => (
+                    <li key={tutor.id}>
+                        <Link href={`/back/tutors/${tutor.id}`}>
+                            {tutor.name}
                         </Link>
                     </li>
                 ))}
