@@ -1,46 +1,32 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTutorPage } from '@/lib/context/page/tutorPageContext';
-import Link from 'next/link';
-import { useTutors } from '@/lib/context/collection/tutorContext';
+import { useSubjectPage } from '@/lib/context/page/subjectPageContext';
+import { useSubjects } from '@/lib/context/collection/subjectContext';
 
-export default function EditTutor({ params }: { params: { id: string } }) {
+export default function EditSubject({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { tutor, setTutor } = useTutorPage();
-  const [name, setName] = useState(tutor?.name || '');
-  // const [age, setAge] = useState(tutor?.age || 0);
-  const { tutors } = useTutors();
+  const { subject, setSubject } = useSubjectPage();
+  const [name, setName] = useState(subject?.name || '');
+  // const [age, setAge] = useState(subject?.age || 0);
 
-  if (tutor === null || tutor.id !== params.id) {
+  const { subjects } = useSubjects();
 
-    const foundTutor = tutors.find(s => s.id === params.id);
-    if (foundTutor)
-      setTutor(foundTutor);
+  if (subject === null || subject.id !== params.id) {
+    const foundSubject = subjects.find(s => s.id === params.id);
+    if (foundSubject)
+      setSubject(foundSubject);
   }
-
-
-  if (tutor === null) {
-    return (
-      <div>
-        <h1>Tutor Not Found</h1>
-        <Link href="/back/tutors">
-          <button>Back to Tutor List</button>
-        </Link>
-      </div>
-    );
-  }
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     router.back();
   };
 
   return (
     <div className="edit-page">
-      <h2>Edit Tutor</h2>
+      <h2>Edit Subject</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name">Name:</label>

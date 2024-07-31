@@ -14,7 +14,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
     const { tutors } = useTutors();
 
 
-    if (tutor === null) {
+    if (tutor === null || tutor.id !== params.id) {
         const foundTutor = tutors.find(s => s.id === params.id);
         if (foundTutor)
             setTutor(foundTutor);

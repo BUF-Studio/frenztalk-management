@@ -9,6 +9,7 @@ import { AvaSubject } from "@/lib/models/avaSubject";
 import AvaSubjectsProvider from "@/lib/context/collection/avaSubjectContext";
 import SubjectsProvider from "@/lib/context/collection/subjectContext";
 import TuitionsProvider from "@/lib/context/collection/tuitionContext";
+import UsersProvider from "@/lib/context/collection/usersContext";
 
 function AppProvider({ children }: ScriptProps) {
   return (
@@ -19,8 +20,11 @@ function AppProvider({ children }: ScriptProps) {
             <SubjectsProvider>
               <InvoicesProvider>
                 <TuitionsProvider>
+                  <UsersProvider>
 
-                  <PageProvider>{children}</PageProvider>
+
+                    <PageProvider>{children}</PageProvider>
+                  </UsersProvider>
                 </TuitionsProvider>
               </InvoicesProvider>
             </SubjectsProvider>

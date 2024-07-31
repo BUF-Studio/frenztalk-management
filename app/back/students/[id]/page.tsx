@@ -14,7 +14,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     const { students } = useStudents();
 
 
-    if (student === null) {
+    if (student === null || student.id !==params.id) {
         const foundStudent = students.find(s => s.id === params.id);
         if (foundStudent)
             setStudent(foundStudent);

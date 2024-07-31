@@ -1,31 +1,31 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 import Link from 'next/link';
-import { useTutors } from '@/lib/context/collection/tutorContext';
+import { useUserPage } from '@/lib/context/page/userPageContext';
+import { useUsers } from '@/lib/context/collection/usersContext';
 
-export default function EditTutor({ params }: { params: { id: string } }) {
+export default function EditUser({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { tutor, setTutor } = useTutorPage();
-  const [name, setName] = useState(tutor?.name || '');
-  // const [age, setAge] = useState(tutor?.age || 0);
-  const { tutors } = useTutors();
+  const { user, setUser } = useUserPage();
+  const [name, setName] = useState(user?.name || '');
+  // const [age, setAge] = useState(user?.age || 0);
+  const { users } = useUsers();
 
-  if (tutor === null || tutor.id !== params.id) {
+  if (user === null || user.id !== params.id) {
 
-    const foundTutor = tutors.find(s => s.id === params.id);
-    if (foundTutor)
-      setTutor(foundTutor);
+    const foundUser = users.find(s => s.id === params.id);
+    if (foundUser)
+      setUser(foundUser);
   }
 
 
-  if (tutor === null) {
+  if (user === null) {
     return (
       <div>
-        <h1>Tutor Not Found</h1>
-        <Link href="/back/tutors">
-          <button>Back to Tutor List</button>
+        <h1>User Not Found</h1>
+        <Link href="/back/users">
+          <button>Back to User List</button>
         </Link>
       </div>
     );
@@ -40,7 +40,7 @@ export default function EditTutor({ params }: { params: { id: string } }) {
 
   return (
     <div className="edit-page">
-      <h2>Edit Tutor</h2>
+      <h2>Edit User</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name">Name:</label>

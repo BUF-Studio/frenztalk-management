@@ -2,21 +2,28 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
+import { useStudents } from '@/lib/context/collection/studentsContext';
 
-export default function EditStudent() {
+export default function EditStudent({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { student, setStudent } = useStudentPage();
   const [name, setName] = useState(student?.name || '');
   const [age, setAge] = useState(student?.age || 0);
 
-  if (!student) return <div>Loading...</div>;
+  const { students } = useStudents();
+
+
+  if (student === null || student.id !== params.id) {
+    const foundStudent = students.find(s => s.id === params.id);
+    if (foundStudent)
+      setStudent(foundStudent);
+  }
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically call an API to update the student
-    console.log('Updating student:', { ...student, name, age });
-    // Update the student in the context
-    // setStudent({ ...student, name, age });
+
     router.back();
   };
 
