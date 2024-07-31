@@ -1,5 +1,5 @@
 import { usersStream } from "@/lib/firebase/user";
-import { User } from "@/lib/models/user";
+import { User, UserRole } from "@/lib/models/user";
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
 import React, {
@@ -11,11 +11,13 @@ import React, {
 } from "react";
 
 type UsersContextType = {
-  users: User[];
+  verifiedUsers: User[];
+  unverifiedUsers: User[];
 };
 
 const initialContext: UsersContextType = {
-  users: [],
+  verifiedUsers: [],
+  unverifiedUsers: [],
 };
 // Create a context to hold the data
 const UsersContext = createContext<UsersContextType>(initialContext);
@@ -27,12 +29,21 @@ type UsersProviderProps = {
 export const useUsers = () => useContext(UsersContext);
 
 function UsersProvider({ children }: UsersProviderProps) {
-  const [users, setUsers] = useState<User[]>([]);
+  const [verifiedUsers, setVerifiedUsers] = useState<User[]>([]);
+  const [unverifiedUsers, setUnverifiedUsers] = useState<User[]>([]);
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (users: User[]) => {
-      setUsers(users);
+      const verifiedUser = users.filter(user =>
+        user.role === UserRole.ADMIN || user.role === UserRole.TUTOR
+      )
+      const unverifiedUser = users.filter(user =>
+        user.role === UserRole.NON_VERIFIED
+      )
+     
+      setVerifiedUsers(verifiedUser);
+      setUnverifiedUsers(unverifiedUser);
     };
 
     const unsubscribe = usersStream(onUpdate);
@@ -41,7 +52,7 @@ function UsersProvider({ children }: UsersProviderProps) {
   }, []);
 
   return (
-    <UsersContext.Provider value={{ users }}>
+    <UsersContext.Provider value={{ verifiedUsers, unverifiedUsers }}>
       {children}
     </UsersContext.Provider>
   );

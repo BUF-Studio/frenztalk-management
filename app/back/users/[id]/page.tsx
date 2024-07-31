@@ -1,51 +1,40 @@
 "use client";
-
-import { useUsers } from '@/lib/context/collection/usersContext';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useUserPage } from '@/lib/context/page/userPageContext';
 import Link from 'next/link';
+import { useUsers } from '@/lib/context/collection/usersContext';
+import UserForm from '../userForm';
+import { UserRole } from '@/lib/models/user';
+
+export default function EditUser({ params }: { params: { id: string } }) {
+  const { user, setUser } = useUserPage();
 
 
-
-export default function UserDetail({ params }: { params: { id: string } }) {
-    const { user, setUser } = useUserPage();
-    const { users } = useUsers();
-
-
-    if (user === null || user.id !== params.id) {
-        const foundUser = users.find(s => s.id === params.id);
-        if (foundUser)
-            setUser(foundUser);
-    }
-
-    if (user === null) {
-        return (
-            <div>
-                <h1>User Not Found</h1>
-                <Link href="/back/users">
-                    <button>Back to User List</button>
-                </Link>
-            </div>
-        );
-    }
-
-
+  const { verifiedUsers } = useUsers();
+  if (user === null) {
     return (
-        <div>
-            <Link href="/back/users">
-                <button>Back to User List</button>
-            </Link>
-
-            <div>
-                <h1>User Details</h1>
-                <p>Name: {user.name}</p>
-                <Link href={`/back/users/${user.id}/edit`}>
-                    <button>Edit</button>
-                </Link>
-
-            </div>
-
-
-        </div>
-
+      <div>
+        <h1>User Not Found</h1>
+        <Link href="/back/users">
+          <button>Back to User List</button>
+        </Link>
+      </div>
     );
+  }
+
+
+  if (user === null || user.id !== params.id) {
+    const foundUser = verifiedUsers.find(s => s.id === params.id);
+    if (foundUser)
+      setUser(foundUser);
+  }
+
+
+  return (
+    <div className="edit-page">
+      <h2>{user.role === UserRole.NON_VERIFIED ? 'Approve User' : 'Edit User'}</h2>
+      <UserForm></UserForm>
+    </div>
+  );
 }

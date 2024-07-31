@@ -35,6 +35,8 @@ export default function StudentForm() {
                 const updatedStudent =  new Student(student.id, name, age, status, student.tuitionsId, student.tutorsId);
                 await updateStudent(updatedStudent)
 
+                setStudent(updatedStudent)
+
             }
             router.back()
 

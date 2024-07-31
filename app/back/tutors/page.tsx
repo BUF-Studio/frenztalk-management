@@ -1,12 +1,23 @@
 "use client";
 
 import { useTutors } from '@/lib/context/collection/tutorContext';
+import { useTutorPage } from '@/lib/context/page/tutorPageContext';
+import { Tutor } from '@/lib/models/tutor';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function TutorList() {
     const { tutors } = useTutors();
+    const { setTutor } = useTutorPage();
+
+    const router = useRouter();
+
+    const viewTutor = (tutor: Tutor) => {
+        setTutor(tutor)
+        router.push(`/back/tutors/${tutor.id}`)
+    }
 
     return (
         <div>
@@ -14,9 +25,10 @@ export default function TutorList() {
             <ul>
                 {tutors.map((tutor) => (
                     <li key={tutor.id}>
-                        <Link href={`/back/tutors/${tutor.id}`}>
+                        <button onClick={(e) => { viewTutor(tutor) }}>
                             {tutor.name}
-                        </Link>
+                        </button>
+
                     </li>
                 ))}
             </ul>

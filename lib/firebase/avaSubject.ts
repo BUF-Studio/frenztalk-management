@@ -1,47 +1,47 @@
 import { type DocumentData, type Query, query, where } from "firebase/firestore";
 import { addData, collectionStream, setData } from "./service/firestoreService";
-import { AvaSubject } from "../models/avaSubject";
+import { Level } from "../models/level";
 
-const PATH = "avaSubjects";
+const PATH = "levels";
 
-export const addAvaSubject = async (
-  avaSubject: AvaSubject,
+export const addLevel = async (
+  level: Level,
 ): Promise<string> => {
   try {
     const path = PATH;
-    const data = avaSubject.toMap();
+    const data = level.toMap();
     const id = await addData(path, data);
-    console.log("AvaSubject added to Firestore");
+    console.log("Level added to Firestore");
     return id;
   } catch (error) {
-    console.error("Error adding avaSubject to Firestore:", error);
+    console.error("Error adding level to Firestore:", error);
 
     throw error;
   }
 };
 
-export const updateAvaSubject = async (
+export const updateLevel = async (
   // id: string,
-  avaSubject: AvaSubject,
+  level: Level,
 ): Promise<void> => {
   try {
-    const path = `${PATH}/${avaSubject.id}`;
-    const data = avaSubject.toMap();
+    const path = `${PATH}/${level.id}`;
+    const data = level.toMap();
     await setData(path, data);
-    console.log(`AvaSubject ${avaSubject.id} updated in Firestore`);
+    console.log(`Level ${level.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting avaSubject ${avaSubject.id} in Firestore:`,
+      `Error setting level ${level.id} in Firestore:`,
       error,
     );
   }
 };
 
-export const avaSubjectsStream = (
-  onUpdate: (updatedData: AvaSubject[]) => void,
+export const levelsStream = (
+  onUpdate: (updatedData: Level[]) => void,
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
-    AvaSubject.fromMap(data, id);
+    Level.fromMap(data, id);
 
   let queryBuilder:
     | ((query: Query<DocumentData>) => Query<DocumentData>)

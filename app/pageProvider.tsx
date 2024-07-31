@@ -3,6 +3,7 @@ import StudentsProvider from "@/lib/context/collection/studentsContext";
 import TutorsProvider from "@/lib/context/collection/tutorContext";
 import UserProvider from "@/lib/context/collection/userContext";
 import InvoicePageProvider from "@/lib/context/page/invoicePageContext";
+import LevelPageProvider from "@/lib/context/page/levelPageContext";
 import StudentPageProvider from "@/lib/context/page/studentPageContext";
 import SubjectPageProvider from "@/lib/context/page/subjectPageContext";
 import TuitionPageProvider from "@/lib/context/page/tuitionPageContext";
@@ -18,7 +19,10 @@ function PageProvider({ children }: ScriptProps) {
           <SubjectPageProvider>
             <TuitionPageProvider>
               <InvoicePageProvider>
-                {children}
+                <LevelPageProvider>
+
+                  {children}
+                </LevelPageProvider>
               </InvoicePageProvider>
             </TuitionPageProvider>
           </SubjectPageProvider>

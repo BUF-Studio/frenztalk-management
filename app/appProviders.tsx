@@ -7,23 +7,27 @@ import PageProvider from "./pageProvider";
 import SubjectsProvider from "@/lib/context/collection/subjectContext";
 import TuitionsProvider from "@/lib/context/collection/tuitionContext";
 import UsersProvider from "@/lib/context/collection/usersContext";
+import LevelsProvider from "@/lib/context/collection/levelContext";
 
 function AppProvider({ children }: ScriptProps) {
   return (
     <UserProvider userId="72AiGSs5ZvRLeA9MKEDz88821Y12">
       <StudentsProvider>
         <TutorsProvider>
-            <SubjectsProvider>
-              <InvoicesProvider>
-                <TuitionsProvider>
-                  <UsersProvider>
-
+          <SubjectsProvider>
+            <InvoicesProvider>
+              <TuitionsProvider>
+                <UsersProvider>
+                  <LevelsProvider>
 
                     <PageProvider>{children}</PageProvider>
-                  </UsersProvider>
-                </TuitionsProvider>
-              </InvoicesProvider>
-            </SubjectsProvider>
+                  </LevelsProvider>
+
+
+                </UsersProvider>
+              </TuitionsProvider>
+            </InvoicesProvider>
+          </SubjectsProvider>
         </TutorsProvider>
       </StudentsProvider>
     </UserProvider>
