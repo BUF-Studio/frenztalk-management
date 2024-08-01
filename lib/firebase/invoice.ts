@@ -15,7 +15,7 @@ export const addInvoice = async (invoice: Invoice): Promise<void> => {
   }
 };
 
-export const setInvoice = async (
+export const updateInvoice = async (
   // id: string,
   invoice: Invoice,
 ): Promise<void> => {

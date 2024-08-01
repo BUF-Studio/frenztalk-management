@@ -15,6 +15,13 @@ export default function UserForm() {
 
     // console.log(user.id)
 
+    const viewTutor = ()=>{
+        if (user && user.id) {
+            router.push(`/back/tutors/${user.id}`);
+          }
+    }
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,14 +31,15 @@ export default function UserForm() {
             await updateUser(updatedUser)
             console.log('update')
 
-            setUser(null)
-            router.push('/back/users')
+            setUser(updatedUser)
+            // router.push('/back/users')
 
         } catch (error) {
             console.error("Failed to submit the form", error);
         }
     };
 
+   
     return (
         <form onSubmit={handleSubmit}>
             <div> Email : {user?.email}</div>
@@ -64,11 +72,19 @@ export default function UserForm() {
                 </select>
             </div>
 
+            <div>
+                {user !== null && user.role === UserRole.TUTOR && (
+                    <button onClick={viewTutor}>View Tutor</button>
+                )}
+            </div>
+
 
             <div>
                 <button type="submit">Save</button>
                 <button type="button" onClick={() => router.back()}>Cancel</button>
             </div>
+
+
         </form>
 
     );

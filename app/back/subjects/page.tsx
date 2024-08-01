@@ -4,6 +4,7 @@ import { useLevels } from '@/lib/context/collection/levelContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
 import { useLevelPage } from '@/lib/context/page/levelPageContext';
 import { useSubjectPage } from '@/lib/context/page/subjectPageContext';
+import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
 import { Level } from '@/lib/models/level';
 import { Subject } from '@/lib/models/subject';
 import Link from 'next/link';
@@ -17,6 +18,7 @@ export default function SubjectList() {
     const { setSubject } = useSubjectPage();
     const { setLevel } = useLevelPage();
     const router = useRouter();
+    const { setTuitionSubject } = useTuitionPage();
 
     const addSubject = () => {
         setSubject(null)
@@ -33,6 +35,12 @@ export default function SubjectList() {
     const editLevel = (level: Level) => {
         setLevel(level)
         router.push(`/back/subjects/level/${level.id}`)
+    }
+
+
+    const addTuition = (subject: Subject) => {
+        setTuitionSubject(subject)
+        router.push(`/back/tuitions/add`)
     }
 
     return (
@@ -61,7 +69,7 @@ export default function SubjectList() {
                                 {subject.name}
                                 {levels.find(level => level.id === subject.levelId)?.name ?? ''}
                             </button>
-
+                            <button onClick={(e) => { addTuition(subject) }}>Add Class</button>
                         </li>
                     ))}
                 </ul>

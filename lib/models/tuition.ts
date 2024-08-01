@@ -13,6 +13,7 @@ export class Tuition {
     public url: string,
     public price: number,
     public currency: string,
+    public invoiced: boolean,
   ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -28,6 +29,7 @@ export class Tuition {
       data.url,
       data.price,
       data.currency,
+      data.invoiced,
     );
   }
 
@@ -43,6 +45,7 @@ export class Tuition {
       url: this.url,
       price: this.price,
       currency: this.currency,
+      invoiced: this.invoiced,
     };
   }
 }

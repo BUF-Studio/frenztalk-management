@@ -1,3 +1,5 @@
+import InvoiceStatus from "./invoiceStatus";
+
 export class Invoice {
   constructor(
     public id: string | null,
@@ -5,7 +7,10 @@ export class Invoice {
     public tuitionId: string,
     public tutorId: string,
     public studentId: string,
+    public subjectId: string,
     public rate: number,
+    public status: InvoiceStatus,
+    // public rate: string,
 
 
   ) { }
@@ -16,7 +21,9 @@ export class Invoice {
       data.tuitionId,
       data.tutorId,
       data.studentId,
+      data.subjectId,
       data.rate,
+      data.status,
     );
   }
 
@@ -26,7 +33,9 @@ export class Invoice {
       tuitionId: this.tuitionId,
       tutorId: this.tutorId,
       studentId: this.studentId,
+      subjectId: this.subjectId,
       rate: this.rate,
+      status: this.status,
 
     };
   }

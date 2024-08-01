@@ -12,14 +12,18 @@ import { useSubjects } from '@/lib/context/collection/subjectContext';
 import Currency from '@/lib/models/currency';
 import TuitionStatus from '@/lib/models/tuitionStatus';
 import { Timestamp } from 'firebase/firestore';
+import { Invoice } from '@/lib/models/invoice';
+import InvoiceStatus from '@/lib/models/invoiceStatus';
+import { addInvoice } from '@/lib/firebase/invoice';
 
 export default function TuitionForm() {
     const router = useRouter();
-    const { tuition, student, tutor, subject, setTuition} = useTuitionPage();
+    const { tuition, student, tutor, subject, setTuition } = useTuitionPage();
 
     const { students } = useStudents()
     const { tutors } = useTutors()
     const { subjects } = useSubjects()
+
 
     const [name, setName] = useState(tuition?.name || '');
     const [studentId, setStudentId] = useState(tuition?.studentId || student?.id || '');
@@ -30,7 +34,7 @@ export default function TuitionForm() {
     const [currency, setCurrency] = useState(tuition?.currency || 'USD');
     const [price, setPrice] = useState(tuition?.price || 0);
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
-    const [duration, setDuration] = useState(tuition?.duration || 60);
+    const [duration, setDuration] = useState(tuition?.duration || 1);
     const [repeatWeeks, setRepeatWeeks] = useState(0);
 
 
@@ -46,7 +50,7 @@ export default function TuitionForm() {
             const startTimestamp = Timestamp.fromDate(new Date(startDateTime));
 
             if (tuition === null) {
-                for (let i = 0; i <= repeatWeeks-1; i++) {
+                for (let i = 0; i <= repeatWeeks - 1; i++) {
                     const newStartTimestamp = Timestamp.fromDate(new Date(startTimestamp.toDate().getTime() + (i * 7 * 24 * 60 * 60 * 1000)));
                     const newTuition = new Tuition(
                         null,
@@ -60,11 +64,30 @@ export default function TuitionForm() {
                         '',
                         price,
                         currency,
+                        false,
                     );
                     await addTuition(newTuition);
                 }
 
             } else {
+                let newInvoice :boolean = false
+                if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && !tuition.invoiced) {
+                    const rate = price * duration
+                    const invoice = new Invoice(
+                        null,
+                        tuition.id!,
+                        tutorId,
+                        studentId,
+                        subjectId,
+                        rate,
+                        InvoiceStatus.PENDING,
+                    )
+                    newInvoice = true
+
+                    addInvoice(invoice)
+
+                }
+
                 const updatedTuition = new Tuition(
                     tuition.id,
                     name,
@@ -77,8 +100,12 @@ export default function TuitionForm() {
                     tuition.url,
                     price,
                     currency,
+                    tuition.invoiced || newInvoice,
+
                 )
                 await updateTuition(updatedTuition)
+
+
 
                 setTuition(updatedTuition)
 
@@ -171,7 +198,7 @@ export default function TuitionForm() {
 
 
             <div>
-                <label htmlFor="price">Price:</label>
+                <label htmlFor="price">Price / hour:</label>
                 <input
                     type="number"
                     id="price"
@@ -189,7 +216,7 @@ export default function TuitionForm() {
                 />
             </div>
             <div>
-                <label htmlFor="duration">Duration (minutes):</label>
+                <label htmlFor="duration">Duration ( hour ):</label>
                 <input
                     type="number"
                     id="duration"

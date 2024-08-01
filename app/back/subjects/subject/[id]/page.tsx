@@ -32,6 +32,7 @@ export default function EditSubject({ params }: { params: { id: string } }) {
   return (
     <div className="edit-page">
       <h2>Edit Subject</h2>
+      
       <SubjectForm></SubjectForm>
     </div>
   );

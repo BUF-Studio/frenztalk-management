@@ -2,30 +2,28 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useUserPage } from '@/lib/context/page/userPageContext';
-import { useUsers } from '@/lib/context/collection/usersContext';
+import { useInvoicePage } from '@/lib/context/page/invoicePageContext';
+import { useInvoices } from '@/lib/context/collection/invoiceContext';
 
-export default function EditUser({ params }: { params: { id: string } }) {
+export default function EditInvoice({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { user, setUser } = useUserPage();
-  const [name, setName] = useState(user?.name || '');
-  // const [age, setAge] = useState(user?.age || 0);
-  const { users } = useUsers();
+  const { invoice, setInvoice } = useInvoicePage();
+  const { invoices } = useInvoices();
 
-  if (user === null || user.id !== params.id) {
+  if (invoice === null || invoice.id !== params.id) {
 
-    const foundUser = users.find(s => s.id === params.id);
-    if (foundUser)
-      setUser(foundUser);
+    const foundInvoice = invoices.find(s => s.id === params.id);
+    if (foundInvoice)
+      setInvoice(foundInvoice);
   }
 
 
-  if (user === null) {
+  if (invoice === null) {
     return (
       <div>
-        <h1>User Not Found</h1>
-        <Link href="/back/users">
-          <button>Back to User List</button>
+        <h1>Invoice Not Found</h1>
+        <Link href="/back/invoices">
+          <button>Back to Invoice List</button>
         </Link>
       </div>
     );
@@ -40,31 +38,8 @@ export default function EditUser({ params }: { params: { id: string } }) {
 
   return (
     <div className="edit-page">
-      <h2>Edit User</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        {/* <div>
-          <label htmlFor="age">Age:</label>
-          <input
-            type="number"
-            id="age"
-            value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
-          />
-        </div> */}
-        <div>
-          <button type="submit">Save</button>
-          <button type="button" onClick={() => router.back()}>Cancel</button>
-        </div>
-      </form>
+      <h2>Edit Invoice</h2>
+      
     </div>
   );
 }
