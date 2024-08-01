@@ -2,10 +2,10 @@
 
 "use client";
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { User, UserRole } from '@/lib/models/user';
 import { useUserPage } from '@/lib/context/page/userPageContext';
 import { addUser, updateUser } from '@/lib/firebase/user';
+import { useRouter } from 'next/navigation';
 
 export default function UserForm() {
     const router = useRouter();
@@ -17,17 +17,15 @@ export default function UserForm() {
 
 
     const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
         try {
-
-
             const updatedUser = new User(user!.id, name, user!.email, role);
             await updateUser(updatedUser)
-
             console.log('update')
 
-            // setUser(null)
-            // router.push('/back/users')
+            setUser(null)
+            router.push('/back/users')
 
         } catch (error) {
             console.error("Failed to submit the form", error);

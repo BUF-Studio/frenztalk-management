@@ -3,6 +3,7 @@ import { Timestamp } from "firebase/firestore";
 export class Tuition {
   constructor(
     public id: string | null,
+    public name: string,
     public tutorId: string,
     public studentId: string,
     public subjectId: string,
@@ -17,6 +18,7 @@ export class Tuition {
   static fromMap(data: Record<string, any>, id: string) {
     return new Tuition(
       id,
+      data.name,
       data.tutorId,
       data.studentId,
       data.subjectId,
@@ -31,6 +33,7 @@ export class Tuition {
 
   toMap(): Record<string, any> {
     return {
+      name: this.name,
       tutorId: this.tutorId,
       studentId: this.studentId,
       subjectId: this.subjectId,

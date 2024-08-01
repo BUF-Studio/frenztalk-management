@@ -1,7 +1,7 @@
 enum Currency {
-    USD = "USD",
-    MYR = "MYR",
-    GBP = "GBP",
-  }
-  
-  export default Currency;
+  MYR = "MYR",
+  USD = "USD",
+  GBP = "GBP",
+}
+
+export default Currency;
