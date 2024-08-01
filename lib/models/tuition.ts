@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import Currency from "./currency";
 
 export class Tuition {
   constructor(
@@ -12,8 +13,8 @@ export class Tuition {
     public duration: number,
     public url: string,
     public price: number,
-    public currency: string,
-    public invoiced: boolean,
+    public currency: Currency,
+    public invoiceId: string | null,
   ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -29,7 +30,7 @@ export class Tuition {
       data.url,
       data.price,
       data.currency,
-      data.invoiced,
+      data.invoiceId,
     );
   }
 
@@ -45,7 +46,7 @@ export class Tuition {
       url: this.url,
       price: this.price,
       currency: this.currency,
-      invoiced: this.invoiced,
+      invoiceId: this.invoiceId,
     };
   }
 }

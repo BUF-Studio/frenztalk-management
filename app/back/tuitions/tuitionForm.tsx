@@ -31,11 +31,11 @@ export default function TuitionForm() {
     const [subjectId, setSubjectId] = useState(tuition?.subjectId || subject?.id || '');
     const [status, setStatus] = useState(tuition?.status || '');
 
-    const [currency, setCurrency] = useState(tuition?.currency || 'USD');
+    const [currency, setCurrency] = useState<Currency>(tuition?.currency || Currency.MYR);
     const [price, setPrice] = useState(tuition?.price || 0);
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
-    const [repeatWeeks, setRepeatWeeks] = useState(0);
+    const [repeatWeeks, setRepeatWeeks] = useState(1);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -64,14 +64,15 @@ export default function TuitionForm() {
                         '',
                         price,
                         currency,
-                        false,
+                        null,
                     );
                     await addTuition(newTuition);
                 }
 
             } else {
-                let newInvoice :boolean = false
-                if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && !tuition.invoiced) {
+                let newInvoice: boolean = false
+                let iid = tuition.invoiceId;
+                if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && tuition.invoiceId === null) {
                     const rate = price * duration
                     const invoice = new Invoice(
                         null,
@@ -81,10 +82,14 @@ export default function TuitionForm() {
                         subjectId,
                         rate,
                         InvoiceStatus.PENDING,
+                        startTimestamp,
+                        duration,
+                        currency,
+                        price,
                     )
                     newInvoice = true
 
-                    addInvoice(invoice)
+                    iid = await addInvoice(invoice)
 
                 }
 
@@ -100,7 +105,7 @@ export default function TuitionForm() {
                     tuition.url,
                     price,
                     currency,
-                    tuition.invoiced || newInvoice,
+                    iid,
 
                 )
                 await updateTuition(updatedTuition)
@@ -224,7 +229,7 @@ export default function TuitionForm() {
                     onChange={(e) => setDuration(Number(e.target.value))}
                 />
             </div>
-            <div>
+            {tuition === null && <div>
                 <label htmlFor="repeatWeeks">Repeat Weeks:</label>
                 <input
                     type="number"
@@ -232,7 +237,7 @@ export default function TuitionForm() {
                     value={repeatWeeks}
                     onChange={(e) => setRepeatWeeks(Number(e.target.value))}
                 />
-            </div>
+            </div>}
 
 
             <div>

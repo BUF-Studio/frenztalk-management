@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInvoicePage } from '@/lib/context/page/invoicePageContext';
 import { useInvoices } from '@/lib/context/collection/invoiceContext';
+import InvoiceForm from '../invoiceForm';
 
 export default function EditInvoice({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function EditInvoice({ params }: { params: { id: string } }) {
   return (
     <div className="edit-page">
       <h2>Edit Invoice</h2>
+      <InvoiceForm></InvoiceForm>
       
     </div>
   );

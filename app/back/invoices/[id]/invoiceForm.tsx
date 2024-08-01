@@ -16,6 +16,7 @@ import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
 import InvoiceStatus from '@/lib/models/invoiceStatus';
 import Currency from '@/lib/models/currency';
+import { Timestamp } from 'firebase/firestore';
 
 export default function InvoiceForm() {
     const router = useRouter();
@@ -26,12 +27,19 @@ export default function InvoiceForm() {
     const { tutors } = useTutors();
     const { subjects } = useSubjects();
 
-    const tuition: Tuition | undefined = tuitions.find((tuition) => { tuition.id === invoice?.tuitionId })
-    const student: Student | undefined = students.find((student) => { student.id === invoice?.studentId })
-    const tutor: Tutor | undefined = tutors.find((tutor) => { tutor.id === invoice?.tutorId })
-    const subject: Subject | undefined = subjects.find((subject) => { subject.id === invoice?.subjectId })
+    const tuition: Tuition | undefined = tuitions.find(tuition => tuition.id === invoice?.tuitionId)
+    const student: Student | undefined = students.find(student => student.id === invoice?.studentId)
+    const tutor: Tutor | undefined = tutors.find(tutor => tutor.id === invoice?.tutorId)
+    const subject: Subject | undefined = subjects.find(subject => subject.id === invoice?.subjectId)
+
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
+
+    const [status, setStatus] = useState<InvoiceStatus>(invoice!.status);
+
+    const [currency, setCurrency] = useState(invoice!.currency);
+    const [price, setPrice] = useState(invoice!.price );
+    const [rate, setRate] = useState(invoice!.rate || (invoice!.price * invoice!.duration) || 0);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,32 +47,37 @@ export default function InvoiceForm() {
 
 
 
-        // try {
+        try {
+            const startTimestamp = Timestamp.fromDate(new Date(startDateTime));
 
-        //     if (invoice === null) {
-        //         const newInvoice = new Invoice(null, name, age, status, [], []);
-        //         await addInvoice(newInvoice)
 
-        //     } else {
-        //         const updatedInvoice =  new Invoice(invoice.id, name, age, status, invoice.tuitionsId, invoice.tutorsId);
-        //         await updateInvoice(updatedInvoice)
+            const updatedInvoice = new Invoice(
+                invoice!.id,
+                invoice!.tuitionId,
+                invoice!.tutorId,
+                invoice!.studentId,
+                invoice!.subjectId,
+                rate,
+                status,
+                startTimestamp,
+                duration,
+                currency,
+                price
 
-        //         setInvoice(updatedInvoice)
+            );
+            await updateInvoice(updatedInvoice)
 
-        //     }
-        //     router.back()
+            setInvoice(updatedInvoice)
 
-        // } catch (error) {
-        //     console.error("Failed to submit the form", error);
-        // }
+
+            router.back()
+
+        } catch (error) {
+            console.error("Failed to submit the form", error);
+        }
     };
 
-    const [status, setStatus] = useState(tuition?.status || '');
-
-    const [currency, setCurrency] = useState(tuition?.currency || 'USD');
-    const [price, setPrice] = useState(tuition?.price || 0);
-    const [rate, setRate] = useState(invoice?.rate || (tuition!.price * tuition!.duration) || 0);
-
+   
 
     return (
         <form onSubmit={handleSubmit}>
@@ -72,11 +85,7 @@ export default function InvoiceForm() {
             <p>Student Name: {student!.name}</p>
             <p>Tutor Name: {tutor!.name}</p>
             <p>Subject Name: {subject!.name}</p>
-            <p>Date Time: {tuition!.startTime?.toDate().toUTCString()}</p>
-            <p>Duration: {tuition!.duration}</p>
 
-            <p>Currency: {tuition!.currency}</p>
-            {/* <p>Rate: {invoice.rate}</p> */}
 
 
             <div>

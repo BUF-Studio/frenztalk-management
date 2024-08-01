@@ -1,15 +1,21 @@
+import { Timestamp } from "firebase/firestore";
 import InvoiceStatus from "./invoiceStatus";
+import Currency from "./currency";
 
 export class Invoice {
   constructor(
     public id: string | null,
-
     public tuitionId: string,
     public tutorId: string,
     public studentId: string,
     public subjectId: string,
     public rate: number,
     public status: InvoiceStatus,
+    public startDateTime: Timestamp,
+    public duration: number,
+    public currency: Currency,
+    public price: number,
+
     // public rate: string,
 
 
@@ -24,6 +30,10 @@ export class Invoice {
       data.subjectId,
       data.rate,
       data.status,
+      data.startDateTime,
+      data.duration,
+      data.currency,
+      data.price,
     );
   }
 
@@ -36,6 +46,10 @@ export class Invoice {
       subjectId: this.subjectId,
       rate: this.rate,
       status: this.status,
+      startDateTime: this.startDateTime,
+      duration: this.duration,
+      currency: this.currency,
+      price: this.price,
 
     };
   }

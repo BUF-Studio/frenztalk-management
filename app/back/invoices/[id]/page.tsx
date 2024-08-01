@@ -22,10 +22,10 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
     const { tutors } = useTutors();
     const { subjects } = useSubjects();
 
-    const tuition :Tuition | undefined= tuitions.find((tuition)=> {tuition.id === invoice?.tuitionId})
-    const student :Student | undefined = students.find((student)=> {student.id === invoice?.studentId})
-    const tutor :Tutor | undefined= tutors.find((tutor)=> {tutor.id === invoice?.tutorId})
-    const subject:Subject | undefined = subjects.find((subject)=> {subject.id === invoice?.subjectId})
+    const tuition :Tuition | undefined= tuitions.find(tuition=> tuition.id === invoice?.tuitionId)
+    const student :Student | undefined = students.find(student=> student.id === invoice?.studentId)
+    const tutor :Tutor | undefined= tutors.find(tutor=> tutor.id === invoice?.tutorId)
+    const subject:Subject | undefined = subjects.find(subject=> subject.id === invoice?.subjectId)
 
     if (invoice === null || invoice.id !== params.id) {
         const foundInvoice = invoices.find(s => s.id === params.id);
