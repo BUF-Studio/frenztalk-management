@@ -19,11 +19,14 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
     currentDate.getMonth() + 1,
     0
   ).getDate();
+
   const firstDayOfMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
     1
   ).getDay();
+
+  console.log("Firstday",firstDayOfMonth);
 
   const monthNames = [
     "January",
@@ -74,7 +77,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="w-full h-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 bg-gray-100">
         <button
           type="button"
@@ -109,7 +112,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
           return (
             <div
               key={`day-${date}`}
-              className={`h-24 border border-gray-200 p-1 overflow-hidden ${isToday(date) ? 'bg-red-200 rounded-full' : ''}`}
+              className={`h-24 border border-gray-200 p-1 overflow-hidden ${
+                isToday(date) ? "bg-red-200 rounded-full" : ""
+              }`}
             >
               <div className="font-semibold">{date}</div>
               {dayEvents.map((event, index) => (
