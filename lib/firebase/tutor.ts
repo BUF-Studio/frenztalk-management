@@ -16,7 +16,7 @@ export const addTutor = async (tutor: Tutor): Promise<string> => {
   }
 };
 
-export const setTutor = async (
+export const updateTutor = async (
   // id: string,
   tutor: Tutor
 ): Promise<void> => {

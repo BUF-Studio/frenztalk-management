@@ -6,15 +6,19 @@ import Link from 'next/link';
 import StudentTutorList from './studentTutorList';
 import StudentTuitionList from './studentTuitionList';
 import StudentInvoiceList from './studentInvoiceList';
+import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
     const { student, setStudent } = useStudentPage();
     const { students } = useStudents();
+    const { setTuitionStudent } = useTuitionPage();
+    const router = useRouter();
 
 
-    if (student === null) {
+    if (student === null || student.id !== params.id) {
         const foundStudent = students.find(s => s.id === params.id);
         if (foundStudent)
             setStudent(foundStudent);
@@ -29,6 +33,11 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                 </Link>
             </div>
         );
+    }
+
+    const addTuition = () => {
+        setTuitionStudent(student)
+        router.push(`/back/tuitions/add`)
     }
 
 
@@ -47,6 +56,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                 </Link>
 
             </div>
+            <button onClick={addTuition}>Add Class</button>
             <StudentTuitionList></StudentTuitionList>
             <StudentTutorList></StudentTutorList>
             <StudentInvoiceList></StudentInvoiceList>

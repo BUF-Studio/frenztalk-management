@@ -4,18 +4,20 @@ import { addData, collectionStream, setData } from "./service/firestoreService";
 
 const PATH = "invoices";
 
-export const addInvoice = async (invoice: Invoice): Promise<void> => {
+export const addInvoice = async (invoice: Invoice): Promise<string | null> => {
   try {
     const path = PATH;
     const data = invoice.toMap();
-    await addData(path, data);
+    const id = await addData(path, data);
     console.log("Invoice added to Firestore");
+    return id
   } catch (error) {
     console.error("Error adding invoice to Firestore:", error);
+    return null
   }
 };
 
-export const setInvoice = async (
+export const updateInvoice = async (
   // id: string,
   invoice: Invoice,
 ): Promise<void> => {

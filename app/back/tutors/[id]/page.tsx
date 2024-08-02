@@ -6,15 +6,18 @@ import TutorInvoiceList from './tutorInvoiceList';
 import TutorTuitionList from './tutorTuitionList';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import TutorStudentList from './tutorStudentList';
+import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
     const { tutor, setTutor } = useTutorPage();
     const { tutors } = useTutors();
+    const { setTuitionTutor } = useTuitionPage();
+    const router = useRouter();
 
-
-    if (tutor === null) {
+    if (tutor === null || tutor.id !== params.id) {
         const foundTutor = tutors.find(s => s.id === params.id);
         if (foundTutor)
             setTutor(foundTutor);
@@ -29,6 +32,11 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 </Link>
             </div>
         );
+    }
+
+    const addTuition = () => {
+        setTuitionTutor(tutor)
+        router.push(`/back/tuitions/add`)
     }
 
 
@@ -46,6 +54,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 </Link>
 
             </div>
+
+            <button onClick={addTuition}>Add Class</button>
+
             <TutorTuitionList></TutorTuitionList>
             <TutorStudentList></TutorStudentList>
             <TutorInvoiceList></TutorInvoiceList>
