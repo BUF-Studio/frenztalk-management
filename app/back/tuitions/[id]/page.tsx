@@ -53,9 +53,14 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
                 <h1>Tuition Details</h1>
                 <p>Name: {tuition.name}</p>
 
-                {tuition.invoiceId !== null && tuition.invoiceId !== undefined && (
+                {tuition.tutorInvoiceId !== null && tuition.tutorInvoiceId !== undefined && (
                     <div>
-                        <button onClick={(e) => { viewInvoice(tuition.invoiceId!) }}>View Invoice</button>
+                        <button onClick={(e) => { viewInvoice(tuition.tutorInvoiceId!) }}>View Tutor Invoice</button>
+                    </div>
+                )}
+                {tuition.studentInvoiceId !== null && tuition.studentInvoiceId !== undefined && (
+                    <div>
+                        <button onClick={(e) => { viewInvoice(tuition.studentInvoiceId!) }}>View Student Invoice</button>
                     </div>
                 )}
                 <Link href={`/back/tuitions/${tuition.id}/edit`}>

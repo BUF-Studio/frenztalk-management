@@ -34,6 +34,7 @@ export default function EditUser({ params }: { params: { id: string } }) {
   return (
     <div className="edit-page">
       <h2>{user.role === UserRole.NON_VERIFIED ? 'Approve User' : 'Edit User'}</h2>
+      <button onClick={(e)=> router.back()}>Back</button>
       <UserForm></UserForm>
     </div>
   );

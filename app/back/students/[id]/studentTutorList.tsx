@@ -5,11 +5,13 @@ import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentTutorList() {
     const { studentTutor } = useStudentPage();
+    const router = useRouter();
 
 
     if (studentTutor.length === 0) {
@@ -28,7 +30,12 @@ export default function StudentTutorList() {
             <ul>
                 {studentTutor.map((tutor) => (
                     <li key={tutor.id}>
-                        {tutor.name}
+                        <button onClick={(e) => {
+                            router.push(`/back/tutors/${tutor.id}`)
+                        }}>
+                            {tutor.name}
+                        </button>
+
                     </li>
                 ))}
             </ul>

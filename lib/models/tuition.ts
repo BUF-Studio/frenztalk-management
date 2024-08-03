@@ -13,9 +13,11 @@ export class Tuition {
     public startTime: Timestamp | null,
     public duration: number,
     public url: string,
-    public price: number,
+    public studentPrice: number,
+    public tutorPrice: number,
     public currency: Currency,
-    public invoiceId: string | null,
+    public studentInvoiceId: string | null,
+    public tutorInvoiceId: string | null,
   ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -30,9 +32,11 @@ export class Tuition {
       data.startTime,
       data.duration,
       data.url,
-      data.price,
+      data.studentPrice,
+      data.tutorPrice,
       data.currency,
-      data.invoiceId,
+      data.studentInvoiceId,
+      data.tutorInvoiceId,
     );
   }
 
@@ -47,9 +51,11 @@ export class Tuition {
       startTime: this.startTime,
       duration: this.duration,
       url: this.url,
-      price: this.price,
+      studentPrice: this.studentPrice,
+      tutorPrice: this.tutorPrice,
       currency: this.currency,
-      invoiceId: this.invoiceId,
+      studentInvoiceId: this.studentInvoiceId,
+      tutorInvoiceId: this.tutorInvoiceId,
     };
   }
 }

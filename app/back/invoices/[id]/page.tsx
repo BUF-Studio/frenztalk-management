@@ -57,6 +57,7 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
             <div>
                 <h1>Invoice Details</h1>
                 <p>Id: {invoice.id}</p>
+                <p>Type: {invoice.invoiceType}</p>
                 <p>Student Name: {student!.name}</p>
                 <p>Tutor Name: {tutor!.name}</p>
                 <p>Subject Name: {subject!.name}</p>

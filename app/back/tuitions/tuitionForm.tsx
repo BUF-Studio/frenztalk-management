@@ -18,6 +18,7 @@ import { addInvoice } from '@/lib/firebase/invoice';
 import { Student } from '@/lib/models/student';
 import { Tutor } from '@/lib/models/tutor';
 import { useLevels } from '@/lib/context/collection/levelContext';
+import InvoiceType from '@/lib/models/invoiceType';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -39,37 +40,41 @@ export default function TuitionForm() {
 
 
     const [currency, setCurrency] = useState<Currency>(tuition?.currency || Currency.MYR);
-    const [price, setPrice] = useState(tuition?.price || 0);
+    const [studentPrice, setStudentPrice] = useState(tuition?.studentPrice || 0);
+    const [tutorPrice, setTutorPrice] = useState(tuition?.tutorPrice || 0);
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
     const [repeatWeeks, setRepeatWeeks] = useState(1);
 
-    
+
 
     useEffect(() => {
-        const selectedLevel = levels.find(l => levelId === l.id);
-        switch (currency) {
-            case Currency.USD:
-              setPrice(selectedLevel!.price_usd);
-              break;
-            case Currency.GBP:
-              setPrice(selectedLevel!.price_gbp);
-              break;
-            case Currency.MYR:
-            default:
-              setPrice(selectedLevel!.price_myr);
-              break;
-          }
-      }, [subjectId]);
-    
-      
-  
+        if (levelId !== '') {
+            const selectedLevel = levels.find(l => levelId === l.id);
+            switch (currency) {
+                case Currency.USD:
+                    setStudentPrice(selectedLevel!.student_price_usd);
+                    setTutorPrice(selectedLevel!.tutor_price_usd);
+                    break;
+                case Currency.GBP:
+                    setStudentPrice(selectedLevel!.student_price_gbp);
+                    setTutorPrice(selectedLevel!.tutor_price_gbp);
+                    break;
+                case Currency.MYR:
+                default:
+                    setStudentPrice(selectedLevel!.student_price_myr);
+                    setTutorPrice(selectedLevel!.tutor_price_myr);
+                    break;
+            }
+        }
+    }, [levelId, currency]);
+
+
+
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-
 
         try {
 
@@ -90,8 +95,10 @@ export default function TuitionForm() {
                         newStartTimestamp,
                         duration,
                         '',
-                        price,
+                        studentPrice,
+                        tutorPrice,
                         currency,
+                        null,
                         null,
                     );
                     const tid = await addTuition(newTuition);
@@ -99,26 +106,49 @@ export default function TuitionForm() {
 
 
             } else {
-                let newInvoice: boolean = false
-                let iid = tuition.invoiceId;
-                if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && tuition.invoiceId === null) {
-                    const rate = price * duration
-                    const invoice = new Invoice(
-                        null,
-                        tuition.id!,
-                        tutorId,
-                        studentId,
-                        subjectId,
-                        rate,
-                        InvoiceStatus.PENDING,
-                        startTimestamp,
-                        duration,
-                        currency,
-                        price,
-                    )
-                    newInvoice = true
+                // let newInvoice: boolean = false
+                let tiid = tuition.tutorInvoiceId;
+                let siid = tuition.studentInvoiceId;
+                if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && (tiid === null || siid === null)) {
+                    if (siid === null) {
+                        const studentRate = studentPrice * duration
+                        const studentInvoice = new Invoice(
+                            null,
+                            tuition.id!,
+                            tutorId,
+                            studentId,
+                            subjectId,
+                            studentRate,
+                            InvoiceStatus.PENDING,
+                            startTimestamp,
+                            duration,
+                            currency,
+                            studentPrice,
+                            InvoiceType.STUDENT
+                        )
 
-                    iid = await addInvoice(invoice)
+                        siid = await addInvoice(studentInvoice)
+                    }
+                    if (tiid === null) {
+                        const tutorRate = tutorPrice * duration
+                        const tutorInvoice = new Invoice(
+                            null,
+                            tuition.id!,
+                            tutorId,
+                            studentId,
+                            subjectId,
+                            tutorRate,
+                            InvoiceStatus.PENDING,
+                            startTimestamp,
+                            duration,
+                            currency,
+                            tutorPrice,
+                            InvoiceType.TUTOR,
+                        )
+
+                        tiid = await addInvoice(tutorInvoice)
+                    }
+
 
                 }
 
@@ -133,9 +163,11 @@ export default function TuitionForm() {
                     startTimestamp,
                     duration,
                     tuition.url,
-                    price,
+                    studentPrice,
+                    tutorPrice,
                     currency,
-                    iid,
+                    siid,
+                    tiid,
 
                 )
                 await updateTuition(updatedTuition)
@@ -249,12 +281,21 @@ export default function TuitionForm() {
 
 
             <div>
-                <label htmlFor="price">Price / hour:</label>
+                <label htmlFor="price">Student Price / hour:</label>
                 <input
                     type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(Number(e.target.value))}
+                    id="studentPrice"
+                    value={studentPrice}
+                    onChange={(e) => setStudentPrice(Number(e.target.value))}
+                />
+            </div>
+            <div>
+                <label htmlFor="price">Tutor Price / hour:</label>
+                <input
+                    type="number"
+                    id="tutorPrice"
+                    value={tutorPrice}
+                    onChange={(e) => setTutorPrice(Number(e.target.value))}
                 />
             </div>
             <div>

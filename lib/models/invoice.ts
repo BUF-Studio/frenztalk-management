@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import InvoiceStatus from "./invoiceStatus";
 import Currency from "./currency";
+import InvoiceType from "./invoiceType";
 
 export class Invoice {
   constructor(
@@ -15,6 +16,7 @@ export class Invoice {
     public duration: number,
     public currency: Currency,
     public price: number,
+    public invoiceType :InvoiceType,
 
     // public rate: string,
 
@@ -34,6 +36,7 @@ export class Invoice {
       data.duration,
       data.currency,
       data.price,
+      data.invoiceType,
     );
   }
 
@@ -50,6 +53,7 @@ export class Invoice {
       duration: this.duration,
       currency: this.currency,
       price: this.price,
+      invoiceType: this.invoiceType,
 
     };
   }
