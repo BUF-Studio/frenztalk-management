@@ -2,7 +2,7 @@ export class Tutor {
   constructor(
     public id: string | null,
     public name: string,
-    public subjects: string[],
+    // public subjects: string[],
     public des: string,
     public status: string,
     public pic: string,
@@ -12,7 +12,7 @@ export class Tutor {
     return new Tutor(
       id,
       data.name,
-      data.subjects,
+      // data.subjects,
       data.des,
       data.status,
       data.pic,
@@ -22,7 +22,7 @@ export class Tutor {
   toMap(): Record<string, any> {
     return {
       name: this.name,
-      subjects: this.subjects,
+      // subjects: this.subjects,
       des: this.des,
       status: this.status,
       pic: this.pic,

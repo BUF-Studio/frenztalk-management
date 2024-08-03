@@ -28,11 +28,11 @@ export default function StudentForm() {
         try {
 
             if (student === null) {
-                const newStudent = new Student(null, name, age, status, [], []);
+                const newStudent = new Student(null, name, age, status);
                 await addStudent(newStudent)
 
             } else {
-                const updatedStudent =  new Student(student.id, name, age, status, student.tuitionsId, student.tutorsId);
+                const updatedStudent =  new Student(student.id, name, age, status);
                 await updateStudent(updatedStudent)
 
                 setStudent(updatedStudent)

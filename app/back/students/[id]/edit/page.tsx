@@ -8,16 +8,16 @@ import Link from 'next/link';
 
 export default function EditStudent({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
-  
 
+  const router = useRouter();
   const { students } = useStudents();
   if (student === null) {
     return (
       <div>
         <h1>Student Not Found</h1>
-        <Link href="/back/students">
-          <button>Back to Student List</button>
-        </Link>
+        
+          <button onClick={(e)=>{router.back()}}>Back</button>
+        
       </div>
     );
   }

@@ -8,22 +8,10 @@ import Link from 'next/link';
 
 export default function TutorTuitionList() {
     const { tuitions } = useTuitions();
-    const { tutor, setTutor } = useTutorPage();
+    const { tutorTuition } = useTutorPage();
 
-    if (tutor === null) {
-        return (
-            <div>
-                <h1>No Tuition Found</h1>
-
-            </div>
-        );
-    }
-
-    const matchingTuitions = tuitions.filter(tuition =>
-        tuition.tutorId === tutor.id
-    );
-
-    if (matchingTuitions.length === 0) {
+  
+    if (tutorTuition.length === 0) {
         return (
             <div>
                 <h1>No Tuition Found</h1>
@@ -37,7 +25,7 @@ export default function TutorTuitionList() {
         <div>
             <h1>Tutor Tuition List</h1>
             <ul>
-                {matchingTuitions.map((tuition) => (
+                {tutorTuition.map((tuition) => (
                     <li key={tuition.id}>
                         {tuition.name}
                     </li>

@@ -4,8 +4,8 @@ export class Student {
     public name: string,
     public age: number,
     public status: string,
-    public tuitionsId: string[],
-    public tutorsId: string[],
+    // public tuitionsId: string[],
+    // public tutorsId: string[],
   ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -14,8 +14,8 @@ export class Student {
       data.name,
       data.age,
       data.status,
-      data.tuitionsId ?? [],
-      data.tutorsId ?? [],
+      // data.tuitionsId ?? [],
+      // data.tutorsId ?? [],
     );
   }
 
@@ -24,8 +24,8 @@ export class Student {
       name: this.name,
       age: this.age,
       status: this.status,
-      tuitionsId: this.tuitionsId,
-      tutorsId: this.tutorsId,
+      // tuitionsId: this.tuitionsId,
+      // tutorsId: this.tutorsId,
     };
   }
 }

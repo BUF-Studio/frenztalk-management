@@ -67,7 +67,6 @@ export default function SubjectList() {
                             <button onClick={(e) => { editSubject(subject) }}>
 
                                 {subject.name}
-                                {levels.find(level => level.id === subject.levelId)?.name ?? ''}
                             </button>
                             <button onClick={(e) => { addTuition(subject) }}>Add Class</button>
                         </li>

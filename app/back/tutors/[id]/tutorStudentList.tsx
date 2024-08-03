@@ -10,13 +10,10 @@ import Link from 'next/link';
 
 export default function TutorStudentList() {
     const { students } = useStudents();
-    const { tutor, setTutor } = useTutorPage();
+    const { tutorStudent } = useTutorPage();
 
-    const matchingStudents = students.filter(student =>
-        student?.tutorsId.includes(tutor!.id!)
-    )
-
-    if (matchingStudents.length === 0) {
+    
+    if (tutorStudent.length === 0) {
         return (
             <div>
                 <h1>No Student Found</h1>
@@ -30,7 +27,7 @@ export default function TutorStudentList() {
         <div>
             <h1>Student Tutor List</h1>
             <ul>
-                {matchingStudents.map((student) => (
+                {tutorStudent.map((student) => (
                     <li key={student.id}>
                         {student.name}
                     </li>

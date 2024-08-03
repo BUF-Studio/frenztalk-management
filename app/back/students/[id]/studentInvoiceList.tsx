@@ -9,13 +9,11 @@ import Link from 'next/link';
 
 export default function StudentInvoiceList() {
     const { invoices } = useInvoices();
-    const { student, setStudent } = useStudentPage();
+    const { studentInvoice } = useStudentPage();
 
-    const matchingInvoices = invoices.filter(invoice =>
-        invoice.studentId === student?.id
-    );
+   
 
-    if (matchingInvoices.length === 0) {
+    if (studentInvoice.length === 0) {
         return (
             <div>
                 <h1>No Invoice Found</h1>
@@ -29,7 +27,7 @@ export default function StudentInvoiceList() {
         <div>
             <h1>Student Invoice List</h1>
             <ul>
-                {matchingInvoices.map((invoice) => (
+                {studentInvoice.map((invoice) => (
                     <li key={invoice.id}>
                         {invoice.rate}
                     </li>

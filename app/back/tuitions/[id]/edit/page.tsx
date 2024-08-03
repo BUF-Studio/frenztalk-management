@@ -8,16 +8,16 @@ import { useTuitions } from '@/lib/context/collection/tuitionContext';
 
 export default function EditTuition({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
-  
+  const router = useRouter();
 
   const { tuitions } = useTuitions();
   if (tuition === null) {
     return (
       <div>
         <h1>Tuition Not Found</h1>
-        <Link href="/back/tuitions">
-          <button>Back to Tuition List</button>
-        </Link>
+
+        <button onClick={(e) => { router.back() }}>Back</button>
+
       </div>
     );
   }

@@ -1,7 +1,7 @@
 
 
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
 import { addTuition, updateTuition } from '@/lib/firebase/tuition';
@@ -15,9 +15,13 @@ import { Timestamp } from 'firebase/firestore';
 import { Invoice } from '@/lib/models/invoice';
 import InvoiceStatus from '@/lib/models/invoiceStatus';
 import { addInvoice } from '@/lib/firebase/invoice';
+import { Student } from '@/lib/models/student';
+import { Tutor } from '@/lib/models/tutor';
+import { useLevels } from '@/lib/context/collection/levelContext';
 
 export default function TuitionForm() {
     const router = useRouter();
+    const { levels } = useLevels();
     const { tuition, student, tutor, subject, setTuition } = useTuitionPage();
 
     const { students } = useStudents()
@@ -31,11 +35,35 @@ export default function TuitionForm() {
     const [subjectId, setSubjectId] = useState(tuition?.subjectId || subject?.id || '');
     const [status, setStatus] = useState(tuition?.status || '');
 
+    const [levelId, setLevelId] = useState(tuition?.levelId || '');
+
+
     const [currency, setCurrency] = useState<Currency>(tuition?.currency || Currency.MYR);
     const [price, setPrice] = useState(tuition?.price || 0);
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
     const [repeatWeeks, setRepeatWeeks] = useState(1);
+
+    
+
+    useEffect(() => {
+        const selectedLevel = levels.find(l => levelId === l.id);
+        switch (currency) {
+            case Currency.USD:
+              setPrice(selectedLevel!.price_usd);
+              break;
+            case Currency.GBP:
+              setPrice(selectedLevel!.price_gbp);
+              break;
+            case Currency.MYR:
+            default:
+              setPrice(selectedLevel!.price_myr);
+              break;
+          }
+      }, [subjectId]);
+    
+      
+  
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -45,11 +73,10 @@ export default function TuitionForm() {
 
         try {
 
-
-
             const startTimestamp = Timestamp.fromDate(new Date(startDateTime));
 
             if (tuition === null) {
+
                 for (let i = 0; i <= repeatWeeks - 1; i++) {
                     const newStartTimestamp = Timestamp.fromDate(new Date(startTimestamp.toDate().getTime() + (i * 7 * 24 * 60 * 60 * 1000)));
                     const newTuition = new Tuition(
@@ -58,6 +85,7 @@ export default function TuitionForm() {
                         tutorId,
                         studentId,
                         subjectId,
+                        levelId,
                         status,
                         newStartTimestamp,
                         duration,
@@ -66,8 +94,9 @@ export default function TuitionForm() {
                         currency,
                         null,
                     );
-                    await addTuition(newTuition);
+                    const tid = await addTuition(newTuition);
                 }
+
 
             } else {
                 let newInvoice: boolean = false
@@ -99,6 +128,7 @@ export default function TuitionForm() {
                     tutorId,
                     studentId,
                     subjectId,
+                    levelId,
                     status,
                     startTimestamp,
                     duration,
@@ -169,6 +199,22 @@ export default function TuitionForm() {
                     <option value="" disabled selected>Choose Subject</option>
                     {subjects.map(subject => (
                         <option key={subject.id} value={subject.id!}>{subject.name}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div>
+                <label htmlFor="level-dropdown">Select Level: </label>
+                <select
+                    id="level-dropdown"
+                    value={levelId}
+                    onChange={(e) => setLevelId(e.target.value)}
+                >
+                    <option value="" disabled>Select a level</option>
+                    {levels.map((level) => (
+                        <option key={level.id} value={level.id!}>
+                            {level.name}
+                        </option>
                     ))}
                 </select>
             </div>

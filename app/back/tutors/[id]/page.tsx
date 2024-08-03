@@ -27,9 +27,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
         return (
             <div>
                 <h1>Tutor Not Found</h1>
-                <Link href="/back/tutors">
-                    <button>Back to Tutor List</button>
-                </Link>
+            
+                    <button onClick={(e)=>{router.back()}}>Back</button>
+          
             </div>
         );
     }
@@ -42,9 +42,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
 
     return (
         <div>
-            <Link href="/back/tutors">
-                <button>Back to Tutor List</button>
-            </Link>
+
+                <button onClick={(e)=>{router.back()}}>Back</button>
+
 
             <div>
                 <h1>Tutor Details</h1>

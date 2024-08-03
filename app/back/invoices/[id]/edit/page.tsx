@@ -23,9 +23,9 @@ export default function EditInvoice({ params }: { params: { id: string } }) {
     return (
       <div>
         <h1>Invoice Not Found</h1>
-        <Link href="/back/invoices">
-          <button>Back to Invoice List</button>
-        </Link>
+        
+          <button onClick={(e)=>{router.back()}}>Back</button>
+        
       </div>
     );
   }

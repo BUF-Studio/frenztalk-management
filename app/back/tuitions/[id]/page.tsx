@@ -28,9 +28,9 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
         return (
             <div>
                 <h1>Tuition Not Found</h1>
-                <Link href="/back/tuitions">
-                    <button>Back to Tuition List</button>
-                </Link>
+                
+                    <button onClick={(e)=>{router.back()}}>Back</button>
+               
             </div>
         );
     }
@@ -45,9 +45,9 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
 
     return (
         <div>
-            <Link href="/back/tuitions">
-                <button>Back to Tuition List</button>
-            </Link>
+            
+                <button onClick={(e)=>{router.back()}}>Back</button>
+          
 
             <div>
                 <h1>Tuition Details</h1>

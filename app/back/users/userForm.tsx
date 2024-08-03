@@ -6,19 +6,21 @@ import { User, UserRole } from '@/lib/models/user';
 import { useUserPage } from '@/lib/context/page/userPageContext';
 import { addUser, updateUser } from '@/lib/firebase/user';
 import { useRouter } from 'next/navigation';
+import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 
 export default function UserForm() {
     const router = useRouter();
     const { user, setUser } = useUserPage();
+    const { setTutor } = useTutorPage();
     const [name, setName] = useState(user!.name);
     const [role, setRole] = useState(user!.role);
 
     // console.log(user.id)
 
-    const viewTutor = ()=>{
+    const viewTutor = () => {
         if (user && user.id) {
             router.push(`/back/tutors/${user.id}`);
-          }
+        }
     }
 
 
@@ -39,7 +41,7 @@ export default function UserForm() {
         }
     };
 
-   
+
     return (
         <form onSubmit={handleSubmit}>
             <div> Email : {user?.email}</div>

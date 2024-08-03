@@ -9,16 +9,16 @@ import { UserRole } from '@/lib/models/user';
 
 export default function EditUser({ params }: { params: { id: string } }) {
   const { user, setUser } = useUserPage();
-
+  const router = useRouter();
 
   const { verifiedUsers } = useUsers();
   if (user === null) {
     return (
       <div>
         <h1>User Not Found</h1>
-        <Link href="/back/users">
-          <button>Back to User List</button>
-        </Link>
+
+        <button onClick={(e) => { router.back() }}>Back</button>
+
       </div>
     );
   }
