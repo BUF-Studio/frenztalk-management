@@ -2,7 +2,7 @@
 
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
-import { Tutor } from '@/lib/models/tutor';
+import type { Tutor } from '@/lib/models/tutor';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 

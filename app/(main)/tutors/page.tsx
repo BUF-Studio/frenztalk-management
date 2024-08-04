@@ -1,11 +1,10 @@
 "use client";
 
-import { useAvaSubjects } from "@/lib/context/collection/avaSubjectContext";
 import SearchBar from "@/app/components/dashboard/SearchBar";
 import { useState, useEffect } from "react";
 import styles from "@/styles/main/tutors/Page.module.scss";
 import { Tutor } from "@/lib/models/tutor";
-import { addTutor, setTutor as updateTutor } from "@/lib/firebase/tutor";
+import { addTutor, updateTutor } from "@/lib/firebase/tutor";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
@@ -20,7 +19,6 @@ const TutorPage = () => {
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(false);
   const [changedIds, setChangedIds] = useState<string[]>([]);
-  const { avaSubjects } = useAvaSubjects();
   const { showSnackbar } = useSnackbar();
 
   const columns: { key: keyof Tutor; label: string }[] = [
@@ -28,7 +26,6 @@ const TutorPage = () => {
     { key: "name", label: "Name" },
     { key: "subjects", label: "Subjects" },
     { key: "des", label: "Description" },
-    { key: "freeze", label: "Status" },
   ];
 
   const renderTutorCell = (tutor: Tutor, columnKey: keyof Tutor) => {
@@ -49,14 +46,6 @@ const TutorPage = () => {
           <div>{tutor.name}</div>
         </div>
       );
-    }
-
-    if (columnKey === "freeze") {
-      return <Badge status={tutor.freeze ? "Frozen" : ("Active" as string)} />;
-    }
-
-    if (columnKey === "subjects") {
-      return tutor.subjects.map((sub) => getSubjectName(sub)).join(", ");
     }
 
     return tutor[columnKey] as React.ReactNode;
@@ -85,6 +74,7 @@ const TutorPage = () => {
     subjects: string[];
     pic: string;
     freezeAccount: boolean;
+    status: string;
   }) => {
     try {
       const newTutor = new Tutor(
@@ -93,7 +83,7 @@ const TutorPage = () => {
         formData.subjects,
         formData.description,
         formData.pic,
-        formData.freezeAccount
+        formData.status
       );
       const changedId = await addTutor(newTutor);
       setShowForm(false);
@@ -106,11 +96,6 @@ const TutorPage = () => {
     } catch (error) {
       console.error("Failed to submit the form", error);
     }
-  };
-
-  const getSubjectName = (id: string): string => {
-    const subject = avaSubjects.find((sub) => sub.id === id);
-    return subject?.name || "";
   };
 
   function handleOnDelete(item: Tutor): void {

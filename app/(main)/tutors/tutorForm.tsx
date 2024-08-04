@@ -1,7 +1,6 @@
 // pages/edit-tutor.tsx
 "use client";
 
-import { useAvaSubjects } from "@/lib/context/collection/avaSubjectContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 import { addAvaSubject } from "@/lib/firebase/avaSubject";
 import { addTutor } from "@/lib/firebase/tutor";
