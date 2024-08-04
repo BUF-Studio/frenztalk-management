@@ -28,9 +28,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
         return (
             <div>
                 <h1>Student Not Found</h1>
-                <Link href="/back/students">
-                    <button>Back to Student List</button>
-                </Link>
+
+                <button onClick={(e) => { router.back() }}>Back</button>
+
             </div>
         );
     }
@@ -43,9 +43,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
 
     return (
         <div>
-            <Link href="/back/students">
-                <button>Back to Student List</button>
-            </Link>
+
+            <button onClick={(e) => { router.back() }}>Back</button>
+
 
             <div>
                 <h1>Student Details</h1>

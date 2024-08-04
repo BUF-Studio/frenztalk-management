@@ -1,21 +1,20 @@
 "use client";
 
 import { useStudents } from '@/lib/context/collection/studentsContext';
+import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentTutorList() {
-    const { tutors } = useTutors();
-    const { student, setStudent } = useStudentPage();
+    const { studentTutor } = useStudentPage();
+    const router = useRouter();
 
-    const matchingTutors = tutors.filter(tutor =>
-        student?.tutorsId.includes(tutor!.id!)
-    );
 
-    if (matchingTutors.length === 0) {
+    if (studentTutor.length === 0) {
         return (
             <div>
                 <h1>No Tutor Found</h1>
@@ -29,9 +28,14 @@ export default function StudentTutorList() {
         <div>
             <h1>Student Tutor List</h1>
             <ul>
-                {matchingTutors.map((tutor) => (
+                {studentTutor.map((tutor) => (
                     <li key={tutor.id}>
-                        {tutor.name}
+                        <button onClick={(e) => {
+                            router.push(`/back/tutors/${tutor.id}`)
+                        }}>
+                            {tutor.name}
+                        </button>
+
                     </li>
                 ))}
             </ul>

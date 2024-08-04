@@ -3,27 +3,17 @@
 import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function TutorTuitionList() {
     const { tuitions } = useTuitions();
-    const { tutor, setTutor } = useTutorPage();
+    const { tutorTuition } = useTutorPage();
 
-    if (tutor === null) {
-        return (
-            <div>
-                <h1>No Tuition Found</h1>
-
-            </div>
-        );
-    }
-
-    const matchingTuitions = tuitions.filter(tuition =>
-        tuition.tutorId === tutor.id
-    );
-
-    if (matchingTuitions.length === 0) {
+    const router = useRouter();
+  
+    if (tutorTuition.length === 0) {
         return (
             <div>
                 <h1>No Tuition Found</h1>
@@ -37,9 +27,14 @@ export default function TutorTuitionList() {
         <div>
             <h1>Tutor Tuition List</h1>
             <ul>
-                {matchingTuitions.map((tuition) => (
+                {tutorTuition.map((tuition) => (
                     <li key={tuition.id}>
+                         <button onClick={(e) => {
+                            router.push(`/back/tuitions/${tuition.id}`)
+                        }}>
                         {tuition.name}
+                        </button>
+
                     </li>
                 ))}
             </ul>

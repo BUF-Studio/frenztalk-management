@@ -3,20 +3,22 @@
 import Link from 'next/link';
 import StudentForm from '../studentForm';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
+import { useRouter } from 'next/navigation';
 
 
 export default function AddStudent() {
     const { student, setStudent } = useStudentPage();
-
+   
+    const router = useRouter();
     setStudent(null)
 
 
 
     return (
         <div>
-            <Link href="/back/students">
-                <button>Back to Student List</button>
-            </Link>
+            
+                <button onClick={(e)=>{router.back()}}>Back</button>
+            
 
             <h2>Add Student</h2>
             <StudentForm></StudentForm>

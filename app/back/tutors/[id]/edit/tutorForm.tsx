@@ -9,7 +9,7 @@ import { updateTutor } from '@/lib/firebase/tutor';
 
 export default function TutorForm() {
     const router = useRouter();
-    const { tutor } = useTutorPage();
+    const { tutor, setTutor } = useTutorPage();
     const [name, setName] = useState(tutor?.name || '');
     const [des, setDes] = useState(tutor?.des || '');
     const [status, setStatus] = useState(tutor?.status || "active");
@@ -19,8 +19,10 @@ export default function TutorForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const updatedTutor = new Tutor(tutor!.id, name, tutor!.subjects, des, status, '');
+            const updatedTutor = new Tutor(tutor!.id, name, des, status, '');
             await updateTutor(updatedTutor)
+
+            setTutor(updatedTutor)
 
             router.back()
 

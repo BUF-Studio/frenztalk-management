@@ -3,18 +3,17 @@
 import { useInvoices } from '@/lib/context/collection/invoiceContext';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function TutorInvoiceList() {
     const { invoices } = useInvoices();
-    const { tutor, setTutor } = useTutorPage();
+    const { tutorInvoice } = useTutorPage();
+    const router = useRouter();
 
-    const matchingInvoices = invoices.filter(invoice =>
-        invoice.tutorId === tutor?.id
-    );
 
-    if (matchingInvoices.length === 0) {
+    if (tutorInvoice.length === 0) {
         return (
             <div>
                 <h1>No Invoice Found</h1>
@@ -28,9 +27,14 @@ export default function TutorInvoiceList() {
         <div>
             <h1>Tutor Invoice List</h1>
             <ul>
-                {matchingInvoices.map((invoice) => (
+                {tutorInvoice.map((invoice) => (
                     <li key={invoice.id}>
-                        {invoice.rate}
+                        <button onClick={(e) => {
+                            router.push(`/back/invoices/${invoice.id}`)
+                        }}>
+                            {invoice.rate}
+                        </button>
+
                     </li>
                 ))}
             </ul>

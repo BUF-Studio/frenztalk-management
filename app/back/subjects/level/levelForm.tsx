@@ -11,24 +11,39 @@ export default function LevelForm() {
     const router = useRouter();
     const { level, setLevel } = useLevelPage();
     const [name, setName] = useState(level?.name || '');
-    const [price_myr, setPrice_myr] = useState(level?.price_myr);
-    const [price_usd, setPrice_usd] = useState(level?.price_usd);
-    const [price_gbp, setPrice_gbp] = useState(level?.price_gbp);
+    const [student_price_myr, setStudentPrice_myr] = useState(level?.student_price_myr);
+    const [student_price_usd, setStudentPrice_usd] = useState(level?.student_price_usd);
+    const [student_price_gbp, setStudentPrice_gbp] = useState(level?.student_price_gbp);
+    const [tutor_price_myr, setTutorPrice_myr] = useState(level?.tutor_price_myr);
+    const [tutor_price_usd, setTutorPrice_usd] = useState(level?.tutor_price_usd);
+    const [tutor_price_gbp, setTutorPrice_gbp] = useState(level?.tutor_price_gbp);
 
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (Number.isNaN(price_myr) || price_myr === undefined) {
-            alert("Please enter a valid price ( RM ).");
+        if (Number.isNaN(student_price_myr) || student_price_myr === undefined) {
+            alert("Please enter a valid student price ( RM ).");
             return;
         }
-        if (Number.isNaN(price_usd) || price_usd === undefined) {
-            alert("Please enter a valid price ( USD ).");
+        if (Number.isNaN(student_price_usd) || student_price_usd === undefined) {
+            alert("Please enter a valid student price ( USD ).");
             return;
         }
-        if (Number.isNaN(price_gbp) || price_gbp === undefined) {
-            alert("Please enter a valid price ( GBP ).");
+        if (Number.isNaN(student_price_gbp) || student_price_gbp === undefined) {
+            alert("Please enter a valid student price ( GBP ).");
+            return;
+        }
+        if (Number.isNaN(tutor_price_myr) || tutor_price_myr === undefined) {
+            alert("Please enter a valid tutor price ( RM ).");
+            return;
+        }
+        if (Number.isNaN(tutor_price_usd) || tutor_price_usd === undefined) {
+            alert("Please enter a valid tutor price ( USD ).");
+            return;
+        }
+        if (Number.isNaN(tutor_price_gbp) || tutor_price_gbp === undefined) {
+            alert("Please enter a valid tutor price ( GBP ).");
             return;
         }
 
@@ -36,12 +51,13 @@ export default function LevelForm() {
         try {
 
             if (level === null) {
-                const newLevel = new Level(null, name, price_myr, price_usd, price_gbp);
+                const newLevel = new Level(null, name, student_price_myr, student_price_usd, student_price_gbp,tutor_price_myr, tutor_price_usd, tutor_price_gbp);
                 await addLevel(newLevel)
 
             } else {
-                const updatedLevel = new Level(level.id, name, price_myr, price_usd, price_gbp);
+                const updatedLevel = new Level(level.id, name, student_price_myr, student_price_usd, student_price_gbp,tutor_price_myr, tutor_price_usd, tutor_price_gbp);
                 await updateLevel(updatedLevel)
+                setLevel(updatedLevel)
 
             }
             router.back()
@@ -63,31 +79,58 @@ export default function LevelForm() {
                 />
             </div>
 
+            <h1>Student Price</h1>
+
             <div>
-                <label htmlFor="myr">Price ( RM ):</label>
+                
+                <label htmlFor="myr">Student Price ( RM ):</label>
                 <input
                     type="number"
-                    id="myr"
-                    value={price_myr}
-                    onChange={(e) => setPrice_myr(Number(e.target.value))}
+                    value={student_price_myr}
+                    onChange={(e) => setStudentPrice_myr(Number(e.target.value))}
                 />
             </div>
             <div>
-                <label htmlFor="usd">Price ( USD ):</label>
+                <label htmlFor="usd">Student Price ( USD ):</label>
                 <input
                     type="number"
-                    id="usd"
-                    value={price_usd}
-                    onChange={(e) => setPrice_usd(Number(e.target.value))}
+                    value={student_price_usd}
+                    onChange={(e) => setStudentPrice_usd(Number(e.target.value))}
                 />
             </div>
             <div>
-                <label htmlFor="gbp">Price ( GBP ):</label>
+                <label htmlFor="gbp">Student Price ( GBP ):</label>
                 <input
                     type="number"
-                    id="gbp"
-                    value={price_gbp}
-                    onChange={(e) => setPrice_gbp(Number(e.target.value))}
+                    value={student_price_gbp}
+                    onChange={(e) => setStudentPrice_gbp(Number(e.target.value))}
+                />
+            </div>
+            <h1>Tutor Price</h1>
+
+            <div>
+                
+                <label htmlFor="myr">Tutor Price ( RM ):</label>
+                <input
+                    type="number"
+                    value={tutor_price_myr}
+                    onChange={(e) => setTutorPrice_myr(Number(e.target.value))}
+                />
+            </div>
+            <div>
+                <label htmlFor="usd">Tutor Price ( USD ):</label>
+                <input
+                    type="number"
+                    value={tutor_price_usd}
+                    onChange={(e) => setTutorPrice_usd(Number(e.target.value))}
+                />
+            </div>
+            <div>
+                <label htmlFor="gbp">Tutor Price ( GBP ):</label>
+                <input
+                    type="number"
+                    value={tutor_price_gbp}
+                    onChange={(e) => setTutorPrice_gbp(Number(e.target.value))}
                 />
             </div>
 

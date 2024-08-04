@@ -13,7 +13,6 @@ export default function SubjectForm() {
     const { subject, setSubject } = useSubjectPage();
     const { levels } = useLevels();
     const [name, setName] = useState(subject?.name || '');
-    const [level, setLevel] = useState(subject?.levelId || '');
 
 
 
@@ -25,11 +24,11 @@ export default function SubjectForm() {
         try {
 
             if (subject === null) {
-                const newSubject = new Subject(null, name, level);
+                const newSubject = new Subject(null, name);
                 await addSubject(newSubject)
 
             } else {
-                const updatedSubject = new Subject(subject.id, name, level);
+                const updatedSubject = new Subject(subject.id, name);
                 await updateSubject(updatedSubject)
 
             }
@@ -52,21 +51,7 @@ export default function SubjectForm() {
                 />
             </div>
 
-            <div>
-                <label htmlFor="level-dropdown">Select Level: </label>
-                <select
-                    id="level-dropdown"
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                >
-                    <option value="" disabled>Select a level</option>
-                    {levels.map((level) => (
-                        <option key={level.id} value={level.id!}>
-                            {level.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            
             <div>
                 <button type="submit">Save</button>
                 <button type="button" onClick={() => router.back()}>Cancel</button>

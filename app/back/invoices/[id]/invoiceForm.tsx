@@ -62,7 +62,8 @@ export default function InvoiceForm() {
                 startTimestamp,
                 duration,
                 currency,
-                price
+                price,
+                invoice!.invoiceType
 
             );
             await updateInvoice(updatedInvoice)

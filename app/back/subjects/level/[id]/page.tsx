@@ -9,15 +9,15 @@ import LevelForm from '../levelForm';
 export default function EditLevel({ params }: { params: { id: string } }) {
   const { level, setLevel } = useLevelPage();
   
-
+  const router = useRouter();
   const { levels } = useLevels();
   if (level === null) {
     return (
       <div>
         <h1>Level Not Found</h1>
-        <Link href="/back/subjects">
-          <button>Back to Level List</button>
-        </Link>
+      
+          <button onClick={(e)=>{router.back()}}>Back</button>
+       
       </div>
     );
   }

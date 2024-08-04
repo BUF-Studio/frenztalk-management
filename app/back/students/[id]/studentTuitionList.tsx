@@ -4,14 +4,17 @@ import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentTuitionList() {
     const { tuitions } = useTuitions();
-    const { student, setStudent } = useStudentPage();
+    const { studentTuition } = useStudentPage();
+    const router = useRouter();
 
-    if (student === null) {
+
+    if (studentTuition === null) {
         return (
             <div>
                 <h1>No Tuition Found</h1>
@@ -20,11 +23,9 @@ export default function StudentTuitionList() {
         );
     }
 
-    const matchingTuitions = tuitions.filter(tuition =>
-        student.tuitionsId.includes(tuition!.id!)
-    );
 
-    if (matchingTuitions.length === 0) {
+
+    if (studentTuition.length === 0) {
         return (
             <div>
                 <h1>No Tuition Found</h1>
@@ -38,9 +39,14 @@ export default function StudentTuitionList() {
         <div>
             <h1>Student Tuition List</h1>
             <ul>
-                {matchingTuitions.map((tuition) => (
+                {studentTuition.map((tuition) => (
                     <li key={tuition.id}>
-                        {tuition.name}
+                        <button onClick={(e) => {
+                            router.push(`/back/tuitions/${tuition.id}`)
+                        }}>
+                            {tuition.name}
+                        </button>
+
                     </li>
                 ))}
             </ul>

@@ -4,18 +4,18 @@ import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useInvoices } from '@/lib/context/collection/invoiceContext';
 import { useStudentPage } from '@/lib/context/page/studentPageContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function StudentInvoiceList() {
     const { invoices } = useInvoices();
-    const { student, setStudent } = useStudentPage();
+    const { studentInvoice } = useStudentPage();
+    const router = useRouter();
 
-    const matchingInvoices = invoices.filter(invoice =>
-        invoice.studentId === student?.id
-    );
 
-    if (matchingInvoices.length === 0) {
+
+    if (studentInvoice.length === 0) {
         return (
             <div>
                 <h1>No Invoice Found</h1>
@@ -29,9 +29,14 @@ export default function StudentInvoiceList() {
         <div>
             <h1>Student Invoice List</h1>
             <ul>
-                {matchingInvoices.map((invoice) => (
+                {studentInvoice.map((invoice) => (
+
                     <li key={invoice.id}>
-                        {invoice.rate}
+                        <button onClick={(e) => {
+                            router.push(`/back/invoices/${invoice.id}`)
+                        }}>
+                            {invoice.id}
+                        </button>
                     </li>
                 ))}
             </ul>

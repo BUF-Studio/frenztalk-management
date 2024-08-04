@@ -11,6 +11,7 @@ import { Subject } from '@/lib/models/subject';
 import { Tuition } from '@/lib/models/tuition';
 import { Tutor } from '@/lib/models/tutor';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -22,10 +23,12 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
     const { tutors } = useTutors();
     const { subjects } = useSubjects();
 
-    const tuition :Tuition | undefined= tuitions.find(tuition=> tuition.id === invoice?.tuitionId)
-    const student :Student | undefined = students.find(student=> student.id === invoice?.studentId)
-    const tutor :Tutor | undefined= tutors.find(tutor=> tutor.id === invoice?.tutorId)
-    const subject:Subject | undefined = subjects.find(subject=> subject.id === invoice?.subjectId)
+    const router = useRouter();
+
+    const tuition: Tuition | undefined = tuitions.find(tuition => tuition.id === invoice?.tuitionId)
+    const student: Student | undefined = students.find(student => student.id === invoice?.studentId)
+    const tutor: Tutor | undefined = tutors.find(tutor => tutor.id === invoice?.tutorId)
+    const subject: Subject | undefined = subjects.find(subject => subject.id === invoice?.subjectId)
 
     if (invoice === null || invoice.id !== params.id) {
         const foundInvoice = invoices.find(s => s.id === params.id);
@@ -37,9 +40,9 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
         return (
             <div>
                 <h1>Invoice Not Found</h1>
-                <Link href="/back/invoices">
-                    <button>Back to Invoice List</button>
-                </Link>
+
+                <button onClick={(e) => { router.back() }}>Back</button>
+
             </div>
         );
     }
@@ -47,13 +50,14 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
 
     return (
         <div>
-            <Link href="/back/invoices">
-                <button>Back to Invoice List</button>
-            </Link>
+
+            <button onClick={(e) => { router.back() }}>Back</button>
+
 
             <div>
                 <h1>Invoice Details</h1>
                 <p>Id: {invoice.id}</p>
+                <p>Type: {invoice.invoiceType}</p>
                 <p>Student Name: {student!.name}</p>
                 <p>Tutor Name: {tutor!.name}</p>
                 <p>Subject Name: {subject!.name}</p>
