@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { GraduationCap, House, UserRound, UsersRound } from "lucide-react";
 import {
   Home,
   SchoolRounded,
@@ -13,6 +12,7 @@ import {
   Group,
   Settings,
   LogoutRounded,
+  Receipt
 } from "@mui/icons-material";
 import { cn } from "@/utils/manage-class-name";
 import Link from "next/link";
@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       href: "/back/tuitions",
       icon: (
         <Home
-          color="primary"
+          strokeWidth={1.6}
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
@@ -62,6 +62,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       ),
     },
     {
+      label: "Invoices",
+      href: "/back/invoices",
+      icon: (
+        <Receipt
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
       label: "Settings",
       href: "/back/settings",
       icon: (
@@ -84,11 +94,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 overflow-hidden",
+        "flex flex-col md:flex-row bg-transparent w-full flex-1 overflow-hidden",
         "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
       )}
     >
-      <Sidebar open={true} setOpen={setOpen} animate={false}>
+      <Sidebar open={true} setOpen={setOpen} animate={true}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Logo open={open} />
@@ -99,8 +109,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={idx}
                   link={link}
                   className={
-                    pathname === link.href
-                      ? "bg-neutral-200 dark:bg-neutral-700"
+                    pathname.startsWith(link.href)
+                      ? "rounded-md bg-red-200 dark:bg-red-900"
                       : ""
                   }
                 />
@@ -126,7 +136,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarBody>
       </Sidebar>
-      {children}
+      <div className="flex flex-col flex-grow py-4 pr-4 overflow-hidden">
+        <div className="flex-grow min-h-0 max-h-full overflow-hidden rounded-xl p-4 bg-neutral-100 dark:bg-neutral-700">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
