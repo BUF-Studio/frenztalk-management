@@ -1,51 +1,60 @@
 "use client";
 
-import { useUsers } from '@/lib/context/collection/usersContext';
-import { useUserPage } from '@/lib/context/page/userPageContext';
-import { User, UserRole } from '@/lib/models/user';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
-
+import { DataTable } from "@/app/components/dashboard/DataTable";
+import { Tabs } from "@/app/components/ui/tabs";
+import { useUsers } from "@/lib/context/collection/usersContext";
+import { useUserPage } from "@/lib/context/page/userPageContext";
+import { type User, UserRole } from "@/lib/models/user";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function UserList() {
-    const { verifiedUsers, unverifiedUsers } = useUsers();
-    const { setUser } = useUserPage();
-    const router = useRouter();
+  const { verifiedUsers, unverifiedUsers } = useUsers();
+  const { setUser } = useUserPage();
+  const router = useRouter();
 
+  const columns: { key: keyof User; label: string }[] = [
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "role", label: "Role" },
+  ];
 
-    const editUser = (user: User) => {
-        setUser(user)
-        router.push(`/back/users/${user.id}`)
-    }
+  const tabs = [
+    {
+      title: "Users",
+      value: "users",
+      content: (
+        <DataTable
+          data={verifiedUsers}
+          columns={columns}
+          actions={[]}
+          onRowClick={(user) => editUser(user)}
+        />
+      ),
+    },
+    {
+      title: "Requests",
+      value: "request",
+      content: (
+        <DataTable
+          data={unverifiedUsers}
+          columns={columns}
+          actions={[]}
+          onRowClick={(user) => editUser(user)}
+        />
+      ),
+      notify: unverifiedUsers.length,
+    },
+  ];
 
-    return (
-        <div>
-            <h1>User List</h1>
-            <ul>
-                {verifiedUsers.map((user) => (
+  const editUser = (user: User) => {
+    setUser(user);
+    router.push(`/back/users/${user.id}`);
+  };
 
-                    <li key={user.id}>
-                        <button onClick={(e) => { editUser(user) }}>
-                            {user.name}
-                            {user.role}
-                        </button>
-
-                    </li>
-
-                ))}
-            </ul>
-            <h1>Pending User List</h1>
-            <ul>
-                {unverifiedUsers.map((user) => (
-                    <li key={user.id}>
-                        {user.name}
-                        {user.role}
-                        <button onClick={(e) => { editUser(user) }}>Approve</button>
-                    </li>
-
-                ))}
-            </ul>
-        </div>
-    );
+  return (
+    <div>
+      <Tabs tabs={tabs} />
+    </div>
+  );
 }
