@@ -14,6 +14,7 @@ interface TuitionCardProps {
   student: string;
   price: string;
   meetingLink: string;
+  onClick?: () => void;
 }
 
 const TuitionCard: React.FC<TuitionCardProps> = ({
@@ -25,11 +26,13 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   student,
   price,
   meetingLink,
+  onClick,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(meetingLink);
@@ -43,60 +46,53 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   };
 
   return (
-    <div className="w-full mx-auto bg-white rounded-lg border-1 border-grey-60 overflow-hidden">
+    <div
+      onClick={onClick}
+      onKeyDown={onClick}
+      onKeyPress={onClick}
+      onKeyUp={onClick}
+      className="bg-white w-full border-1 border-grey-600 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+    >
       <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-lg font-bold">{subject}</h2>
-            <p className="text-gray-500 text-sm">{level ?? "No level found"}</p>
-          </div>
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-            {status}
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-gray-500 text-sm mb-1">
+            Sunday, 08 May 2024
           </span>
-          {/* <span className="text-lg font-semibold">{time}</span> */}
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="flex items-center text-left text-gray-400 hover:text-gray-600 transition-colors"
+            title={isCopied ? "Copied!" : "Copy to clipboard"}
+          >
+            <span className="mr-2 text-sm">{meetingLink}</span>
+            {isCopied ? (
+              <Check size={16} className="text-green-500" />
+            ) : (
+              <Copy size={16} />
+            )}
+          </button>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Status</span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Tutor</span>
-            <div className="flex items-center">
-              <div className="w-6 h-6 bg-gray-200 rounded-full mr-2" />
-              <span>{tutor}</span>
+        {/* Half Bottom */}
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="flex flex-row gap-2 mb-1">
+              <h2 className="text-lg font-semibold">{subject}</h2>
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                {status}
+              </span>
+            </div>
+            <p className="text-gray-500 text-sm mb-2">
+              {level ?? "No level found"}
+            </p>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-gray-200 rounded-full mr-2" />
+                <span className="text-sm">{tutor}</span>
+              </div>
             </div>
           </div>
-
-          {/* <div className="flex justify-between items-center">
-            <span className="text-gray-600">Student</span>
-            <span>{student}</span>
-          </div> */}
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Price</span>
-            <span className="text-red-500">{price}</span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Meeting Link</span>
-            <div className="flex items-center">
-              <span className="text-blue-500 mr-2">{meetingLink}</span>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-                title={isCopied ? "Copied!" : "Copy to clipboard"}
-              >
-                {isCopied ? (
-                  <Check size={16} className="text-green-500" />
-                ) : (
-                  <Copy size={16} />
-                )}
-              </button>
-            </div>
-          </div>
+          <span className="text-md font-medium text-gray-700">12PM to 2PM</span>
         </div>
       </div>
     </div>

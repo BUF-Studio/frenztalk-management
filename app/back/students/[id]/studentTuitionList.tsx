@@ -35,29 +35,27 @@ export default function StudentTuitionList() {
     return tutor?.name ?? "";
   };
 
+  const handleCardClick = (tuitionId: string) => {
+    router.push(`/back/tuitions/${tuitionId}`);
+  };
+
   return (
     <div>
       <h1 className="text-lg font-semibold mb-2">Classes</h1>
-      <div className="flex flex-col gap-2 justify-between items-center mb-4">
+      <div className="flex flex-col gap-2 justify-between items-center">
         {studentTuition.map((tuition) => (
           <TuitionCard
             key={tuition.id}
             subject={findSubject(tuition.subjectId)}
             level={tuition.levelId}
             time="12PM to 2PM"
-            status={tuition.status}
+            status="Active"
             tutor={findTutor(tuition.tutorId)}
             student={tuition.studentId}
             price="Unset"
             meetingLink="meet.google.com/pwg-tgvo-kkc"
+            onClick={() => handleCardClick(tuition.id ?? "")}
           />
-          // <button
-          //   onClick={(e) => {
-          //     router.push(`/back/tuitions/${tuition.id}`);
-          //   }}
-          // >
-          //   {tuition.name}
-          // </button>
         ))}
       </div>
     </div>

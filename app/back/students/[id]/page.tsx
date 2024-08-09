@@ -68,20 +68,12 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               </button>
             </div>
           </div>
-          <StudentTuitionList/>
+          <StudentTuitionList />
         </div>
         <div className="lg:w-[300px] flex-shrink-0">
-          <StudentTutorList></StudentTutorList>
-          <StudentInvoiceList></StudentInvoiceList>
+          <StudentTutorList />
+          <StudentInvoiceList />
         </div>
-        {/* <div>
-        <p>Name: {student?.name}</p>
-        <p>Age: {student?.age}</p>
-        <Link href={`/back/students/${student?.id}/edit`}>
-          <button>Edit</button>
-        </Link>
-      </div> */}
-        {/* <button onClick={addTuition}>Add Class</button> */}
       </div>
     </div>
   );

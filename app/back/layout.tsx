@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
       )}
     >
-      <Sidebar open={true} setOpen={setOpen} animate={true}>
+      <Sidebar open={open} setOpen={setOpen} animate={false}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Logo open={open} />
