@@ -9,6 +9,8 @@ import StudentInvoiceList from "./studentInvoiceList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { ArrowBackIosNew } from "@mui/icons-material";
+import { use, useEffect } from "react";
+import { Edit } from "lucide-react";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
@@ -16,55 +18,71 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   const { setTuitionStudent } = useTuitionPage();
   const router = useRouter();
 
-  if (student === null || student.id !== params.id) {
-    const foundStudent = students.find((s) => s.id === params.id);
-    if (foundStudent) setStudent(foundStudent);
-  }
-
-  if (student === null) {
-    return (
-      <div>
-        <h1>Student Not Found</h1>
-
-        <button
-          onClick={(e) => {
-            router.back();
-          }}
-        >
-          Back
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (student === null || student.id !== params.id) {
+      const foundStudent = students.find((s) => s.id === params.id);
+      if (foundStudent) setStudent(foundStudent);
+    }
+  }, [params, student, students, setStudent]);
 
   const addTuition = () => {
     setTuitionStudent(student);
-    router.push(`/back/tuitions/add`);
+    router.push("/back/tuitions/add");
   };
 
   return (
     <div>
+      {/* Back Button */}
       <button
         type="button"
         onClick={(e) => {
           router.back();
         }}
-        className="flex flex-row items-center gap-2 pb-4"
+        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
       >
-        <ArrowBackIosNew className="h-6 w-6" />
-        <h1 className="text-xl font-bold">Student Details</h1>
+        <ArrowBackIosNew className="h-5 w-5 mr-2" />
+        <h1 className="text-lg font-semibold">Student Details</h1>
       </button>
-      <div>
-        <p>Name: {student.name}</p>
-        <p>Age: {student.age}</p>
-        <Link href={`/back/students/${student.id}/edit`}>
+
+      {/* Main Section */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Left Side */}
+        <div className="flex-grow">
+          <div className="bg-white border-1 border-grey-600 rounded-lg p-6 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-row gap-6 items-center">
+                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                  {/* <span className="text-gray-500 text-xl">Avatar</span> */}
+                </div>
+                <div className="grid grid-row-2">
+                  <p className="text-lg font-semibold">{student?.name}</p>
+                  <p className="text-xs text-gray-600 font-semibolds">{`Aged ${student?.age}`}</p>
+                </div>
+              </div>
+              <button
+                className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+                type="button"
+              >
+                <Edit size={16} strokeWidth={3} className="mr-1" />
+                Edit
+              </button>
+            </div>
+          </div>
+          <StudentTuitionList/>
+        </div>
+        <div className="lg:w-[300px] flex-shrink-0">
+          <StudentTutorList></StudentTutorList>
+          <StudentInvoiceList></StudentInvoiceList>
+        </div>
+        {/* <div>
+        <p>Name: {student?.name}</p>
+        <p>Age: {student?.age}</p>
+        <Link href={`/back/students/${student?.id}/edit`}>
           <button>Edit</button>
         </Link>
+      </div> */}
+        {/* <button onClick={addTuition}>Add Class</button> */}
       </div>
-      <button onClick={addTuition}>Add Class</button>
-      <StudentTuitionList></StudentTuitionList>
-      <StudentTutorList></StudentTutorList>
-      <StudentInvoiceList></StudentInvoiceList>
     </div>
   );
 }
