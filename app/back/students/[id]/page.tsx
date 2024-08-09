@@ -70,7 +70,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           </div>
           <StudentTuitionList />
         </div>
-        <div className="lg:w-[300px] flex-shrink-0">
+        <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <StudentTutorList />
           <StudentInvoiceList />
         </div>

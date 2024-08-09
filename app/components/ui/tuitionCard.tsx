@@ -4,14 +4,17 @@ import type React from "react";
 import { User, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import Link from "next/link";
+import type { Student } from "@/lib/models/student";
+import type { Level } from "@/lib/models/level";
 
 interface TuitionCardProps {
   subject: string;
-  level: string;
+  level?: Level;
   time: string;
   status: string;
-  tutor: string;
-  student: string;
+  tutor?: string;
+  student?: Student;
   price: string;
   meetingLink: string;
   onClick?: () => void;
@@ -77,20 +80,31 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         <div className="flex justify-between items-start">
           <div>
             <div className="flex flex-row gap-2 mb-1">
-              <h2 className="text-lg font-semibold">{subject}</h2>
+              <h2 className="text-lg font-medium">{subject}</h2>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
                 {status}
               </span>
             </div>
             <p className="text-gray-500 text-sm mb-2">
-              {level ?? "No level found"}
+              {level?.name ?? "No level found"}
             </p>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-gray-200 rounded-full mr-2" />
-                <span className="text-sm">{tutor}</span>
+            {tutor && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full mr-2" />
+                  <span className="text-sm">{tutor}</span>
+                </div>
               </div>
-            </div>
+            )}
+            {student && (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  {/* Registered student */}
+                  <span className="text-sm">Enrolled by </span>
+                  <Link type="button" className="text-sm font-medium ml-1" href={`/back/students/${student.id}`}>{student.name}</Link>
+                </div>
+              </div>
+            )}
           </div>
           <span className="text-md font-medium text-gray-700">12PM to 2PM</span>
         </div>

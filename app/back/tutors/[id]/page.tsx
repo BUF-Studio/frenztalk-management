@@ -1,69 +1,83 @@
 "use client";
 
-import { useTutorPage } from '@/lib/context/page/tutorPageContext';
-import Link from 'next/link';
-import TutorInvoiceList from './tutorInvoiceList';
-import TutorTuitionList from './tutorTuitionList';
-import { useTutors } from '@/lib/context/collection/tutorContext';
-import TutorStudentList from './tutorStudentList';
-import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
-import { useRouter } from 'next/navigation';
-
-
+import { useTutorPage } from "@/lib/context/page/tutorPageContext";
+import Link from "next/link";
+import TutorInvoiceList from "./tutorInvoiceList";
+import TutorTuitionList from "./tutorTuitionList";
+import { useTutors } from "@/lib/context/collection/tutorContext";
+import TutorStudentList from "./tutorStudentList";
+import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { ArrowBackIosNew } from "@mui/icons-material";
+import { Edit } from "lucide-react";
+import StudentInvoiceList from "../../students/[id]/studentInvoiceList";
+import StudentTuitionList from "../../students/[id]/studentTuitionList";
+import StudentTutorList from "../../students/[id]/studentTutorList";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
-    const { tutor, setTutor } = useTutorPage();
-    const { tutors } = useTutors();
-    const { setTuitionTutor } = useTuitionPage();
-    const router = useRouter();
+  const { tutor, setTutor } = useTutorPage();
+  const { tutors } = useTutors();
+  const { setTuitionTutor } = useTuitionPage();
+  const router = useRouter();
 
+  useEffect(() => {
     if (tutor === null || tutor.id !== params.id) {
-        const foundTutor = tutors.find(s => s.id === params.id);
-        if (foundTutor)
-            setTutor(foundTutor);
+      const foundTutor = tutors.find((s) => s.id === params.id);
+      if (foundTutor) setTutor(foundTutor);
     }
+  }, [tutor, tutors, params, setTutor]);
 
-    if (tutor === null) {
-        return (
-            <div>
-                <h1>Tutor Not Found</h1>
-            
-                    <button onClick={(e)=>{router.back()}}>Back</button>
-          
+  const addTuition = () => {
+    setTuitionTutor(tutor);
+    router.push("/back/tuitions/add");
+  };
+
+  return (
+    <div>
+      {/* Back Button */}
+      <button
+        type="button"
+        onClick={(e) => {
+          router.back();
+        }}
+        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
+      >
+        <ArrowBackIosNew className="h-5 w-5 mr-2" />
+        <h1 className="text-lg font-semibold">Tutor Details</h1>
+      </button>
+
+      {/* Main Section */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Left Side */}
+        <div className="flex-grow">
+          <div className="bg-white border-1 border-grey-600 rounded-lg p-6 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-row gap-6 items-center">
+                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                  {/* <span className="text-gray-500 text-xl">Avatar</span> */}
+                </div>
+                <div className="grid grid-row-2">
+                  <p className="text-lg font-semibold">{tutor?.name}</p>
+                  <p className="text-xs text-gray-600 font-semibolds">{tutor?.des}</p>
+                </div>
+              </div>
+              <button
+                className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+                type="button"
+              >
+                <Edit size={16} strokeWidth={3} className="mr-1" />
+                Edit
+              </button>
             </div>
-        );
-    }
-
-    const addTuition = () => {
-        setTuitionTutor(tutor)
-        router.push(`/back/tuitions/add`)
-    }
-
-
-    return (
-        <div>
-
-                <button onClick={(e)=>{router.back()}}>Back</button>
-
-
-            <div>
-                <h1>Tutor Details</h1>
-                <p>Name: {tutor.name}</p>
-                <Link href={`/back/tutors/${tutor.id}/edit`}>
-                    <button>Edit</button>
-                </Link>
-
-            </div>
-
-            <button onClick={addTuition}>Add Class</button>
-
-            <TutorTuitionList></TutorTuitionList>
-            <TutorStudentList></TutorStudentList>
-            <TutorInvoiceList></TutorInvoiceList>
-
-
-
+          </div>
+          <TutorTuitionList />
         </div>
-
-    );
+        <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+          <TutorStudentList />
+          <TutorInvoiceList />
+        </div>
+      </div>
+    </div>
+  );
 }
