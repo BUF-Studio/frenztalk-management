@@ -32,7 +32,7 @@ export default function InvoiceForm() {
     const tutor: Tutor | undefined = tutors.find(tutor => tutor.id === invoice?.tutorId)
     const subject: Subject | undefined = subjects.find(subject => subject.id === invoice?.subjectId)
 
-    const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
+    const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
 
     const [status, setStatus] = useState<InvoiceStatus>(invoice!.status);
@@ -48,7 +48,9 @@ export default function InvoiceForm() {
 
 
         try {
-            const startTimestamp = Timestamp.fromDate(new Date(startDateTime));
+            const startTimestamp = new Date(startDateTime);
+            const zoomStartTime = startTimestamp.toISOString().replace('Z', '+08:00');
+
 
 
             const updatedInvoice = new Invoice(
@@ -59,7 +61,7 @@ export default function InvoiceForm() {
                 invoice!.subjectId,
                 rate,
                 status,
-                startTimestamp,
+                zoomStartTime,
                 duration,
                 currency,
                 price,

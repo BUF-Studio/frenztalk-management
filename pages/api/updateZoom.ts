@@ -2,8 +2,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-type MeetingRequestBody = {
+type UpdateMeetingRequestBody = {
     accessToken: string;
+    meetingId: string;
     topic: string;
     start_time: string;
     duration: number;
@@ -12,7 +13,7 @@ type MeetingRequestBody = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        const { accessToken, topic, start_time, duration, password }: MeetingRequestBody = req.body;
+        const { accessToken, meetingId, topic, start_time, duration, password }: UpdateMeetingRequestBody = req.body;
 
         // Replace 'YOUR_OAUTH_ACCESS_TOKEN' with the access token you obtained
         // const accessToken = "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6ImUyMTdjZDBmLWYyNzQtNDUyNi04MGRmLTg2OGYwYjJiZmJjNSJ9.eyJhdWQiOiJodHRwczovL29hdXRoLnpvb20udXMiLCJ1aWQiOiJ3c1NNbHRqcFNfR1BpaDVQeXR1V05RIiwidmVyIjo5LCJhdWlkIjoiMjVlNTYzMjE0NGI5ZDY4NTZjMWUxODYyZGZjMGE2NzQiLCJuYmYiOjE3MjMwMzk2MjAsImNvZGUiOiI1aGRib1p5blE0T0RiSDh1WXRJazRnc0U4dmRWYm9GTHciLCJpc3MiOiJ6bTpjaWQ6RFpxR3FnR1VTUGFXZ3M1QmdyenpRIiwiZ25vIjowLCJleHAiOjE3MjMwNDMyMjAsInR5cGUiOjMsImlhdCI6MTcyMzAzOTYyMCwiYWlkIjoiNThsZHl0T1dTSVdvdjZ0ZzhpWWRjQSJ9.yGp-C4w8Calp8070gN9YvD5GYtrF-oz1WM_IjX-fGuvfG9idKWY5iE3QJDIvtPawrvrP8uux661O9i7DteEYfQ";
@@ -22,12 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         try {
-            const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
+
+
+
+            const response = await axios.patch(`https://api.zoom.us/v2/meetings/${meetingId}`, {
                 topic,
-                type: 2, // Scheduled meeting
                 start_time,
                 duration,
-                password
+                password,
             }, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -35,18 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             });
 
-            // console.log(response.data)
-
-            return res.status(200).json(response.data);
+            // Return 204 No Content
+            return res.status(204).end();
         } catch (error: any) {
-            console.error('Error creating Zoom meeting:', error.message);
+            console.error('Error updating Zoom meeting start time:', error.message);
             if (error.response) {
-
-                // More detailed error information from the response
-                console.error('Response data:', error.response.data);
                 return res.status(error.response.status).json({ error: error.response.data.message });
             } else {
-                // General error handling
                 return res.status(500).json({ error: 'Internal Server Error' });
             }
         }

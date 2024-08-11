@@ -25,9 +25,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const { access_token } = response.data;
-    res.status(200).json({ access_token });
+    return res.status(200).json({ access_token });
   } catch (error) {
     console.error('Error fetching access token:', error);
-    res.status(500).json({ error: 'Failed to fetch access token' });
+    return res.status(500).json({ error: 'Failed to fetch access token' });
   }
 }
