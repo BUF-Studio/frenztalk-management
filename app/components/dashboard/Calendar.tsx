@@ -1,14 +1,10 @@
 import type React from "react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface Event {
-  date: string;
-  title: string;
-}
+import type { Tuition } from "@/lib/models/tuition";
 
 interface MonthCalendarProps {
-  events: Event[];
+  events: Tuition[];
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
@@ -25,8 +21,6 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
     currentDate.getMonth(),
     1
   ).getDay();
-
-  console.log("Firstday",firstDayOfMonth);
 
   const monthNames = [
     "January",
@@ -58,7 +52,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
   const getEventsForDate = (date: number) => {
     return events.filter(
       (event) =>
-        new Date(event.date).toDateString() ===
+        new Date(event.startTime?.toString() ?? "").toDateString() ===
         new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
@@ -77,14 +71,14 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
   };
 
   return (
-    <div className="w-full h-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 bg-gray-100">
         <button
           type="button"
           onClick={prevMonth}
-          className="p-2 rounded-full hover:bg-gray-200"
+          className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-200"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft className="w-6 h-6" />
         </button>
         <h2 className="text-xl font-bold">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -92,19 +86,19 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
         <button
           type="button"
           onClick={nextMonth}
-          className="p-2 rounded-full hover:bg-gray-200"
+          className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-200"
         >
-          <ChevronRight size={24} />
+          <ChevronRight className="w-6 h-6" />
         </button>
       </div>
       <div className="grid grid-cols-7 gap-1 p-4">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="text-center font-bold">
+          <div key={day} className="text-center font-bold text-gray-500">
             {day}
           </div>
         ))}
         {Array.from(Array(firstDayOfMonth).keys()).map((i) => (
-          <div key={`empty-${i}`} className="h-24 bg-gray-100" />
+          <div key={`empty-${i}`} className="h-24 bg-gray-50 rounded" />
         ))}
         {Array.from(Array(daysInMonth).keys()).map((i) => {
           const date = i + 1;
@@ -112,18 +106,26 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
           return (
             <div
               key={`day-${date}`}
-              className={`h-24 border border-gray-200 p-1 overflow-hidden ${
-                isToday(date) ? "bg-red-200 rounded-full" : ""
-              }`}
+              className={`h-24 border border-gray-200 p-2 overflow-hidden ${
+                isToday(date) ? "bg-red-100" : ""
+              } rounded transition-colors duration-200 hover:bg-gray-50`}
             >
-              <div className="font-semibold">{date}</div>
+              <div
+                className={`font-semibold ${
+                  isToday(date) ? "text-red-600" : ""
+                }`}
+              >
+                {date}
+              </div>
               {dayEvents.map((event, index) => (
                 <div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  key={index}
-                  className="text-xs bg-blue-100 rounded p-1 mb-1 truncate"
+                  key={`event-${date}-${
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                    index
+                  }`}
+                  className="text-xs bg-blue-100 text-blue-800 rounded p-1 mb-1 truncate"
                 >
-                  {event.title}
+                  {event.subjectId}
                 </div>
               ))}
             </div>
