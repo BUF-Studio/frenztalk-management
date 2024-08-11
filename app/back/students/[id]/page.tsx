@@ -15,10 +15,12 @@ import StudentDialog from "../studentForm";
 import { Student } from "@/lib/models/student";
 import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import MonthCalendar from "@/app/components/dashboard/Calendar";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
   const { students } = useStudents();
+  const { studentTuition } = useStudentPage();
   const { setTuitionStudent } = useTuitionPage();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -99,6 +101,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           <StudentTuitionList />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+          <MonthCalendar events={studentTuition} />
           <StudentTutorList />
           <StudentInvoiceList />
         </div>

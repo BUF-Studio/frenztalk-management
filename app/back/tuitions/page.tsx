@@ -2,12 +2,11 @@
 
 import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
-import { Tuition } from '@/lib/models/tuition';
+import type { Tuition } from '@/lib/models/tuition';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-
+import MonthCalendar from "@/app/components/dashboard/Calendar";
 
 export default function TuitionList() {
     const { tuitions } = useTuitions();
@@ -55,6 +54,7 @@ export default function TuitionList() {
 
     return (
         <div>
+            <MonthCalendar events={tuitions} />
             <h1>Tuition List</h1>
             <ul>
                 {tuitions.map((tuition) => (

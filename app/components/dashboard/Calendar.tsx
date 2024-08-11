@@ -1,14 +1,10 @@
 import type React from "react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface Event {
-  date: string;
-  title: string;
-}
+import type { Tuition } from "@/lib/models/tuition";
 
 interface MonthCalendarProps {
-  events: Event[];
+  events: Tuition[];
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
@@ -56,7 +52,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
   const getEventsForDate = (date: number) => {
     return events.filter(
       (event) =>
-        new Date(event.date).toDateString() ===
+        new Date(event.startTime?.toString() ?? "").toDateString() ===
         new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
@@ -129,7 +125,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({ events }) => {
                   }`}
                   className="text-xs bg-blue-100 text-blue-800 rounded p-1 mb-1 truncate"
                 >
-                  {event.title}
+                  {event.subjectId}
                 </div>
               ))}
             </div>
