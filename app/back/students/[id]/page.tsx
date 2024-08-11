@@ -9,14 +9,24 @@ import StudentInvoiceList from "./studentInvoiceList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { Edit } from "lucide-react";
+import StudentDialog from "../studentForm";
+import { Student } from "@/lib/models/student";
+import { updateStudent } from "@/lib/firebase/student";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
   const { students } = useStudents();
   const { setTuitionStudent } = useTuitionPage();
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
+  };
 
   useEffect(() => {
     if (student === null || student.id !== params.id) {
@@ -29,6 +39,23 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     setTuitionStudent(student);
     router.push("/back/tuitions/add");
   };
+
+  const handleUpdateStudent = async(studentData: Partial<Student>) => {
+    try {
+      const updatedStudent = new Student(
+        student?.id ?? null,
+        studentData.name ?? "",
+        studentData.age ?? 0,
+        studentData.status ?? "active"
+      );
+      console.log(updatedStudent);
+      await updateStudent(updatedStudent);
+      showSnackbar("Successfully updated student", "success");
+      toggleDialog();
+    } catch (error) {
+      showSnackbar("Error processing student", "error");
+    }
+  }
 
   return (
     <div>
@@ -62,6 +89,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               <button
                 className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
                 type="button"
+                onClick={toggleDialog}
               >
                 <Edit size={16} strokeWidth={3} className="mr-1" />
                 Edit
@@ -75,6 +103,12 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           <StudentInvoiceList />
         </div>
       </div>
+      <StudentDialog
+        isOpen={isDialogOpen}
+        onClose={toggleDialog}
+        onSubmit={handleUpdateStudent}
+        initialStudent={student}
+      />
     </div>
   );
 }
