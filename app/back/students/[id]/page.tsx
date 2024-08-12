@@ -22,6 +22,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   const { students } = useStudents();
   const { studentTuition } = useStudentPage();
   const { setTuitionStudent } = useTuitionPage();
+  const [ selectedDate, setSelectedDate ] = useState<Date | null>(null);
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { showSnackbar } = useSnackbar();
@@ -101,7 +102,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           <StudentTuitionList />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
-          <MonthCalendar events={studentTuition} />
+          <MonthCalendar events={studentTuition} onDateSelect={(date)=> setSelectedDate(date)}/>
           <StudentTutorList />
           <StudentInvoiceList />
         </div>

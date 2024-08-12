@@ -7,11 +7,13 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import MonthCalendar from "@/app/components/dashboard/Calendar";
+import { useState } from 'react';
 
 export default function TuitionList() {
     const { tuitions } = useTuitions();
     const router = useRouter();
     const { setTuition } = useTuitionPage();
+    const [ selectedDate, setSelectedDate ] = useState<Date | null>(null);
 
     const addTuition = () => {
         setTuition(null)
@@ -54,7 +56,7 @@ export default function TuitionList() {
 
     return (
         <div>
-            <MonthCalendar events={tuitions} />
+            <MonthCalendar events={tuitions} onDateSelect={(date)=> setSelectedDate(date)}/>
             <h1>Tuition List</h1>
             <ul>
                 {tuitions.map((tuition) => (

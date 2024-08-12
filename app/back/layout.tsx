@@ -83,7 +83,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Logout",
-      href: "#",
+      href: "/sign-in",
       icon: (
         <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
       ),
@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
       )}
     >
-      <Sidebar open={open} setOpen={setOpen} animate={false}>
+      <Sidebar open={open} setOpen={setOpen} animate={true}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Logo open={open} />
@@ -109,7 +109,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={idx}
                   link={link}
                   className={
-                    pathname.startsWith(link.href)
+                    pathname?.startsWith(link.href)
                       ? "rounded-md bg-red-200 dark:bg-red-900"
                       : ""
                   }
