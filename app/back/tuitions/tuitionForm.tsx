@@ -19,6 +19,7 @@ import { Student } from '@/lib/models/student';
 import { Tutor } from '@/lib/models/tutor';
 import { useLevels } from '@/lib/context/collection/levelContext';
 import InvoiceType from '@/lib/models/invoiceType';
+import axios from 'axios';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -39,12 +40,15 @@ export default function TuitionForm() {
     const [levelId, setLevelId] = useState(tuition?.levelId || '');
 
 
+
     const [currency, setCurrency] = useState<Currency>(tuition?.currency || Currency.MYR);
     const [studentPrice, setStudentPrice] = useState(tuition?.studentPrice || 0);
     const [tutorPrice, setTutorPrice] = useState(tuition?.tutorPrice || 0);
-    const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.toDate().toISOString().slice(0, 16) || '');
+    const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 1);
     const [repeatWeeks, setRepeatWeeks] = useState(1);
+
+
 
 
 
@@ -70,6 +74,67 @@ export default function TuitionForm() {
     }, [levelId, currency]);
 
 
+    const authToken = async () => {
+        try {
+            const response = await axios.post('/api/auth/authorize');
+            const data = response.data['access_token']
+            return data
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const createZoom = async (topic: string, start_time: string, duration: number) => {
+        try {
+            const token = await authToken()
+            const response = await axios.post('/api/addZoom', {
+                accessToken: token,
+                topic: topic,
+                start_time: start_time,
+                duration: duration * 60,
+                password: null,
+            });
+            const meetingid = response.data.id
+            const url = response.data.join_url
+            console.log(url);
+            return { meetingid, url }
+        } catch (error) {
+            console.error(error);
+            return null
+        }
+    }
+    const updateZoom = async (meetingId: string, topic: string, start_time: string, duration: number) => {
+        try {
+            const token = await authToken()
+            const response = await axios.post('/api/updateZoom', {
+                accessToken: token,
+                meetingid: meetingId,
+                topic: topic,
+                start_time: start_time,
+                duration: duration * 60,
+                password: null,
+            });
+            if (response.status === 204) {
+                console.log('Meeting updated successfully.');
+                return { success: true };
+            } else {
+                // Handle other status codes if needed
+                console.error('Unexpected response status:', response.status);
+                return { success: false, error: `Unexpected response status: ${response.status}` };
+            }
+
+        } catch (error: any) {
+            if (error.response) {
+                console.error('Error response data:', error.response.data);
+                console.error('Error response status:', error.response.status);
+                return { success: false, error: error.response.data.message };
+            } else {
+                console.error('Error message:', error.message);
+                return { success: false, error: 'An error occurred' };
+            }
+        }
+    }
+
 
 
 
@@ -78,34 +143,55 @@ export default function TuitionForm() {
 
         try {
 
-            const startTimestamp = Timestamp.fromDate(new Date(startDateTime));
+            const startTime = new Date(startDateTime);
 
             if (tuition === null) {
 
                 for (let i = 0; i <= repeatWeeks - 1; i++) {
-                    const newStartTimestamp = Timestamp.fromDate(new Date(startTimestamp.toDate().getTime() + (i * 7 * 24 * 60 * 60 * 1000)));
-                    const newTuition = new Tuition(
-                        null,
-                        name,
-                        tutorId,
-                        studentId,
-                        subjectId,
-                        levelId,
-                        status,
-                        newStartTimestamp,
-                        duration,
-                        '',
-                        studentPrice,
-                        tutorPrice,
-                        currency,
-                        null,
-                        null,
-                    );
-                    const tid = await addTuition(newTuition);
+                    const newStartTime = new Date(startTime.getTime() + (i * 7 * 24 * 60 * 60 * 1000) + (8 * 60 * 60 * 1000));
+                    const zoomStartTime = newStartTime.toISOString();
+                    // const 
+
+                    const zoom = await createZoom(name, zoomStartTime, duration)
+                    if (zoom !== null) {
+                        const { meetingid, url } = zoom
+                        const newTuition = new Tuition(
+                            null,
+                            name,
+                            tutorId,
+                            studentId,
+                            subjectId,
+                            levelId,
+                            status,
+                            zoomStartTime,
+                            duration,
+                            url,
+                            studentPrice,
+                            tutorPrice,
+                            currency,
+                            null,
+                            null,
+                            meetingid,
+                        );
+                        const tid = await addTuition(newTuition);
+                    } else {
+                        console.log('Failed to create zoom meeting')
+                    }
+
+
                 }
 
 
             } else {
+                const newStartTime = new Date(startTime.getTime() + (8 * 60 * 60 * 1000));
+                
+                const zoomStartTime = newStartTime.toISOString()
+
+                if (tuition.startTime !== zoomStartTime || tuition.name !== name || tuition.duration !== duration) {
+                    await updateZoom(tuition.meetingId!, name, zoomStartTime, duration)
+                    // error handling
+                }
+
                 // let newInvoice: boolean = false
                 let tiid = tuition.tutorInvoiceId;
                 let siid = tuition.studentInvoiceId;
@@ -120,7 +206,7 @@ export default function TuitionForm() {
                             subjectId,
                             studentRate,
                             InvoiceStatus.PENDING,
-                            startTimestamp,
+                            zoomStartTime,
                             duration,
                             currency,
                             studentPrice,
@@ -139,7 +225,7 @@ export default function TuitionForm() {
                             subjectId,
                             tutorRate,
                             InvoiceStatus.PENDING,
-                            startTimestamp,
+                            zoomStartTime,
                             duration,
                             currency,
                             tutorPrice,
@@ -148,9 +234,8 @@ export default function TuitionForm() {
 
                         tiid = await addInvoice(tutorInvoice)
                     }
-
-
                 }
+
 
                 const updatedTuition = new Tuition(
                     tuition.id,
@@ -160,7 +245,7 @@ export default function TuitionForm() {
                     subjectId,
                     levelId,
                     status,
-                    startTimestamp,
+                    zoomStartTime,
                     duration,
                     tuition.url,
                     studentPrice,
@@ -168,7 +253,7 @@ export default function TuitionForm() {
                     currency,
                     siid,
                     tiid,
-
+                    tuition.meetingId
                 )
                 await updateTuition(updatedTuition)
 
@@ -185,7 +270,9 @@ export default function TuitionForm() {
     };
 
     return (
+
         <form onSubmit={handleSubmit}>
+
             <div>
                 <label htmlFor="name">Name:</label>
                 <input

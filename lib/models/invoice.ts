@@ -12,7 +12,7 @@ export class Invoice {
     public subjectId: string,
     public rate: number,
     public status: InvoiceStatus,
-    public startDateTime: Timestamp,
+    public startDateTime: string,
     public duration: number,
     public currency: Currency,
     public price: number,

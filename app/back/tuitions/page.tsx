@@ -25,32 +25,28 @@ export default function TuitionList() {
     }
 
 
-    type MeetingData = {
-        id: string;
-        join_url: string;
-    };
+    
 
 
+    // const zoom = async () => {
+    //     try {
+    //         const response = await axios.post<MeetingData>('/api/addZoom', {
+    //             topic: "Hello",
+    //             start_time: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    //             duration: 60,
+    //             password: null,
+    //         });
 
-    const zoom = async () => {
-        try {
-            const response = await axios.post<MeetingData>('/api/addZoom', {
-                topic: "Hello",
-                start_time: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-                duration: 60,
-                password: null,
-            });
+    //         console.log(response.data);
+    //         console.log(response.data.join_url);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 
-            console.log(response.data);
-            console.log(response.data.join_url);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const zoomAuth = () => {
-        window.location.href = '/api/auth/authorize';
-      };
+    // const zoomAuth = () => {
+    //     window.location.href = '/api/auth/authorize';
+    //   };
 
 
 
@@ -71,8 +67,8 @@ export default function TuitionList() {
             </ul>
 
             <button onClick={addTuition}>Add Tuition</button>
-            <button onClick={zoom}>Test Zoom</button>
-            <button onClick={zoomAuth}>Zoom Auth</button>
+            {/* <button onClick={zoom}>Test Zoom</button> */}
+            {/* <button onClick={zoomAuth}>Zoom Auth</button> */}
         </div>
     );
 }
