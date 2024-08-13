@@ -12,7 +12,8 @@ import {
   Group,
   Settings,
   LogoutRounded,
-  Receipt
+  Receipt,
+  DashboardCustomize
 } from "@mui/icons-material";
 import { cn } from "@/utils/manage-class-name";
 import Link from "next/link";
@@ -72,6 +73,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       ),
     },
     {
+      label: "Academic Setup",
+      href: "/back/academic-setup",
+      icon: (
+        <DashboardCustomize
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
       label: "Settings",
       href: "/back/settings",
       icon: (
@@ -98,7 +109,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
       )}
     >
-      <Sidebar open={open} setOpen={setOpen} animate={true}>
+      <Sidebar open={open} setOpen={setOpen} animate={false}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <Logo open={open} />

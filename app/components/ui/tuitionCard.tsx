@@ -7,6 +7,7 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Link from "next/link";
 import type { Student } from "@/lib/models/student";
 import type { Level } from "@/lib/models/level";
+import { AccessTime, CalendarToday } from "@mui/icons-material";
 
 interface TuitionCardProps {
   subject: string;
@@ -60,26 +61,36 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <span className="text-gray-500 text-sm mb-1">
+          <span className="flex items-center text-gray-500 text-sm mb-1">
+            <CalendarToday className="h-4 w-4 mr-2" />
             {new Date(time).toDateString()}
           </span>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex items-center text-left text-gray-400 hover:text-gray-600 transition-colors"
-            title={isCopied ? "Copied!" : "Copy to clipboard"}
-          >
-            <span className="mr-2 text-sm">Copy meeting link</span>
-            {isCopied ? (
-              <Check size={16} className="text-green-500" />
-            ) : (
-              <Copy size={16} />
-            )}
-          </button>
+          <span className="flex items-center text-gray-500 text-sm mb-1">
+            <AccessTime className="h-4 w-4 mr-2" />
+            {new Date(time)
+              .toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+              .replace(/am|pm/i, (match) => match.toUpperCase())}{" "}
+            to{" "}
+            {
+              new Date(new Date(time).getTime() + duration * 60 * 60 * 1000)
+                .toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .replace(/am|pm/i, (match) => match.toUpperCase())
+              // (minutes * 60 * 1000) +
+              // (seconds * 1000);
+            }
+          </span>
         </div>
 
         {/* Half Bottom */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start h-fit">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row gap-2">
               <h2 className="text-lg font-medium">{subject}</h2>
@@ -106,37 +117,27 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col">
-            <span className="text-md font-medium text-gray-700">
-              {new Date(time)
-                .toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })
-                .replace(/am|pm/i, (match) => match.toUpperCase())}{" "}
-              to{" "}
-              {
-                new Date(new Date(time).getTime() + duration * 60 * 60 * 1000)
-                  .toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })
-                  .replace(/am|pm/i, (match) => match.toUpperCase())
-                // (minutes * 60 * 1000) +
-                // (seconds * 1000);
-              }
-            </span>
-            {tutor && (
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full mr-2" />
-                  <span className="text-sm">{tutor}</span>
-                </div>
+          {tutor && (
+            <div className="flex flex-col-reverse justify-between items-end gap-2">
+              <div className="flex items-center">
+                <div className="w-6 h-6 bg-gray-200 rounded-full mr-2" />
+                <span className="text-sm">{tutor}</span>
               </div>
-            )}
-          </div>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="flex items-center text-left text-gray-400 hover:text-gray-600 transition-colors"
+                title={isCopied ? "Copied!" : "Copy to clipboard"}
+              >
+                <span className="mr-2 text-sm">Copy meeting link</span>
+                {isCopied ? (
+                  <Check size={16} className="text-green-500" />
+                ) : (
+                  <Copy size={16} />
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

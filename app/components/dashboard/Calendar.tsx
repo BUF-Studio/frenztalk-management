@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Tuition } from "@/lib/models/tuition";
 import { cn } from "@/utils/manage-class-name";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
 
 interface MonthCalendarProps {
   events: Tuition[];
@@ -18,8 +19,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [componentSize, setComponentSize] = useState({ width: 0, height: 0 });
-  const [ resetDateSelect, setResetDateSelect ] = useState(false);
+  const [resetDateSelect, setResetDateSelect] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
+  const { subjects } = useSubjects();
 
   useEffect(() => {
     if (!calendarRef.current) return;
@@ -48,6 +50,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
       setResetDateSelect(true);
     }
   }, [onResetDateSelect]);
+
+  const findSubject = (id: string) => {
+    const subject = subjects.find((subject) => subject.id === id);
+    return subject;
+  };
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -92,7 +99,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   };
 
   const getEventsForDate = (date: number) => {
-    return events.filter(
+    const dayEvents = events.filter(
       (event) =>
         new Date(event.startTime?.toString() ?? "").toDateString() ===
         new Date(
@@ -101,6 +108,19 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
           date
         ).toDateString()
     );
+
+    // Sort events by start time
+    dayEvents.sort(
+      (a, b) =>
+        new Date(a.startTime ?? "").getTime() -
+        new Date(b.startTime ?? "").getTime()
+    );
+
+    // Return top 2 events and the remaining count
+    return {
+      topEvents: dayEvents.slice(0, 1),
+      moreCount: dayEvents.length - 1,
+    };
   };
 
   const isSelected = (date: number) =>
@@ -114,7 +134,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
       currentDate.getMonth(),
       date
     );
-    resetDateSelect
+    resetDateSelect;
     setSelectedDate(newSelectedDate);
     if (onDateSelect) onDateSelect(newSelectedDate);
   };
@@ -166,7 +186,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   return (
     <div
       ref={calendarRef}
-      className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden"
+      className="w-full h-full max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden"
     >
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex flex-row gap-2">
@@ -210,7 +230,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-7 border-l border-gray-200">
+      <div className="grid grid-cols-7">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
@@ -226,8 +246,10 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
           const isEmptyStart = index < emptyCellsAtStart;
           const isEmptyEnd = index >= emptyCellsAtStart + daysInMonth;
           const date = index - emptyCellsAtStart + 1;
-          const dayEvents =
-            !isEmptyStart && !isEmptyEnd ? getEventsForDate(date) : [];
+          const { topEvents, moreCount } =
+            !isEmptyStart && !isEmptyEnd
+              ? getEventsForDate(date)
+              : { topEvents: [], moreCount: 0 };
 
           return (
             <button
@@ -260,19 +282,24 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
                   >
                     {date}
                   </div>
-                  {styles.showEvents && dayEvents.length > 0 && (
+                  {styles.showEvents && topEvents.length > 0 && (
                     <div className="space-y-1 mt-1 w-full">
-                      {dayEvents.map((event) => (
+                      {topEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="text-xs bg-blue-100 text-blue-800 rounded p-1 truncate"
+                          className="text-xs bg-blue-100 text-blue-800 rounded p-1 truncate text-left"
                         >
-                          {event.subjectId}
+                          {findSubject(event.subjectId)?.name}
                         </div>
                       ))}
+                      {moreCount > 0 && (
+                        <div className="text-xs text-gray-500 text-left px-1">
+                          {moreCount} more...
+                        </div>
+                      )}
                     </div>
                   )}
-                  {!styles.showEvents && dayEvents.length > 0 && (
+                  {!styles.showEvents && topEvents.length > 0 && (
                     <div className="mt-1">
                       <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                     </div>

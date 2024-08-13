@@ -126,13 +126,16 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           <StudentTuitionList filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
-          <MonthCalendar
-            events={studentTuition}
-            onDateSelect={(date) => setSelectedDate(date)}
-            onResetDateSelect={selectedDate === null}
-          />
+          <div>
+            <MonthCalendar
+              events={studentTuition}
+              onDateSelect={(date) => setSelectedDate(date)}
+              onResetDateSelect={selectedDate === null}
+            />
+          </div>
           <StudentTutorList />
           <StudentInvoiceList />
+          <div className="flex flex-1 h-full" />
         </div>
       </div>
       <StudentDialog
