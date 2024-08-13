@@ -45,7 +45,7 @@ export default function TuitionForm() {
     const [studentPrice, setStudentPrice] = useState(tuition?.studentPrice || 0);
     const [tutorPrice, setTutorPrice] = useState(tuition?.tutorPrice || 0);
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.slice(0, 16) || '');
-    const [duration, setDuration] = useState(tuition?.duration || 1);
+    const [duration, setDuration] = useState(tuition?.duration || 60);
     const [repeatWeeks, setRepeatWeeks] = useState(1);
 
 
@@ -78,6 +78,7 @@ export default function TuitionForm() {
         try {
             const response = await axios.post('/api/auth/authorize');
             const data = response.data['access_token']
+            console.error(data);
             return data
         } catch (error) {
             console.error(error);
@@ -91,7 +92,7 @@ export default function TuitionForm() {
                 accessToken: token,
                 topic: topic,
                 start_time: start_time,
-                duration: duration * 60,
+                duration: duration,
                 password: null,
             });
             const meetingid = response.data.id
@@ -103,16 +104,19 @@ export default function TuitionForm() {
             return null
         }
     }
+
+
     const updateZoom = async (meetingId: string, topic: string, start_time: string, duration: number) => {
         try {
             const token = await authToken()
             const response = await axios.post('/api/updateZoom', {
                 accessToken: token,
-                meetingid: meetingId,
+                meetingId: meetingId,
                 topic: topic,
                 start_time: start_time,
-                duration: duration * 60,
+                duration: duration,
                 password: null,
+                recurrence: null,
             });
             if (response.status === 204) {
                 console.log('Meeting updated successfully.');
@@ -184,11 +188,12 @@ export default function TuitionForm() {
 
             } else {
                 const newStartTime = new Date(startTime.getTime() + (8 * 60 * 60 * 1000));
-                
+
                 const zoomStartTime = newStartTime.toISOString()
 
                 if (tuition.startTime !== zoomStartTime || tuition.name !== name || tuition.duration !== duration) {
-                    await updateZoom(tuition.meetingId!, name, zoomStartTime, duration)
+                    console.log(tuition.meetingId!)
+                    await updateZoom(tuition.meetingId!, name, zoomStartTime, duration,)
                     // error handling
                 }
 

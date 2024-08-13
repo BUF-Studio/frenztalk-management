@@ -49,6 +49,7 @@ export default function TutorTuitionList() {
         {tutorTuition.map((tuition) => (
           <TuitionCard
             key={tuition.id}
+            duration={tuition.duration}
             subject={findSubject(tuition.subjectId)}
             level={findLevel(tuition.levelId)}
             time="12PM to 2PM"

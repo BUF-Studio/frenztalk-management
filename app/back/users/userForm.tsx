@@ -7,6 +7,8 @@ import { useUserPage } from '@/lib/context/page/userPageContext';
 import { addUser, updateUser } from '@/lib/firebase/user';
 import { useRouter } from 'next/navigation';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
+import { addTutor } from '@/lib/firebase/tutor';
+import { Tutor } from '@/lib/models/tutor';
 
 export default function UserForm() {
     const router = useRouter();
@@ -30,7 +32,11 @@ export default function UserForm() {
 
         try {
             const updatedUser = new User(user!.id, name, user!.email, role);
+            const newTutor = new Tutor(
+                user!.id, user!.name, '', 'active', ''
+            );
             await updateUser(updatedUser)
+            await addTutor(newTutor)
             console.log('update')
 
             setUser(updatedUser)
