@@ -144,7 +144,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-                <label htmlFor="duration">Duration ( hour ):</label>
+                <label htmlFor="duration">Duration ( minutes ):</label>
                 <input
                     type="number"
                     id="duration"
