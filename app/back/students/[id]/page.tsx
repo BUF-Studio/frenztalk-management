@@ -8,7 +8,7 @@ import StudentTuitionList from "./studentTuitionList";
 import StudentInvoiceList from "./studentInvoiceList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
-import { ArrowBackIosNew } from "@mui/icons-material";
+import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { use, useEffect, useState } from "react";
 import { Edit } from "lucide-react";
 import StudentDialog from "../studentForm";
@@ -22,7 +22,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   const { students } = useStudents();
   const { studentTuition } = useStudentPage();
   const { setTuitionStudent } = useTuitionPage();
-  const [ selectedDate, setSelectedDate ] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { showSnackbar } = useSnackbar();
@@ -38,12 +38,16 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     }
   }, [params, student, students, setStudent]);
 
+  useEffect(() => {
+    console.log(selectedDate?.toISOString());
+  }, [selectedDate]);
+
   const addTuition = () => {
     setTuitionStudent(student);
     router.push("/back/tuitions/add");
   };
 
-  const handleUpdateStudent = async(studentData: Partial<Student>) => {
+  const handleUpdateStudent = async (studentData: Partial<Student>) => {
     try {
       const updatedStudent = new Student(
         student?.id ?? null,
@@ -58,7 +62,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     } catch (error) {
       showSnackbar("Error processing student", "error");
     }
-  }
+  };
 
   return (
     <div>
@@ -99,10 +103,34 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               </button>
             </div>
           </div>
-          <StudentTuitionList />
+          <div className="flex flex-row justify-between items-center mb-2">
+            <h1 className="text-lg font-normal">Classes</h1>
+            <div className="flex flex-row gap-2 items-center">
+              <div>Filter:</div>
+              {selectedDate ? (
+                <button
+                  className="flex flex-row h-10 gap-1 items-center px-2 py-2 bg-red-200 text-red-400 text-sm rounded-md font-normal hover:shadow-lg"
+                  type="button"
+                  onClick={() => setSelectedDate(null)}
+                >
+                  {selectedDate.toDateString()}
+                  <Close className="text-red" />
+                </button>
+              ) : (
+                <div className="flex flex-row h-10 items-center px-4 py-2 bg-transparent text-gray-900 text-sm rounded-md font-semibold">
+                  None
+                </div>
+              )}
+            </div>
+          </div>
+          <StudentTuitionList filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
-          <MonthCalendar events={studentTuition} onDateSelect={(date)=> setSelectedDate(date)}/>
+          <MonthCalendar
+            events={studentTuition}
+            onDateSelect={(date) => setSelectedDate(date)}
+            onResetDateSelect={selectedDate === null}
+          />
           <StudentTutorList />
           <StudentInvoiceList />
         </div>

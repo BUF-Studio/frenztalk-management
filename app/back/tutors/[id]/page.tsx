@@ -8,16 +8,18 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import TutorStudentList from "./tutorStudentList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { Edit } from "lucide-react";
+import MonthCalendar from "@/app/components/dashboard/Calendar";
 import StudentInvoiceList from "../../students/[id]/studentInvoiceList";
 import StudentTuitionList from "../../students/[id]/studentTuitionList";
 import StudentTutorList from "../../students/[id]/studentTutorList";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
-  const { tutor, setTutor } = useTutorPage();
+  const { tutorTuition, tutor, setTutor } = useTutorPage();
   const { tutors } = useTutors();
+  const [ selectedDate, setSelectedDate ] = useState<Date | null>(null);
   const { setTuitionTutor } = useTuitionPage();
   const router = useRouter();
 
@@ -59,7 +61,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 </div>
                 <div className="grid grid-row-2">
                   <p className="text-lg font-semibold">{tutor?.name}</p>
-                  <p className="text-xs text-gray-600 font-semibolds">{tutor?.des}</p>
+                  <p className="text-xs text-gray-600 font-semibolds">
+                    {tutor?.des}
+                  </p>
                 </div>
               </div>
               <button
@@ -74,6 +78,10 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
           <TutorTuitionList />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+          <MonthCalendar
+            events={tutorTuition}
+            onDateSelect={(date) => setSelectedDate(date)}
+          />
           <TutorStudentList />
           <TutorInvoiceList />
         </div>

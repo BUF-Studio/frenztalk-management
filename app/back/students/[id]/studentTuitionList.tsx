@@ -9,9 +9,9 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function StudentTuitionList() {
+export default function StudentTuitionList({ filter }: { filter?: Date | null}) {
   const { tuitions } = useTuitions();
   const { studentTuition } = useStudentPage();
   const { tutors } = useTutors();
@@ -40,7 +40,6 @@ export default function StudentTuitionList() {
 
   return (
     <div>
-      <h1 className="text-lg font-normal mb-2">Classes</h1>
       <div className="flex flex-col gap-2 justify-between items-center">
         {studentTuition.length === 0 && (
           <div className="bg-white w-full border-1 border-grey-600 rounded-lg overflow-hidden p-4">
@@ -49,19 +48,29 @@ export default function StudentTuitionList() {
             </h1>
           </div>
         )}
-        {studentTuition.map((tuition) => (
-          <TuitionCard
-            key={tuition.id}
-            subject={findSubject(tuition.subjectId)}
-            level={findLevel(tuition.levelId)}
-            time="12PM to 2PM"
-            status="Active"
-            tutor={findTutor(tuition.tutorId)}
-            price="Unset"
-            meetingLink="meet.google.com/pwg-tgvo-kkc"
-            onClick={() => handleCardClick(tuition.id ?? "")}
-          />
-        ))}
+        
+        {
+        studentTuition
+        .filter((tuition) => {
+            if (!filter) return true; // If filter is null, return all tuition objects
+            const tuitionDate = new Date(tuition.startTime ?? "").toDateString();
+            const filterDate = new Date(filter).toDateString();
+            return tuitionDate === filterDate; // Compare the dates only
+          })
+          .map((tuition) => (
+            <TuitionCard
+              key={tuition.id}
+              subject={findSubject(tuition.subjectId)}
+              level={findLevel(tuition.levelId)}
+              time={tuition.startTime ?? ""}
+              duration={tuition.duration}
+              status="Active"
+              tutor={findTutor(tuition.tutorId)}
+              price="Unset"
+              meetingLink={tuition.url}
+              onClick={() => handleCardClick(tuition.id ?? "")}
+            />
+          ))}
       </div>
     </div>
   );

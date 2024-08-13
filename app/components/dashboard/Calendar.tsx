@@ -7,15 +7,18 @@ import { cn } from "@/utils/manage-class-name";
 interface MonthCalendarProps {
   events: Tuition[];
   onDateSelect: (date: Date) => void;
+  onResetDateSelect?: boolean;
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({
   events,
   onDateSelect,
+  onResetDateSelect,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [componentSize, setComponentSize] = useState({ width: 0, height: 0 });
+  const [ resetDateSelect, setResetDateSelect ] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,6 +35,19 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
 
     return () => resizeObserver.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (resetDateSelect) {
+      setSelectedDate(null);
+      setResetDateSelect(false);
+    }
+  }, [resetDateSelect]);
+
+  useEffect(() => {
+    if (onResetDateSelect) {
+      setResetDateSelect(true);
+    }
+  }, [onResetDateSelect]);
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -98,6 +114,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
       currentDate.getMonth(),
       date
     );
+    resetDateSelect
     setSelectedDate(newSelectedDate);
     if (onDateSelect) onDateSelect(newSelectedDate);
   };
