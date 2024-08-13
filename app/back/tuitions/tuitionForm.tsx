@@ -202,7 +202,7 @@ export default function TuitionForm() {
                 let siid = tuition.studentInvoiceId;
                 if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && (tiid === null || siid === null)) {
                     if (siid === null) {
-                        const studentRate = studentPrice * duration
+                        const studentRate = studentPrice * duration / 60
                         const studentInvoice = new Invoice(
                             null,
                             tuition.id!,
@@ -221,7 +221,7 @@ export default function TuitionForm() {
                         siid = await addInvoice(studentInvoice)
                     }
                     if (tiid === null) {
-                        const tutorRate = tutorPrice * duration
+                        const tutorRate = tutorPrice * duration / 60
                         const tutorInvoice = new Invoice(
                             null,
                             tuition.id!,

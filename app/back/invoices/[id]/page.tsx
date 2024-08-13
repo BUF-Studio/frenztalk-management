@@ -6,10 +6,12 @@ import { useSubjects } from '@/lib/context/collection/subjectContext';
 import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useInvoicePage } from '@/lib/context/page/invoicePageContext';
+import { Invoice } from '@/lib/models/invoice';
 import { Student } from '@/lib/models/student';
 import { Subject } from '@/lib/models/subject';
 import { Tuition } from '@/lib/models/tuition';
 import { Tutor } from '@/lib/models/tutor';
+import generatePDF from '@/lib/pdf/pdf';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -47,6 +49,10 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
         );
     }
 
+    const handleGeneratePDF = (invoice: Invoice) => {
+        generatePDF(invoice);
+    }
+
 
     return (
         <div>
@@ -71,6 +77,10 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
                 </Link>
 
             </div>
+
+            <button onClick={(e) => handleGeneratePDF(invoice)}>
+                Download Invoice
+            </button>
 
 
         </div>
