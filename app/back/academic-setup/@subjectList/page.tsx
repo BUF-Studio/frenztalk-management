@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import { XCircle, CheckCircle2, Pencil, CircleMinus, Plus } from "lucide-react";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useSubjectPage } from "@/lib/context/page/subjectPageContext";
-import { addSubject, updateSubject, deleteSubject } from "@/lib/firebase/subject";
+import {
+  addSubject,
+  updateSubject,
+  deleteSubject,
+} from "@/lib/firebase/subject";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Subject } from "@/lib/models/subject";
 import { useAlert } from "@/lib/context/component/AlertContext";
@@ -49,21 +53,20 @@ const SubjectList = () => {
 
   const handleDeleteSubject = (subject: Subject) => {
     showAlert({
-        title: "Confirm Delete Subject?",
-        message:
-          "Are you sure wan to delete this subject? This action cannot be undone.",
-        confirmLabel: "Confirm",
-        cancelLabel: "Cancel",
-        onConfirm: () => {
-          deleteSubject(subject);
-          showSnackbar("Subject deleted successfully", "success");
-        },
-        onCancel: () => {
-          return;
-        },
-      });
-  }
-
+      title: "Confirm Delete Subject?",
+      message:
+        "Are you sure wan to delete this subject? This action cannot be undone.",
+      confirmLabel: "Confirm",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteSubject(subject);
+        showSnackbar("Subject deleted successfully", "success");
+      },
+      onCancel: () => {
+        return;
+      },
+    });
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
@@ -74,7 +77,7 @@ const SubjectList = () => {
       <div className="flex-1 overflow-y-auto space-y-4 mb-6">
         {subjects.length === 0 && (
           <p className="text-center text-gray-600 italic">
-            No subject available. Type a subject name below to add one.
+            No subject available.
           </p>
         )}
         {subjects.map((subject) => (

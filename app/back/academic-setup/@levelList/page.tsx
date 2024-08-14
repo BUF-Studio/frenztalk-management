@@ -1,8 +1,20 @@
 "use client";
 
-import type React from 'react';
-import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronRight, Edit, Trash2, Save, X } from 'lucide-react';
+import type React from "react";
+import { useState, useEffect } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Trash2,
+  Save,
+  X,
+  Pencil,
+  Circle,
+  CircleMinus,
+  XCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { useLevelPage } from "@/lib/context/page/levelPageContext";
 import { updateLevel } from "@/lib/firebase/avaSubject";
@@ -26,22 +38,34 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
   name,
 }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+
+    const isValid = /^(\d+(\.\d{0,2})?)?$/.test(inputValue);
+
+    if (isValid) {
+      onChange(inputValue);
+    }
+  };
+
   return (
     <div className="relative w-full rounded-md shadow-sm">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
         <span className="text-gray-500 sm:text-sm">{currency}</span>
       </div>
       <input
-        type="text"
+        type="number"
         name={name}
         id={id}
-        className={`block w-full rounded-md border-0 py-1.5 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ${
+        className={`block w-full rounded-md border-0 py-1.5 pl-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ${
           disabled ? "bg-gray-100" : ""
         }`}
         placeholder="0.00"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={String(value)}
+        onChange={handleChange}
         disabled={disabled}
+        step="0.01"
+        min="0"
       />
     </div>
   );
@@ -85,12 +109,12 @@ const LevelList: React.FC = () => {
     const updatedLevel = new Level(
       levelId,
       editedLevel.name ?? "",
+      editedLevel.student_price_myr ?? 0,
       editedLevel.student_price_usd ?? 0,
       editedLevel.student_price_gbp ?? 0,
-      editedLevel.student_price_myr ?? 0,
+      editedLevel.tutor_price_myr ?? 0,
       editedLevel.tutor_price_usd ?? 0,
-      editedLevel.tutor_price_gbp ?? 0,
-      editedLevel.tutor_price_myr ?? 0
+      editedLevel.tutor_price_gbp ?? 0
     );
     updateLevel(updatedLevel);
     setEditingLevel(null);
@@ -108,7 +132,7 @@ const LevelList: React.FC = () => {
   };
 
   const renderPriceInputs = (level: Level, type: "student" | "tutor") => (
-    <div className="flex w-full flex-col gap-2 items-center justify-between p-3 bg-gray-50">
+    <div className="flex w-full flex-col gap-2 items-center justify-between">
       <CurrencyInput
         currency="USD"
         id={`usd-price-${type}`}
@@ -121,7 +145,7 @@ const LevelList: React.FC = () => {
         onChange={(value) =>
           setEditedLevel({
             ...editedLevel,
-            [`${type}_price_usd`]: Number(value),
+            [`${type}_price_usd`]: Number.parseFloat(value),
           })
         }
         disabled={editingLevel !== level.id}
@@ -138,7 +162,7 @@ const LevelList: React.FC = () => {
         onChange={(value) =>
           setEditedLevel({
             ...editedLevel,
-            [`${type}_price_gbp`]: Number(value),
+            [`${type}_price_gbp`]: Number.parseFloat(value),
           })
         }
         disabled={editingLevel !== level.id}
@@ -155,7 +179,7 @@ const LevelList: React.FC = () => {
         onChange={(value) =>
           setEditedLevel({
             ...editedLevel,
-            [`${type}_price_myr`]: Number(value),
+            [`${type}_price_myr`]: Number.parseFloat(value),
           })
         }
         disabled={editingLevel !== level.id}
@@ -181,12 +205,12 @@ const LevelList: React.FC = () => {
       key={level.id}
       className="mb-4 last:mb-0 border border-gray-300 rounded shadow"
     >
-      <div className="flex flex-row w-full items-center justify-between p-4 bg-gray-100">
-        <button
-          type="button"
-          className="flex flex-row items-center cursor-pointer hover:bg-gray-200"
-          onClick={() => toggleLevel(level.id ?? "")}
-        >
+      <button
+        type="button"
+        className="flex flex-row w-full items-center justify-between p-4 bg-gray-100 cursor-pointer hover:bg-gray-200"
+        onClick={() => toggleLevel(level.id ?? "")}
+      >
+        <div className="flex flex-row items-center ">
           {expandedLevel.includes(level.id ?? "") ? (
             <ChevronDown size={24} />
           ) : (
@@ -196,43 +220,66 @@ const LevelList: React.FC = () => {
             <input
               type="text"
               value={editedLevel.name ?? level.name}
-              onChange={(e) => setEditedLevel({ ...editedLevel, name: e.target.value })}
+              onChange={(e) =>
+                setEditedLevel({ ...editedLevel, name: e.target.value })
+              }
               className="ml-2 font-semibold bg-white border rounded px-2 py-1"
+              onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span className="flex-grow ml-2 font-semibold">{level.name}</span>
           )}
-        </button>
+        </div>
         <div className="flex space-x-2">
           {editingLevel === level.id ? (
-            <>
-              <Save
-                size={20}
-                className="text-green-600 hover:text-green-800 cursor-pointer"
-                onClick={() => handleSave(level.id ?? "")}
-              />
-              <X
-                size={20}
-                className="text-red-600 hover:text-red-800 cursor-pointer"
-                onClick={handleCancel}
-              />
-            </>
+            <div className="flex space-x-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancel();
+                }}
+                className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSave(level.id ?? "");
+                }}
+                className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+              </button>
+            </div>
           ) : (
-            <>
-              <Edit
-                size={20}
-                className="text-gray-600 hover:text-gray-800 cursor-pointer"
-                onClick={() => handleEdit(level.id ?? "")}
-              />
-              <Trash2
-                size={20}
-                className="text-gray-600 hover:text-gray-800 cursor-pointer"
-                onClick={() => handleDelete(level.id ?? "")}
-              />
-            </>
+            <div className="flex space-x-1">
+              <button
+                type="button"
+                className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toggle from being triggered
+                  handleEdit(level.id ?? "");
+                }}
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(level.id ?? "");
+                }}
+              >
+                <CircleMinus className="w-4 h-4" />
+              </button>
+            </div>
           )}
         </div>
-      </div>
+      </button>
       {expandedLevel.includes(level.id ?? "") && (
         <div className="p-4">{renderLevel(level)}</div>
       )}
@@ -240,12 +287,19 @@ const LevelList: React.FC = () => {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 flex-1 mx-auto">
-      <div className="mb-6">
+    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
+      <div className="mb-6 flex-shrink-0">
         <h2 className="text-2xl font-bold mb-2">Education Level</h2>
         <p className="text-gray-600">Manage your education levels here</p>
       </div>
-      <div className="space-y-4">{levels.map(renderEducationLevel)}</div>
+      <div className="flex-1 overflow-y-auto space-y-4">
+        {levels.length === 0 && (
+          <p className="text-center text-gray-600 italic">
+            No level available.
+          </p>
+        )}
+        {levels.map(renderEducationLevel)}
+      </div>
     </div>
   );
 };
