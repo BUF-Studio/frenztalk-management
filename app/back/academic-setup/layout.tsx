@@ -2,12 +2,12 @@ export default function Layout({
     children,
     subjectList,
     pricing,
-    educationLevel,
+    levelList,
   }: Readonly<{
     children: React.ReactNode;
     subjectList: React.ReactNode;
     pricing: React.ReactNode;
-    educationLevel: React.ReactNode;
+    levelList: React.ReactNode;
   }>) {
     return (
       <div className="flex h-full gap-4">
@@ -17,12 +17,9 @@ export default function Layout({
   
         <div className="flex flex-1 flex-col gap-4 h-full">
           <div className="flex flex-1 min-h-0">
-            {educationLevel}
+            {levelList}
+            {/* {children} */}
           </div>
-  {/* 
-          <div className="flex flex-1 min-h-0">
-            {pricing}
-          </div> */}
         </div>
       </div>
     );
