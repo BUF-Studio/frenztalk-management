@@ -14,10 +14,11 @@ import {
   CircleMinus,
   XCircle,
   CheckCircle2,
+  Plus,
 } from "lucide-react";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { useLevelPage } from "@/lib/context/page/levelPageContext";
-import { updateLevel } from "@/lib/firebase/avaSubject";
+import { updateLevel, addLevel } from "@/lib/firebase/avaSubject";
 import { Level } from "@/lib/models/level";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 
@@ -76,6 +77,7 @@ const LevelList: React.FC = () => {
   const [expandedLevel, setExpandedLevel] = useState<string[]>([]);
   const [editingLevel, setEditingLevel] = useState<string | null>(null);
   const [editedLevel, setEditedLevel] = useState<Partial<Level>>({});
+  const [newLevel, setNewLevel] = useState<Level | null>(null);
 
   const { showSnackbar } = useSnackbar();
 
@@ -116,22 +118,49 @@ const LevelList: React.FC = () => {
       editedLevel.tutor_price_usd ?? 0,
       editedLevel.tutor_price_gbp ?? 0
     );
-    updateLevel(updatedLevel);
+
+    if (levelId === "new") {
+      addLevel(updatedLevel);
+      showSnackbar("Level added successfully", "success");
+      setNewLevel(null);
+    } else {
+      updateLevel(updatedLevel);
+    }
+
     setEditingLevel(null);
     setEditedLevel({});
-    showSnackbar(`Level ${updatedLevel.name} updated successfully`, "success");
+    showSnackbar(
+      `Level ${updatedLevel.name} ${
+        levelId === "new" ? "added" : "updated"
+      } successfully`,
+      "success"
+    );
   };
 
   const handleCancel = () => {
     setEditingLevel(null);
     setEditedLevel({});
+    if (newLevel) {
+      setNewLevel(null);
+    }
   };
 
   const handleDelete = (levelId: string) => {
-    showSnackbar(`Subject ${levelId} deleted`, "success");
+    showSnackbar("Level deleted", "success");
   };
 
-  const renderPriceInputs = (level: Level, type: "student" | "tutor") => (
+  const handleAddLevel = () => {
+    const blankLevel = new Level("new", "", 0, 0, 0, 0, 0, 0);
+    setNewLevel(blankLevel);
+    setEditingLevel("new");
+    setEditedLevel({});
+    setExpandedLevel(["new", ...expandedLevel]);
+  };
+
+  const renderPriceInputs = (
+    level: Level,
+    type: "student" | "tutor" // ... (renderPriceInputs function remains unchanged)
+  ) => (
     <div className="flex w-full flex-col gap-2 items-center justify-between">
       <CurrencyInput
         currency="USD"
@@ -188,6 +217,7 @@ const LevelList: React.FC = () => {
   );
 
   const renderLevel = (level: Level) => (
+    // ... (renderLevel function remains unchanged)
     <div>
       <div className="mb-2 last:mb-0 border border-gray-200 rounded p-4">
         <div className="mb-2">Student Rate</div>
@@ -227,7 +257,9 @@ const LevelList: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <span className="flex-grow ml-2 font-semibold">{level.name}</span>
+            <span className="flex-grow ml-2 font-semibold">
+              {level.name || "New Level"}
+            </span>
           )}
         </div>
         <div className="flex space-x-2">
@@ -260,7 +292,7 @@ const LevelList: React.FC = () => {
                 type="button"
                 className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toggle from being triggered
+                  e.stopPropagation();
                   handleEdit(level.id ?? "");
                 }}
               >
@@ -288,12 +320,23 @@ const LevelList: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
-      <div className="mb-6 flex-shrink-0">
-        <h2 className="text-2xl font-bold mb-2">Education Level</h2>
-        <p className="text-gray-600">Manage your education levels here</p>
+      <div className="flex flex-row justify-between mb-4">
+        <div className="flex-shrink-0">
+          <h2 className="text-2xl font-bold mb-2">Education Level</h2>
+          <p className="text-gray-600">Manage your levels here</p>
+        </div>
+        <button
+          className="flex flex-row h-fit items-center px-4 py-2 bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+          type="button"
+          onClick={handleAddLevel}
+        >
+          <Plus size={16} strokeWidth={3} className="mr-1" />
+          Add Level
+        </button>
       </div>
       <div className="flex-1 overflow-y-auto space-y-4">
-        {levels.length === 0 && (
+        {newLevel && renderEducationLevel(newLevel)}
+        {levels.length === 0 && !newLevel && (
           <p className="text-center text-gray-600 italic">
             No level available.
           </p>
