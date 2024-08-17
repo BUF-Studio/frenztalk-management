@@ -5,9 +5,9 @@
  * @param dateString - The date string in UTC format
  * @returns Formatted date string or an error message if the input is invalid
  */
-export function formatDate(dateString: string | undefined): string {
-  if (!dateString) {
-    console.error("Invalid date string: undefined or empty");
+export function formatDate(dateString: string | null | undefined): string {
+  if (dateString == null) {
+    console.error("Invalid date string: null or undefined");
     return "Invalid date";
   }
 
@@ -25,9 +25,9 @@ export function formatDate(dateString: string | undefined): string {
  * @param duration - The duration in hours
  * @returns Formatted time range string or an error message if the input is invalid
  */
-export function formatTimeRange(startTime: string | undefined, duration: number | undefined): string {
-  if (!startTime) {
-    console.error("Invalid start time: undefined or empty");
+export function formatTimeRange(startTime: string | null | undefined, duration: number | null | undefined): string {
+  if (startTime == null) {
+    console.error("Invalid start time: null or undefined");
     return "Invalid time";
   }
 
