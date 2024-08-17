@@ -1,7 +1,12 @@
 import { jsPDF } from 'jspdf';
-import { Invoice } from '../models/invoice';
+import type { Invoice } from '../models/invoice';
 
-const generatePDF = (invoice: Invoice) => {
+const generatePDF = (invoice: Invoice | null) => {
+  if (!invoice) {
+    console.error('Invoice data is null or undefined.');
+    return;
+  }
+
   const doc = new jsPDF();
 
   // Add the title

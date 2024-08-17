@@ -51,3 +51,32 @@ export function formatTimeRange(startTime: string | null | undefined, duration: 
     return "Invalid time range";
   }
 }
+
+export const formatDateRange = (start: string | null | undefined, duration: number | null | undefined): string => {
+  if (start == null) {
+    console.error("Invalid start time: null or undefined");
+    return "Invalid time";
+  }
+
+  try {
+    const startDate = new Date(start);
+    const endDate = new Date(startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000);
+    
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    
+    const formatTime = (date: Date) => 
+      date.toLocaleTimeString([], formatOptions)
+        .replace(/am|pm/i, (match) => match.toUpperCase());
+    
+    return `${formatTime(endDate)}`;
+  } catch (error) {
+    console.error("Error formatting time range:", error);
+    return "Invalid time range";
+  }
+}
