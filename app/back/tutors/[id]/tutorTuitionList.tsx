@@ -52,7 +52,7 @@ export default function TutorTuitionList() {
             duration={tuition.duration}
             subject={findSubject(tuition.subjectId)}
             level={findLevel(tuition.levelId)}
-            time="12PM to 2PM"
+            time={tuition.startTime ?? ""}
             status="Active"
             student={findStudent(tuition.studentId)}
             price="Unset"
