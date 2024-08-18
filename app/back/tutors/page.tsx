@@ -7,7 +7,7 @@ import type { Tutor } from "@/lib/models/tutor";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Badge from "@/app/components/dashboard/Badge";
+import {Badge} from "@/app/components/ui/badge";
 
 export default function TutorList() {
   const { tutors } = useTutors();
@@ -48,7 +48,7 @@ export default function TutorList() {
     }
 
     if (columnKey === "status") {
-        return <Badge status={tutor.status as string} />;
+        return <Badge>{tutor.status as string}</Badge>;
     }
 
     return tutor[columnKey] as React.ReactNode;

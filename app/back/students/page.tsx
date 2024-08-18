@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import Badge from "@/app/components/dashboard/Badge";
+import { Badge } from "@/app/components/ui/badge";
 import StudentDialog from "./studentForm";
 
 export default function StudentList() {
@@ -50,7 +50,7 @@ export default function StudentList() {
 
   const renderStudentCell = (student: Student, columnKey: keyof Student) => {
     if (columnKey === "status") {
-      return <Badge status={student.status as string} />;
+      return <Badge>{student.status as string}</Badge>;
     }
     return student[columnKey] as React.ReactNode;
   };
