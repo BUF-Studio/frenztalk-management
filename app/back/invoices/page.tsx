@@ -7,7 +7,7 @@ import type { Invoice } from "@/lib/models/invoice";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Badge from "@/app/components/dashboard/Badge";
+import { Badge } from "@/app/components/ui/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { formatDateRange, formatTimeRange } from "@/utils/util";
@@ -46,31 +46,31 @@ export default function InvoiceList() {
 
   const renderInvoiceCell = (invoice: Invoice, columnKey: keyof Invoice) => {
     if (columnKey === "status") {
-      return <Badge status={invoice.status as string} />;
+      return <Badge>{invoice.status as string}</Badge>;
     }
-  
+
     if (columnKey === "invoiceType") {
       return invoice[columnKey] === "tutor"
         ? findTutor(invoice.tutorId)?.name
         : findStudent(invoice.studentId)?.name;
     }
-  
+
     if (columnKey === "tutorId") {
       return invoice.invoiceType;
     }
-  
+
     if (columnKey === "startDateTime") {
       return new Date(invoice[columnKey] as string).toDateString();
     }
-  
-    if (columnKey === 'duration') {
+
+    if (columnKey === "duration") {
       return formatDateRange(invoice.startDateTime, invoice.duration);
     }
-  
+
     if (columnKey === "rate") {
       return `${invoice.currency} ${invoice[columnKey]}`;
     }
-  
+
     return invoice[columnKey] as React.ReactNode;
   };
 
