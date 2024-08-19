@@ -1,36 +1,53 @@
-// utils/stringUtils.ts
+// util.ts
 
 /**
- * Capitalizes the first letter of each word in a string.
- * @param str The input string to be capitalized.
- * @returns A new string with the first letter of each word capitalized, or an empty string if input is invalid.
+ * Formats the given date string to a readable date format.
+ * @param dateString - The date string in UTC format
+ * @returns Formatted date string or an error message if the input is invalid
  */
-export function capitalizeWords(str: string | null | undefined): string {
-  // Check if the input is null, undefined, or not a string
-  if (typeof str !== 'string') {
-    return '';
+export function formatDate(dateString: string | undefined): string {
+  if (!dateString) {
+    console.error("Invalid date string: undefined or empty");
+    return "Invalid date";
   }
 
-  // Trim the string and check if it's empty
-  const trimmedStr = str.trim();
-  if (trimmedStr === '') {
-    return '';
+  try {
+    return new Date(dateString).toDateString();
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid date";
   }
-
-  // Split the string into words
-  return trimmedStr
-    .split(/\s+/)  // Split on one or more whitespace characters
-    // Capitalize the first letter of each word
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    // Join the words back into a string
-    .join(' ');
 }
 
-// Example usage:
-// import { capitalizeWords } from '../utils/stringUtils';
-// 
-// console.log(capitalizeWords('hello world'));  // Output: "Hello World"
-// console.log(capitalizeWords('  HELLO   WORLD  '));  // Output: "Hello World"
-// console.log(capitalizeWords(''));  // Output: ""
-// console.log(capitalizeWords(null));  // Output: ""
-// console.log(capitalizeWords(undefined));  // Output: ""
+/**
+ * Formats the given start time and duration to a readable time range.
+ * @param startTime - The start time string in UTC format
+ * @param duration - The duration in hours
+ * @returns Formatted time range string or an error message if the input is invalid
+ */
+export function formatTimeRange(startTime: string | undefined, duration: number | undefined): string {
+  if (!startTime) {
+    console.error("Invalid start time: undefined or empty");
+    return "Invalid time";
+  }
+
+  try {
+    const start = new Date(startTime);
+    const end = new Date(start.getTime() + (duration ?? 0) * 60 * 60 * 1000);
+    
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    
+    const formatTime = (date: Date) => 
+      date.toLocaleTimeString([], formatOptions)
+        .replace(/am|pm/i, (match) => match.toUpperCase());
+    
+    return `${formatTime(start)} to ${formatTime(end)}`;
+  } catch (error) {
+    console.error("Error formatting time range:", error);
+    return "Invalid time range";
+  }
+}

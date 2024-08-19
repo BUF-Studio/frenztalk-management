@@ -22,6 +22,7 @@ type DataTableProps<T> = {
   changedIds?: string[];
   renderCell?: (item: T, columnKey: keyof T) => React.ReactNode;
   onRowClick: (item: T) => void; // Changed from onItemClick to onRowClick
+  showId?: boolean;
 };
 
 export const DataTable = <T extends { id: string | null }>({
@@ -31,8 +32,12 @@ export const DataTable = <T extends { id: string | null }>({
   changedIds,
   renderCell,
   onRowClick,
+  showId,
 }: DataTableProps<T>) => {
-  const filteredColumns = columns.filter((column) => column.key !== "id");
+  const filteredColumns = columns.filter((column) => {
+    if (showId) return true;
+    return column.key !== "id";
+  });
 
   const defaultRenderCell = (item: T, columnKey: keyof T) => {
     const value = item[columnKey] as React.ReactNode;
