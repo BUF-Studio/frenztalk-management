@@ -1,17 +1,52 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
-import type { Invoice } from "../models/invoice";
+import { Invoice } from "../models/invoice";
 import { Badge } from "@/app/components/ui/badge";
 import DropdownButton from "@/app/components/ui/dropdown";
 import { Download, Trash2 } from "lucide-react";
+import { useStudents } from "../context/collection/studentsContext";
+import { useSubjects } from "../context/collection/subjectContext";
+import { useTuitions } from "../context/collection/tuitionContext";
+import { useTutors } from "../context/collection/tutorContext";
+import type { Student } from "../models/student";
+import type { Subject } from "../models/subject";
+import type { Tuition } from "../models/tuition";
+import type { Tutor } from "../models/tutor";
+import {
+  capitalizeFirstLetter,
+  formatDate,
+  formatDateRange,
+} from "@/utils/util";
+import { updateInvoice } from "../firebase/invoice";
+import { InvoiceStatus } from "../models/invoiceStatus";
+import { useSnackbar } from "../context/component/SnackbarContext";
 
 type InvoiceTemplateProps = {
   invoice: Invoice | null;
+  role: "tutor" | "student";
 };
 
 const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
   const [logoLoaded, setLogoLoaded] = useState(false);
+  const { students } = useStudents();
+  const { tutors } = useTutors();
+  const { subjects } = useSubjects();
+  const { tuitions } = useTuitions();
+  const {showSnackbar} = useSnackbar();
+
+  const tuition: Tuition | undefined = tuitions.find(
+    (tuition) => tuition.id === invoice?.tuitionId
+  );
+  const student: Student | undefined = students.find(
+    (student) => student.id === invoice?.studentId
+  );
+  const tutor: Tutor | undefined = tutors.find(
+    (tutor) => tutor.id === invoice?.tutorId
+  );
+  const subject: Subject | undefined = subjects.find(
+    (subject) => subject.id === invoice?.subjectId
+  );
 
   useEffect(() => {
     const img = new Image();
@@ -30,6 +65,27 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
       html2pdf().set(opt).from(element).save();
+    }
+  };
+
+  const handleStatusChange = async(status: InvoiceStatus) => {
+    if (invoice) {
+      const updatedInvoice = new Invoice(
+        invoice.id,
+        invoice.tuitionId,
+        invoice.tutorId,
+        invoice.studentId,
+        invoice.subjectId,
+        invoice.rate,
+        status,
+        invoice.startDateTime,
+        invoice.duration,
+        invoice.currency,
+        invoice.price,
+        invoice.invoiceType
+      );
+      await updateInvoice(updatedInvoice);
+      showSnackbar("Invoice status updated", "success");
     }
   };
 
@@ -59,22 +115,20 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           </div>
           <div className="flex flex-row justify-between">
             <div className="flex flex-row gap-4 items-center">
-              <h2 className="text-2xl font-bold">#EN2024123B</h2>
-              <Badge variant="success">Status</Badge>
+              <h2 className="text-xl font-bold">{invoice?.id}</h2>
+              <Badge variant="success">
+                {capitalizeFirstLetter(invoice?.status)}
+              </Badge>
             </div>
             <div className="flex flex-row gap-2" data-html2canvas-ignore>
               <DropdownButton
                 title="Change Status"
-                items={[
-                  {
-                    label: "Edit",
-                    onClick: () => console.log("Edit"),
-                  },
-                  {
-                    label: "Delete",
-                    onClick: () => console.log("Delete"),
-                  },
-                ]}
+                items={Object.values(InvoiceStatus)
+                  .filter((status) => status !== invoice?.status)
+                  .map((status) => ({
+                    label: capitalizeFirstLetter(status),
+                    onClick: () => handleStatusChange(status),
+                  }))}
               />
               <DropdownButton
                 title="..."
@@ -93,43 +147,42 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
                 ]}
               />
             </div>
-
-            {/* <button
-              type="button"
-              onClick={generatePDF}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              data-html2canvas-ignore
-            >
-              Download
-            </button> */}
           </div>
         </div>
         <div className="flex w-full flex-row justify-between">
           <div className="flex flex-col">
             <p className="text-md mb-1">Billed to:</p>
-            <strong className="font-bold text-lg mb-1">ANG ZHI HENG</strong>
+            <strong className="font-bold text-lg mb-1">
+              {invoice?.invoiceType === "tutor" ? tutor?.name : student?.name}
+            </strong>
             <div className="flex flex-row gap-1 text-sm">
               <p className="font-medium">Email:</p>
-              <p className="font-light">zhiheng426@gmail.com</p>
+              <p className="font-light">--</p>
             </div>
             <div className="flex flex-row gap-1 text-sm">
               <p className="font-medium">Phone No.:</p>
-              <p className="font-light">+6012-436 5174</p>
+              <p className="font-light">--</p>
             </div>
           </div>
         </div>
         <div className="flex flex-row justify-between border border-gray-900">
           <div className="flex-1 p-4 border-r border-gray-900">
             <p className="font-normal text-sm">Date Issued:</p>
-            <p className="mt-1 font-bold text-md">15 Aug 2024</p>
+            <p className="mt-1 font-bold text-md">
+              {formatDate(invoice?.startDateTime, true)}
+            </p>
           </div>
           <div className="flex-1 p-4 border-r border-gray-900">
             <p className="font-normal text-sm">Due Date:</p>
-            <p className="mt-1 font-bold text-md">15 Sep 2024</p>
+            <p className="mt-1 font-bold text-md">
+              {formatDateRange(invoice?.startDateTime, invoice?.duration)}
+            </p>
           </div>
           <div className="flex-1 p-4">
             <p className="font-normal text-sm">Due Amount:</p>
-            <p className="mt-1 font-bold text-md">RM 123.00</p>
+            <p className="mt-1 font-bold text-md">
+              {`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}
+            </p>
           </div>
         </div>
         <table className="w-full border-collapse mt-4">
@@ -154,11 +207,22 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           </thead>
           <tbody>
             <tr className="border-b border-gray-300">
-              <td className="py-3 px-4">English</td>
-              <td className="py-3 px-4">4 Aug</td>
-              <td className="py-3 px-4 text-center">1</td>
-              <td className="py-3 px-4 text-center">123.00</td>
-              <td className="py-3 px-4 text-right">123.00</td>
+              <td className="py-3 px-4">{subject?.name}</td>
+              <td className="py-3 px-4">{formatDate(tuition?.startTime)}</td>
+              <td className="py-3 px-4 text-center">{tuition?.duration}</td>
+              <td className="py-3 px-4 text-center">
+                {(invoice?.invoiceType === "tutor"
+                  ? tuition?.tutorPrice
+                  : tuition?.studentPrice
+                )?.toFixed(2)}
+              </td>
+              <td className="py-3 px-4 text-right">
+                {(
+                  (invoice?.invoiceType === "tutor"
+                    ? tuition?.tutorPrice ?? 0
+                    : tuition?.studentPrice ?? 0) * (tuition?.duration ?? 0)
+                ).toFixed(2)}
+              </td>
             </tr>
           </tbody>
           <tfoot className="pt-8">
@@ -166,7 +230,9 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
               <td colSpan={4} className="py-4  px-4 text-right font-medium">
                 Subtotal
               </td>
-              <td className="py-4 px-4 text-right">123.00</td>
+              <td className="py-4 px-4 text-right">
+                {invoice?.rate.toFixed(2)}
+              </td>
             </tr>
             <tr>
               <td colSpan={4} className="px-4 text-right font-medium">
@@ -181,7 +247,9 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
               >
                 Total
               </td>
-              <td className="py-3 px-4 text-right font-bold text-xl">123.00</td>
+              <td className="py-3 px-4 text-right font-bold text-xl">
+                {`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}
+              </td>
             </tr>
           </tfoot>
         </table>
