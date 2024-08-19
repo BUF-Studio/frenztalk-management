@@ -68,9 +68,9 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
                 <p>Tutor Name: {tutor!.name}</p>
                 <p>Subject Name: {subject!.name}</p>
                 <p>Status: {invoice.status}</p>
-                <p>Date Time: {tuition!.startTime}</p>
-                <p>Duration: {tuition!.duration}</p>
-                <p>Currency: {tuition!.currency}</p>
+                <p>Date Time: {invoice!.startDateTime}</p>
+                <p>Duration: {invoice!.duration}</p>
+                <p>Currency: {invoice!.currency}</p>
                 <p>Rate: {invoice.rate}</p>
                 <Link href={`/back/invoices/${invoice.id}/edit`}>
                     <button>Edit</button>

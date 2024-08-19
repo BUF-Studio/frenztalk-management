@@ -51,6 +51,8 @@ export default function InvoiceForm() {
             const startTimestamp = new Date(startDateTime);
             const zoomStartTime = startTimestamp.toISOString().replace('Z', '+08:00');
 
+            console.log('duration')
+            console.log(duration)
 
 
             const updatedInvoice = new Invoice(
@@ -126,8 +128,9 @@ export default function InvoiceForm() {
                     id="price"
                     value={price}
                     onChange={(e) => {
-                        setPrice(Number(e.target.value))
-                        setRate(price * duration)
+                        const pri = Number(e.target.value)
+                        setPrice(pri)
+                        setRate(pri * duration)
 
                     }}
                 />
@@ -150,8 +153,9 @@ export default function InvoiceForm() {
                     id="duration"
                     value={duration}
                     onChange={(e) => {
-                        setDuration(Number(e.target.value))
-                        setRate(price * duration)
+                        const dur = Number(e.target.value)
+                        setDuration(dur)
+                        setRate(price * dur)
                     }}
                 />
             </div>
