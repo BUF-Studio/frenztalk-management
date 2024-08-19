@@ -14,9 +14,9 @@ import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
-import InvoiceStatus from '@/lib/models/invoiceStatus';
 import Currency from '@/lib/models/currency';
 import { Timestamp } from 'firebase/firestore';
+import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 
 export default function InvoiceForm() {
     const router = useRouter();
@@ -38,7 +38,7 @@ export default function InvoiceForm() {
     const [status, setStatus] = useState<InvoiceStatus>(invoice!.status);
 
     const [currency, setCurrency] = useState(invoice!.currency);
-    const [price, setPrice] = useState(invoice!.price );
+    const [price, setPrice] = useState(invoice!.price);
     const [rate, setRate] = useState(invoice!.rate || (invoice!.price * invoice!.duration) || 0);
 
 
@@ -82,7 +82,7 @@ export default function InvoiceForm() {
         }
     };
 
-   
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -130,7 +130,7 @@ export default function InvoiceForm() {
                     onChange={(e) => {
                         const pri = Number(e.target.value)
                         setPrice(pri)
-                        setRate(pri * duration)
+                        setRate(pri * duration / 60)
 
                     }}
                 />
@@ -155,7 +155,7 @@ export default function InvoiceForm() {
                     onChange={(e) => {
                         const dur = Number(e.target.value)
                         setDuration(dur)
-                        setRate(price * dur)
+                        setRate(price * dur / 60)
                     }}
                 />
             </div>

@@ -13,13 +13,13 @@ import Currency from '@/lib/models/currency';
 import TuitionStatus from '@/lib/models/tuitionStatus';
 import { Timestamp } from 'firebase/firestore';
 import { Invoice } from '@/lib/models/invoice';
-import InvoiceStatus from '@/lib/models/invoiceStatus';
 import { addInvoice } from '@/lib/firebase/invoice';
 import { Student } from '@/lib/models/student';
 import { Tutor } from '@/lib/models/tutor';
 import { useLevels } from '@/lib/context/collection/levelContext';
 import InvoiceType from '@/lib/models/invoiceType';
 import axios from 'axios';
+import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 
 export default function TuitionForm() {
     const router = useRouter();
