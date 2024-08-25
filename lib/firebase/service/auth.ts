@@ -12,8 +12,9 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 
-import { auth } from "./clientApp";
+import { auth, db } from "./clientApp";
 import { addUserToFirestore } from "./firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 export function onAuthStateChanged(cb: (user: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
@@ -36,11 +37,19 @@ export const signInWithGoogle = async () => {
     const resultUserCredential = await signInWithPopup(auth, provider);
     const uid = resultUserCredential.user.uid;
 
-    addUserToFirestore(
-      uid,
-      resultUserCredential.user.displayName || "",
-      resultUserCredential.user.email || ""
-    );
+    try {
+      const existUserCheck = await getDoc(doc(db, "tutors", uid));
+
+      if (!existUserCheck.exists()) {
+        addUserToFirestore(
+          uid,
+          resultUserCredential.user.displayName || "",
+          resultUserCredential.user.email || ""
+        );
+      }
+    } catch (error) {
+      console.error("Error checking if user exists in auth.ts: ", error);
+    }
 
     const sessionCreated = await createSession(resultUserCredential.user);
     if (sessionCreated) {
