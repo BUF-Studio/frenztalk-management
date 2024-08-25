@@ -1,36 +1,54 @@
 "use client";
 
-import SearchBar from "@/app/components/dashboard/SearchBar";
-import { useState, useEffect } from "react";
-import styles from "@/styles/main/tutors/Page.module.scss";
-import { Tutor } from "@/lib/models/tutor";
-import { addTutor, updateTutor } from "@/lib/firebase/tutor";
+import { DataTable } from "@/app/components/dashboard/DataTable";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
-import TutorForm from "./tutorForm";
+import type { Tutor } from "@/lib/models/tutor";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { capitalizeFirstLetter } from "@/utils/util";
 
-const TutorPage = () => {
+export default function TutorList() {
   const { tutors } = useTutors();
-  const { tutor, setTutor } = useTutorPage();
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [changedIds, setChangedIds] = useState<string[]>([]);
-  const { showSnackbar } = useSnackbar();
+  const { setTutor } = useTutorPage();
+
+  const router = useRouter();
+
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
 
   const columns: { key: keyof Tutor; label: string }[] = [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
-    { key: "subjects", label: "Subjects" },
     { key: "des", label: "Description" },
+    { key: "status", label: "Status" },
   ];
+
+  const viewTutor = (tutor: Tutor) => {
+    setTutor(tutor);
+    router.push(`/back/tutors/${tutor.id}`);
+  };
 
   const renderTutorCell = (tutor: Tutor, columnKey: keyof Tutor) => {
     if (columnKey === "name") {
       return (
-        <div className={styles.tutorSection}>
+        <div className="">
           {tutor.pic ? (
             <Image
               src="/frenztalk-logo.jpg"
@@ -40,107 +58,36 @@ const TutorPage = () => {
               height={20}
             />
           ) : (
-            <div className={styles.tutorPic} />
+            <div className="" />
           )}
           <div>{tutor.name}</div>
         </div>
       );
     }
 
+    if (columnKey === "status") {
+      return (
+        <Badge variant={getStatusVariant(tutor.status)}>
+          {capitalizeFirstLetter(tutor.status)}
+        </Badge>
+      );
+    }
+
     return tutor[columnKey] as React.ReactNode;
   };
 
-  useEffect(() => {
-    console.log("searchKeyword", searchKeyword);
-  }, [searchKeyword]);
-
-  const handleSearch = (keyword: string) => {
-    setSearchKeyword(keyword);
-  };
-
-  const handleAddTutor = () => {
-    setShowForm(true);
-  };
-
-  const handleFormCancel = () => {
-    setShowForm(false); // Hide the form when cancel button is clicked
-    setTutor(null); // Reset the tutor state
-  };
-
-  const handleFormSubmit = async (formData: {
-    name: string;
-    description: string;
-    subjects: string[];
-    pic: string;
-    freezeAccount: boolean;
-    status: string;
-  }) => {
-    try {
-      const newTutor = new Tutor(
-        null,
-        formData.name,
-        formData.subjects,
-        formData.description,
-        formData.pic,
-        formData.status
-      );
-      //TODO: change to updateTutor to set the tutor id manually with user id
-      const changedId = await addTutor(newTutor);
-      setShowForm(false);
-      setTutor(null);
-
-      setChangedIds((prev) => [...prev, changedId]);
-      setTimeout(() => {
-        setChangedIds((prev) => prev.filter((id) => id !== changedId));
-      }, 1000);
-    } catch (error) {
-      console.error("Failed to submit the form", error);
-    }
-  };
-
-  function handleOnDelete(item: Tutor): void {
-    showSnackbar("Tutor deleted successfully", "success");
-  }
-
-  const actions: Action<Tutor>[] = [];
-
   return (
-    <div className={styles.mainContainer}>
-      <div className={styles.headerContainer}>
-        <SearchBar onSearch={handleSearch} />
-        {!showForm && (
-          <button
-            type="submit"
-            className={styles.addTutorButton}
-            onClick={handleAddTutor}
-          >
-            Add Tutor
-          </button>
-        )}
+    <div>
+      <div className="flex flex-1 flex-row justify-between pb-4">
+        <h1 className="text-xl font-bold">Tutor List</h1>
       </div>
-      <div className={styles.contentContainer}>
-        <div
-          className={`${styles.tutorList} ${!showForm ? styles.fullWidth : ""}`}
-        >
-          <DataTable
-            data={tutors}
-            columns={columns}
-            actions={actions}
-            changedIds={changedIds}
-            renderCell={renderTutorCell}
-          />
-        </div>
-        {showForm && (
-          <div className={styles.tutorForms}>
-            <TutorForm
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-            />
-          </div>
-        )}
-      </div>
+      <DataTable
+        data={tutors}
+        columns={columns}
+        actions={[]}
+        onRowClick={(tutor) => viewTutor(tutor)}
+        renderCell={renderTutorCell}
+      />
     </div>
   );
-};
-
-export default TutorPage;
+}

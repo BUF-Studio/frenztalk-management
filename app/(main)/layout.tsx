@@ -1,41 +1,185 @@
 "use client";
 
-import SideNav from "@/app/components/dashboard/sidenav";
-import Header from "@/app/components/dashboard/Header";
+import type React from "react";
+import { useState } from "react";
+import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import styles from "@/styles/main/Main.module.scss";
-import ProtectedRoute from "@/lib/ProtectedRoute";
-import { UserRole } from "@/lib/models/user";
+import Image from "next/image";
+import {
+  Home,
+  SchoolRounded,
+  SupervisedUserCircle,
+  Group,
+  Settings,
+  LogoutRounded,
+  Receipt,
+  DashboardCustomize
+} from "@mui/icons-material";
+import { cn } from "@/utils/manage-class-name";
+import Link from "next/link";
+import { motion, useAnimationControls } from "framer-motion";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const links = [
+    {
+      label: "Home",
+      href: "/back/tuitions",
+      icon: (
+        <Home
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Students",
+      href: "/back/students",
+      icon: (
+        <SchoolRounded
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Tutors",
+      href: "/back/tutors",
+      icon: (
+        <SupervisedUserCircle
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Users",
+      href: "/back/users",
+      icon: (
+        <Group
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Invoices",
+      href: "/back/invoices",
+      icon: (
+        <Receipt
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Academic Setup",
+      href: "/back/academic-setup",
+      icon: (
+        <DashboardCustomize
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Settings",
+      href: "/back/settings",
+      icon: (
+        <Settings
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+    },
+    {
+      label: "Logout",
+      href: "/sign-in",
+      icon: (
+        <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
+      ),
+    },
+  ];
 
-  let currentLocation = "Home";
-  if (pathname.includes("/invoice")) {
-    currentLocation = "Invoices";
-  } else if (pathname.includes("/tutors")) {
-    currentLocation = "Tutors";
-  } else if (pathname.includes("/students")) {
-    currentLocation = "Students";
-  } else if (pathname.includes("/settings")) {
-    currentLocation = "Settings";
-  } else if (pathname.includes("/users")) {
-    currentLocation = "Users";
-  } else if (pathname.includes("/academic-setup")) {
-    currentLocation = "Academic Setup";
-  }
-
+  const [open, setOpen] = useState(false);
   return (
-    <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.TUTOR]}>
-      <div className={styles.layout}>
-        <div className={styles.sideNav}>
-          <SideNav />
-        </div>
-        <div className={styles.main}>
-          <Header currentLocation={currentLocation} />
-          <div className={styles.content}>{children}</div>
+    <div
+      className={cn(
+        "flex flex-col md:flex-row bg-transparent w-full flex-1 overflow-hidden",
+        "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
+      )}
+    >
+      <Sidebar open={open} setOpen={setOpen} animate={false}>
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+            <Logo open={open} />
+            <div className="mt-8 flex flex-col gap-2">
+              {links.map((link, idx) => (
+                <SidebarLink
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  key={idx}
+                  link={link}
+                  className={
+                    pathname?.startsWith(link.href)
+                      ? "rounded-md bg-red-200 dark:bg-red-900"
+                      : ""
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <SidebarLink
+              link={{
+                label: "Manu Arora",
+                href: "#",
+                icon: (
+                  <Image
+                    src="/steveJobs.png"
+                    className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
+                    width={24}
+                    height={24}
+                    alt="Avatar"
+                  />
+                ),
+              }}
+            />
+          </div>
+        </SidebarBody>
+      </Sidebar>
+      <div className="flex flex-col flex-grow py-4 pr-4 overflow-hidden">
+        <div className="flex-grow min-h-0 max-h-full overflow-auto rounded-xl p-4 bg-neutral-100 dark:bg-neutral-700">
+          {children}
         </div>
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }
+
+export const Logo = ({ open }: { open: boolean }) => {
+  return (
+    <Link
+      href="#"
+      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
+    >
+      <Image
+        src="/frenztalk-logo.jpg"
+        alt="Frenztalk Logo"
+        width={80}
+        height={80}
+        priority
+        className="h-10 w-10 bg-black dark:bg-white flex-shrink-0"
+      />
+      {true && (
+        <motion.span
+          initial={{ opacity: 0, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="font-medium text-black dark:text-white whitespace-pre"
+        >
+          Frenztalk
+        </motion.span>
+      )}
+    </Link>
+  );
+};

@@ -7,10 +7,14 @@ import type { Invoice } from "@/lib/models/invoice";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
-import { formatDateRange, formatTimeRange } from "@/utils/util";
+import {
+  capitalizeFirstLetter,
+  formatDateRange,
+  formatTimeRange,
+} from "@/utils/util";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
@@ -34,6 +38,25 @@ export default function InvoiceList() {
     return tutor;
   };
 
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "paid":
+        return "success";
+      case "pending":
+        return "info";
+      case "cancel":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
+
   const columns: { key: keyof Invoice; label: string }[] = [
     { key: "id", label: "ID" },
     { key: "invoiceType", label: "Issuer" },
@@ -46,7 +69,11 @@ export default function InvoiceList() {
 
   const renderInvoiceCell = (invoice: Invoice, columnKey: keyof Invoice) => {
     if (columnKey === "status") {
-      return <Badge>{invoice.status as string}</Badge>;
+      return (
+        <Badge variant={getStatusVariant(invoice.status)}>
+          {capitalizeFirstLetter(invoice.status as string)}
+        </Badge>
+      );
     }
 
     if (columnKey === "invoiceType") {

@@ -46,7 +46,7 @@ export const signInWithGoogle = async () => {
 
     const auth = getAuth();
     if (auth.currentUser) {
-      await deleteUserFromAuth(auth.currentUser!);
+      await deleteUserFromAuth(auth?.currentUser);
     }
   }
   return;
@@ -59,6 +59,17 @@ export const signInWithEmail = async (email: string, password: string) => {
       email,
       password
     );
+
+    fetch("/api/auth", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${await resultUserCrendential.user.getIdToken()}`,
+      },
+    }).then((response) => {
+      if (response.status === 200) {
+        console.log("Login Successfully")
+      }
+    });
 
     return resultUserCrendential.user;
   } catch (error) {

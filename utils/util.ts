@@ -89,7 +89,6 @@ export function formatDateRange(start: string | null | undefined, duration: numb
  */
 export function capitalizeFirstLetter(str: string | null | undefined): string {
   if (!str) {
-    console.error("Invalid string: null or undefined");
     return "Invalid string";
   }
   return str.charAt(0).toUpperCase() + str.slice(1);

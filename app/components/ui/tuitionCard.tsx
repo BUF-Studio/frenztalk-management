@@ -8,6 +8,8 @@ import Link from "next/link";
 import type { Student } from "@/lib/models/student";
 import type { Level } from "@/lib/models/level";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
+import { capitalizeFirstLetter } from "@/utils/util";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 
 interface TuitionCardProps {
   subject: string;
@@ -37,6 +39,23 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
 
+  function getStatusVariant(status: string): BadgeProps["variant"] {
+    switch (status.toLowerCase()) {
+      case "active":
+      case "end":
+        return "success";
+      case "pending":
+        return "info";
+      case "on hold":
+        return "warning";
+      case "failed":
+      case "":
+        return "error";
+      default:
+        return "info";
+    }
+  }
+
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (navigator.clipboard) {
@@ -52,11 +71,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   };
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      onKeyDown={onClick}
-      onKeyPress={onClick}
-      onKeyUp={onClick}
       className="bg-white w-full border-1 border-grey-600 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
     >
       <div className="p-4">
@@ -94,11 +111,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           <div className="flex flex-col gap-1">
             <div className="flex flex-row gap-2">
               <h2 className="text-lg font-medium">{subject}</h2>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                {status}
-              </span>
+                <Badge variant={getStatusVariant(status)}>{capitalizeFirstLetter(status)}</Badge>
             </div>
-            <p className="text-gray-500 text-sm">
+            <p className="flex text-gray-500 text-sm justify-start">
               {level?.name ?? "No level found"}
             </p>
             {student && (
@@ -140,7 +155,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

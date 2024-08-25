@@ -2,7 +2,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "../models/invoice";
-import { Badge } from "@/app/components/ui/badge";
+import { Badge, BadgeProps } from "@/app/components/ui/badge";
 import DropdownButton from "@/app/components/ui/dropdown";
 import { Download, Trash2 } from "lucide-react";
 import { useStudents } from "../context/collection/studentsContext";
@@ -32,7 +32,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
-  const { tuitions } = useTuitions();
+  const { tuitions } = useTuitions()
   const {showSnackbar} = useSnackbar();
 
   const tuition: Tuition | undefined = tuitions.find(
@@ -68,6 +68,25 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
     }
   };
 
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "paid":
+        return "success";
+      case "pending":
+        return "info";
+      case "cancel":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
+
   const handleStatusChange = async(status: InvoiceStatus) => {
     if (invoice) {
       const updatedInvoice = new Invoice(
@@ -96,6 +115,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           <div className="flex flex-1 justify-start mb-4 gap-4">
             <div className="w-8 h-8">
               {logoLoaded && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src="/frenztalk-logo.jpg"
                   alt="Frenztalk Logo"
@@ -116,7 +136,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           <div className="flex flex-row justify-between">
             <div className="flex flex-row gap-4 items-center">
               <h2 className="text-xl font-bold">{invoice?.id}</h2>
-              <Badge variant="success">
+              <Badge variant={getStatusVariant(invoice?.status)}>
                 {capitalizeFirstLetter(invoice?.status)}
               </Badge>
             </div>
