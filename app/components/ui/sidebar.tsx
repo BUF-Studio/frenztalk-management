@@ -5,11 +5,13 @@ import type React from "react";
 import { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 // import { IconMenu2, IconX } from "@tabler/icons-react";
 
 interface Links {
   label: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   icon: React.JSX.Element | React.ReactNode;
 }
 
@@ -165,20 +167,29 @@ export const SidebarLink = ({
 }: {
   link: Links;
   className?: string;
-  props?: LinkProps;
+  props?: React.ComponentProps<"button">;
 }) => {
   const { open, animate } = useSidebar();
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (link.href) {
+      router.push(link.href);
+    } else if (link.onClick) {
+      link.onClick();
+    }
+  };
+
   return (
-    <Link
-      href={link.href}
+    <button
+      onClick={handleClick}
       className={cn(
-        "flex items-center justify-start gap-4 group/sidebar p-2",
+        "flex items-center justify-start gap-4 group/sidebar p-2 w-full text-left",
         className
       )}
       {...props}
     >
       {link.icon}
-
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
@@ -188,6 +199,6 @@ export const SidebarLink = ({
       >
         {link.label}
       </motion.span>
-    </Link>
+    </button>
   );
 };
