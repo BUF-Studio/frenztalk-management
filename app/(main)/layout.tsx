@@ -13,13 +13,15 @@ import {
   Settings,
   LogoutRounded,
   Receipt,
-  DashboardCustomize
+  DashboardCustomize,
 } from "@mui/icons-material";
 import { cn } from "@/utils/manage-class-name";
 import Link from "next/link";
 import { motion, useAnimationControls } from "framer-motion";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const authContext = useAuth();
   const pathname = usePathname();
   const links = [
     {
@@ -131,11 +133,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div>
             <SidebarLink
               link={{
-                label: "Manu Arora",
-                href: "#",
+                label: authContext.user?.displayName ?? "Anonymous",
+                href: "/profile",
                 icon: (
+                  //TODO: Change the default image type based on the theme mode
                   <Image
-                    src="/steveJobs.png"
+                    src={authContext.user?.photoURL ?? "/account-darkmode.png"}
                     className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
                     width={24}
                     height={24}

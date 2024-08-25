@@ -15,6 +15,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { auth } from "firebase-admin";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/service/clientApp";
+import Image from "next/image";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const authContext = useAuth();
@@ -42,11 +43,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     }
   }, [tutor, tutors, params, setTutor]);
 
-  //   const addTuition = () => {
-  //     setTuitionTutor(tutor);
-  //     router.push("/back/tuitions/add");
-  //   };
-
   return (
     <div>
       {/* Back Button */}
@@ -70,6 +66,11 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               <div className="flex flex-row gap-6 items-center">
                 <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                   {/* <span className="text-gray-500 text-xl">Avatar</span> */}
+                  <img
+                    src={authContext.user?.photoURL ?? "/account-darkmode.png"}
+                    alt="avatar"
+                    className="w-20 h-20 object-cover rounded-full"
+                  />
                 </div>
                 <div className="grid grid-row-2">
                   <p className="text-lg font-semibold">
