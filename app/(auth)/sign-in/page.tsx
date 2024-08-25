@@ -11,11 +11,15 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { getErrorMessage } from "@/utils/get-error-message";
 
 const SignIn = () => {
-  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { signInWithEmail, signInWithGoogle, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
+
+  if (user) {
+    router.push("/");
+  }
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +147,8 @@ export default SignIn;
 //   </div>
 // </div>;
 
-{/* <p className="flex justify-center mt-4 font-sans text-sm font-light leading-normal text-inherit">
+{
+  /* <p className="flex justify-center mt-4 font-sans text-sm font-light leading-normal text-inherit">
   Don&apos;t have an account?
   <Link
     href="/signup"
@@ -151,4 +156,5 @@ export default SignIn;
   >
     Sign up
   </Link>
-</p>; */}
+</p>; */
+}
