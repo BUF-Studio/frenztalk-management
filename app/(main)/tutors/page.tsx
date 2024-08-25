@@ -9,7 +9,6 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
 import TutorForm from "./tutorForm";
-import Badge from "@/app/components/dashboard/Badge";
 import Image from "next/image";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 
@@ -85,6 +84,7 @@ const TutorPage = () => {
         formData.pic,
         formData.status
       );
+      //TODO: change to updateTutor to set the tutor id manually with user id
       const changedId = await addTutor(newTutor);
       setShowForm(false);
       setTutor(null);
