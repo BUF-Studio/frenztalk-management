@@ -4,6 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { LogOut } from "lucide-react";
 import Image from "next/image";
 import {
   Home,
@@ -131,6 +132,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div>
+            <button
+              className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+              type="button"
+              onClick={() => authContext.signOut()}
+            >
+              <LogOut size={16} strokeWidth={3} className="mr-1" />
+              Log Out
+            </button>
             <SidebarLink
               link={{
                 label: authContext.user?.displayName ?? "Anonymous",

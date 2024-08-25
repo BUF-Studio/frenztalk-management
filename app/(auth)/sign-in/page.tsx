@@ -18,7 +18,7 @@ const SignIn = () => {
   const router = useRouter();
 
   if (user) {
-    router.push("/");
+    router.push("/tuitions");
   }
 
   const handleEmailLogin = async (e: React.FormEvent) => {
