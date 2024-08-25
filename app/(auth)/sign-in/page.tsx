@@ -11,11 +11,15 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { getErrorMessage } from "@/utils/get-error-message";
 
 const SignIn = () => {
-  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { signInWithEmail, signInWithGoogle, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
+
+  if (user) {
+    router.push("/");
+  }
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
