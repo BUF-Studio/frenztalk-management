@@ -72,7 +72,7 @@ export default function StudentList() {
 
   const viewStudent = (student: Student) => {
     setStudent(student);
-    router.push(`/back/students/${student.id}`);
+    router.push(`/students/${student.id}`);
   };
 
   return (

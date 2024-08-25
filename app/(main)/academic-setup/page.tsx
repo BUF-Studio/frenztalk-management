@@ -19,24 +19,24 @@ export default function SubjectList() {
 
   const addSubject = () => {
     setSubject(null);
-    router.push("/back/academic-setup/subject/add");
+    router.push("/academic-setup/subject/add");
   };
   const addLevel = () => {
     setLevel(null);
-    router.push("/back/academic-setup/level/add");
+    router.push("/academic-setup/level/add");
   };
   const editSubject = (subject: Subject) => {
     setSubject(subject);
-    router.push(`/back/academic-setup/subject/${subject.id}`);
+    router.push(`/academic-setup/subject/${subject.id}`);
   };
   const editLevel = (level: Level) => {
     setLevel(level);
-    router.push(`/back/academic-setup/level/${level.id}`);
+    router.push(`/academic-setup/level/${level.id}`);
   };
 
   const addTuition = (subject: Subject) => {
     setTuitionSubject(subject);
-    router.push("/back/tuitions/add");
+    router.push("/tuitions/add");
   };
 
   return (

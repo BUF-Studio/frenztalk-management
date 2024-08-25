@@ -35,7 +35,7 @@ export default function StudentTuitionList({ filter }: { filter?: Date | null}) 
   };
 
   const handleCardClick = (tuitionId: string) => {
-    router.push(`/back/tuitions/${tuitionId}`);
+    router.push(`/tuitions/${tuitionId}`);
   };
 
   return (

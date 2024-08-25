@@ -13,7 +13,7 @@ export default function StudentTutorList() {
   const router = useRouter();
 
   const handleOnClick = (id: string) => {
-    router.push(`/back/tutors/${id}`);
+    router.push(`/tutors/${id}`);
   };
 
   return (

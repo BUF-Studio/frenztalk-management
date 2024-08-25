@@ -46,7 +46,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
 
   const addTuition = () => {
     setTuitionStudent(student);
-    router.push("/back/tuitions/add");
+    router.push("/tuitions/add");
   };
 
   const handleUpdateStudent = async (studentData: Partial<Student>) => {

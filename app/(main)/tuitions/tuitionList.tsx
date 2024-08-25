@@ -42,7 +42,7 @@ const TuitionList: React.FC<TuitionListProps> = ({ tuitions }) => {
   };
 
   const handleCardClick = (tuitionId: string) => {
-    router.push(`/back/tuitions/${tuitionId}`);
+    router.push(`/tuitions/${tuitionId}`);
   };
 
   return (

@@ -25,7 +25,7 @@ export default function InvoiceList() {
 
   const viewInvoice = (invoice: Invoice) => {
     setInvoice(invoice);
-    router.push(`/back/invoices/${invoice.id}`);
+    router.push(`/invoices/${invoice.id}`);
   };
 
   const findStudent = (id: string) => {
@@ -108,7 +108,7 @@ export default function InvoiceList() {
         <button
           className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
           type="button"
-          onClick={() => router.push("/back/invoices/new")}
+          onClick={() => router.push("/invoices/new")}
         >
           <Plus size={16} strokeWidth={3} className="mr-1" />
           Add invoice

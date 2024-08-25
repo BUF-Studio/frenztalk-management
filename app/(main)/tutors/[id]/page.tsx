@@ -34,7 +34,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
 
   const addTuition = () => {
     setTuitionTutor(tutor);
-    router.push("/back/tuitions/add");
+    router.push("/tuitions/add");
   };
 
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {

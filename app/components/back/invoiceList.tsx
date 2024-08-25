@@ -12,7 +12,7 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
   const router = useRouter();
 
   const handleOnClick = (id: string) => {
-    router.push(`/back/invoices/${id}`);
+    router.push(`/invoices/${id}`);
   };
 
   return (

@@ -11,7 +11,7 @@ export default function TutorInvoiceList() {
     const router = useRouter();
 
     const handleOnClick = (id: string) => {
-        router.push(`/back/invoices/${id}`);
+        router.push(`/invoices/${id}`);
       };
 
 

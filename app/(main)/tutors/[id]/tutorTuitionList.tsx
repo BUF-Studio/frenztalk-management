@@ -34,7 +34,7 @@ export default function TutorTuitionList() {
   }
 
   const handleCardClick = (tuitionId: string) => {
-    router.push(`/back/tuitions/${tuitionId}`);
+    router.push(`/tuitions/${tuitionId}`);
   };
 
   return (

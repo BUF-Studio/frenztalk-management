@@ -19,7 +19,7 @@ export default function UserForm() {
 
   const viewTutor = () => {
     if (user && user.id) {
-      router.push(`/back/tutors/${user.id}`);
+      router.push(`/tutors/${user.id}`);
     }
   };
 
@@ -51,7 +51,7 @@ export default function UserForm() {
       console.log("update");
 
       setUser(updatedUser);
-      // router.push('/back/users')
+      // router.push('/users')
     } catch (error) {
       console.error("Failed to submit the form", error);
     }

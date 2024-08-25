@@ -19,11 +19,11 @@ export default function TuitionPage() {
 
   const addTuition = () => {
     setTuition(null);
-    router.push("/back/tuitions/add");
+    router.push("/tuitions/add");
   };
   const viewTuition = (tuition: Tuition) => {
     setTuition(tuition);
-    router.push(`/back/tuitions/${tuition.id}`);
+    router.push(`/tuitions/${tuition.id}`);
   };
 
   // const zoom = async () => {

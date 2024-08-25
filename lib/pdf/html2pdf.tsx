@@ -2,7 +2,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "../models/invoice";
-import { Badge, BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import DropdownButton from "@/app/components/ui/dropdown";
 import { Download, Trash2 } from "lucide-react";
 import { useStudents } from "../context/collection/studentsContext";

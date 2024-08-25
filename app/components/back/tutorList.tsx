@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Tutor } from "@/lib/models/tutor";
+import type { Tutor } from "@/lib/models/tutor";
 import Image from "next/image";
 
 interface TutorsProps {
@@ -12,7 +12,7 @@ export const TutorList: React.FC<TutorsProps> = ({ tutors }) => {
   const router = useRouter();
 
   const handleOnClick = (id: string) => {
-    router.push(`/back/tutors/${id}`);
+    router.push(`/tutors/${id}`);
   };
 
   return (

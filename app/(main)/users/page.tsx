@@ -49,7 +49,7 @@ export default function UserList() {
 
   const editUser = (user: User) => {
     setUser(user);
-    router.push(`/back/users/${user.id}`);
+    router.push(`/users/${user.id}`);
   };
 
   return (

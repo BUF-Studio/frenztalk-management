@@ -14,64 +14,66 @@ import type { User } from "firebase/auth";
 
 import { auth } from "./clientApp";
 import { addUserToFirestore } from "./firestore";
-// import { auth as adminAuth } from "./serverApp";
 
 export function onAuthStateChanged(cb: (user: User | null) => void) {
   return _onAuthStateChanged(auth, cb);
 }
 
-// export const verifyIdToken = async (idToken: string) => {
-//   try {
-//     const decodedToken = await adminAuth.verifyIdToken(idToken);
-//     return decodedToken;
-//   } catch (error) {
-//     console.error("Error verifying ID token:", error);
-//     throw error;
-//   }
-// }
+async function createSession(user: User) {
+  const idToken = await user.getIdToken();
+  const response = await fetch("/api/auth", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  return response.status === 200;
+}
 
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
-    const resultUserCrendential = await signInWithPopup(auth, provider);
-    const uid = resultUserCrendential.user.uid;
+    const resultUserCredential = await signInWithPopup(auth, provider);
+    const uid = resultUserCredential.user.uid;
 
     addUserToFirestore(
       uid,
-      resultUserCrendential.user.displayName || "",
-      resultUserCrendential.user.email || ""
+      resultUserCredential.user.displayName || "",
+      resultUserCredential.user.email || ""
     );
+
+    const sessionCreated = await createSession(resultUserCredential.user);
+    if (sessionCreated) {
+      console.log("Google Sign-in Successful");
+    } else {
+      console.error("Failed to create session after Google Sign-in");
+    }
   } catch (error) {
     console.error("Error signing in with Google:", error);
 
     const auth = getAuth();
     if (auth.currentUser) {
-      await deleteUserFromAuth(auth?.currentUser);
+      await deleteUserFromAuth(auth.currentUser);
     }
   }
-  return;
 };
 
 export const signInWithEmail = async (email: string, password: string) => {
   try {
-    const resultUserCrendential = await signInWithEmailAndPassword(
+    const resultUserCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-    fetch("/api/auth", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${await resultUserCrendential.user.getIdToken()}`,
-      },
-    }).then((response) => {
-      if (response.status === 200) {
-        console.log("Login Successfully")
-      }
-    });
+    const sessionCreated = await createSession(resultUserCredential.user);
+    if (sessionCreated) {
+      console.log("Login Successful");
+    } else {
+      console.error("Failed to create session after Email Sign-in");
+    }
 
-    return resultUserCrendential.user;
+    return resultUserCredential.user;
   } catch (error) {
     console.error("Error logging in with email and password:", error);
     throw error;
@@ -80,21 +82,28 @@ export const signInWithEmail = async (email: string, password: string) => {
 
 export const signUpWithEmail = async (email: string, password: string) => {
   try {
-    const resultUserCrendential = await createUserWithEmailAndPassword(
+    const resultUserCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-    const uid = resultUserCrendential.user.uid;
+    const uid = resultUserCredential.user.uid;
 
     addUserToFirestore(
       uid,
-      resultUserCrendential.user.displayName || "",
-      resultUserCrendential.user.email || ""
+      resultUserCredential.user.displayName || "",
+      resultUserCredential.user.email || ""
     );
 
-    return resultUserCrendential.user;
+    const sessionCreated = await createSession(resultUserCredential.user);
+    if (sessionCreated) {
+      console.log("Sign-up Successful");
+    } else {
+      console.error("Failed to create session after Sign-up");
+    }
+
+    return resultUserCredential.user;
   } catch (error) {
     console.log("Error signing up with email and password:", error);
     throw error;
@@ -108,15 +117,14 @@ export const deleteUserFromAuth = async (user: User) => {
     console.error("Error deleting user:", error);
     throw error;
   }
-  return;
 };
 
 export const signOut = async () => {
   try {
     await firebaseSignOut(auth);
+    await fetch("/api/auth", { method: "DELETE" });
     console.log("Signed out successfully");
   } catch (error) {
     console.error("Error signing out:", error);
   }
-  return;
 };

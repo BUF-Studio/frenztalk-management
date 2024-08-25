@@ -124,7 +124,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
                   <Link
                     type="button"
                     className="text-sm font-medium ml-1"
-                    href={`/back/students/${student.id}`}
+                    href={`/students/${student.id}`}
                   >
                     {student.name}
                   </Link>

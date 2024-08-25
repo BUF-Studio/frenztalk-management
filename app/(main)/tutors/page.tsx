@@ -42,7 +42,7 @@ export default function TutorList() {
 
   const viewTutor = (tutor: Tutor) => {
     setTutor(tutor);
-    router.push(`/back/tutors/${tutor.id}`);
+    router.push(`/tutors/${tutor.id}`);
   };
 
   const renderTutorCell = (tutor: Tutor, columnKey: keyof Tutor) => {

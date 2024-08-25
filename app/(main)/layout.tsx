@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const links = [
     {
       label: "Home",
-      href: "/back/tuitions",
+      href: "/tuitions",
       icon: (
         <Home
           strokeWidth={1.6}
@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Students",
-      href: "/back/students",
+      href: "/students",
       icon: (
         <SchoolRounded
           strokeWidth={1.6}
@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Tutors",
-      href: "/back/tutors",
+      href: "/tutors",
       icon: (
         <SupervisedUserCircle
           strokeWidth={1.6}
@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Users",
-      href: "/back/users",
+      href: "/users",
       icon: (
         <Group
           strokeWidth={1.6}
@@ -64,7 +64,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Invoices",
-      href: "/back/invoices",
+      href: "/invoices",
       icon: (
         <Receipt
           strokeWidth={1.6}
@@ -74,7 +74,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Academic Setup",
-      href: "/back/academic-setup",
+      href: "/academic-setup",
       icon: (
         <DashboardCustomize
           strokeWidth={1.6}
@@ -84,7 +84,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Settings",
-      href: "/back/settings",
+      href: "/settings",
       icon: (
         <Settings
           strokeWidth={1.6}

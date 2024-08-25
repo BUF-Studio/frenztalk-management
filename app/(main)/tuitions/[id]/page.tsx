@@ -1,7 +1,7 @@
 "use client";
 
-import { InvoiceList } from "@/app/components/back/invoiceList";
-import { TutorList } from "@/app/components/back/tutorList";
+import { InvoiceList } from "@/app/components/invoiceList";
+import { TutorList } from "@/app/components/tutorList";
 import { type Step, Stepper } from "@/app/components/ui/stepper";
 import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";
@@ -58,7 +58,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   const viewInvoice = (invoiceId: string) => {
     const invoice = invoices.find((inv) => inv.id === invoiceId);
     setInvoice(invoice ?? null);
-    router.push(`/back/invoices/${invoiceId}`);
+    router.push(`/invoices/${invoiceId}`);
   };
 
   const findTutor = (id: string): Tutor | undefined => {
@@ -140,7 +140,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
               <Link
                 type="button"
                 className="text-sm font-medium ml-1"
-                href={`/back/students/${tuition?.studentId}`}
+                href={`/students/${tuition?.studentId}`}
               >
                 {findStudent(tuition?.studentId ?? "")?.name}
               </Link>
