@@ -7,7 +7,7 @@ import type { Tutor } from "@/lib/models/tutor";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {Badge} from "@/app/components/ui/badge";
+import { Badge } from "@/app/components/ui/badge";
 
 export default function TutorList() {
   const { tutors } = useTutors();
@@ -48,7 +48,16 @@ export default function TutorList() {
     }
 
     if (columnKey === "status") {
-        return <Badge>{tutor.status as string}</Badge>;
+      if (!tutor.status) {
+        return <Badge variant="error">Error</Badge>;
+      }
+
+      if (tutor.status === "active") {
+        return <Badge color="success">Active</Badge>;
+      }
+      if (tutor.status === "inactive") {
+        return <Badge color="error">Inactive</Badge>;
+      }
     }
 
     return tutor[columnKey] as React.ReactNode;
