@@ -70,7 +70,7 @@ const TuitionList: React.FC<TuitionListProps> = ({ tuitions }) => {
               level={findLevel(tuition.levelId)}
               time={tuition.startTime ?? ""}
               duration={tuition.duration}
-              status="Active"
+              status={tuition.status}
               tutor={findTutor(tuition.tutorId)}
               student={findStudent(tuition.studentId)}
               price="Unset"

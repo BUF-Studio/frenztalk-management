@@ -16,6 +16,8 @@ import { Student } from "@/lib/models/student";
 import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
@@ -64,6 +66,22 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     }
   };
 
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "error";
+      default:
+        return "error";
+    }
+  }
+
   return (
     <div>
       {/* Back Button */}
@@ -88,8 +106,15 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                 <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                   {/* <span className="text-gray-500 text-xl">Avatar</span> */}
                 </div>
-                <div className="grid grid-row-2">
+                {/* <div className="grid grid-row-2">
                   <p className="text-lg font-semibold">{student?.name}</p>
+                  <p className="text-xs text-gray-600 font-semibolds">{`Aged ${student?.age}`}</p>
+                </div> */}
+                <div className="grid grid-row-2 gap-2">
+                  <div className="flex flex-row gap-2">
+                    <p className="text-lg font-semibold">{student?.name}</p>
+                    <Badge variant={getStatusVariant(student?.status)}>{capitalizeFirstLetter(student?.status)}</Badge>
+                  </div>
                   <p className="text-xs text-gray-600 font-semibolds">{`Aged ${student?.age}`}</p>
                 </div>
               </div>

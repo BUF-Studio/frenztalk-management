@@ -7,13 +7,31 @@ import type { Tutor } from "@/lib/models/tutor";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {Badge} from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function TutorList() {
   const { tutors } = useTutors();
   const { setTutor } = useTutorPage();
 
   const router = useRouter();
+
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
 
   const columns: { key: keyof Tutor; label: string }[] = [
     { key: "id", label: "ID" },
@@ -48,7 +66,11 @@ export default function TutorList() {
     }
 
     if (columnKey === "status") {
-        return <Badge>{tutor.status as string}</Badge>;
+      return (
+        <Badge variant={getStatusVariant(tutor.status)}>
+          {capitalizeFirstLetter(tutor.status)}
+        </Badge>
+      );
     }
 
     return tutor[columnKey] as React.ReactNode;

@@ -6,12 +6,12 @@ import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { addStudent, updateStudent } from "@/lib/firebase/student";
 import { Student } from "@/lib/models/student";
 import { Plus } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { Badge } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import StudentDialog from "./studentForm";
+import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function StudentList() {
   const { students } = useStudents();
@@ -20,6 +20,17 @@ export default function StudentList() {
   const { showSnackbar } = useSnackbar();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  function getStatusVariant(status: string): BadgeProps["variant"] {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "error";
+      default:
+        return "info";
+    }
+  }
 
   const toggleDialog = () => {
     setIsDialogOpen(!isDialogOpen);
@@ -50,7 +61,11 @@ export default function StudentList() {
 
   const renderStudentCell = (student: Student, columnKey: keyof Student) => {
     if (columnKey === "status") {
-      return <Badge>{student.status as string}</Badge>;
+      return (
+        <Badge variant={getStatusVariant(student.status)}>
+          {capitalizeFirstLetter(student.status as string)}
+        </Badge>
+      );
     }
     return student[columnKey] as React.ReactNode;
   };

@@ -15,6 +15,8 @@ import MonthCalendar from "@/app/components/dashboard/Calendar";
 import StudentInvoiceList from "../../students/[id]/studentInvoiceList";
 import StudentTuitionList from "../../students/[id]/studentTuitionList";
 import StudentTutorList from "../../students/[id]/studentTutorList";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
   const { tutorTuition, tutor, setTutor } = useTutorPage();
@@ -34,6 +36,23 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
     setTuitionTutor(tutor);
     router.push("/back/tuitions/add");
   };
+
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
 
   return (
     <div>
@@ -59,8 +78,11 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                   {/* <span className="text-gray-500 text-xl">Avatar</span> */}
                 </div>
-                <div className="grid grid-row-2">
-                  <p className="text-lg font-semibold">{tutor?.name}</p>
+                <div className="grid grid-row-2 gap-2">
+                  <div className="flex flex-row gap-2">
+                    <p className="text-lg font-semibold">{tutor?.name}</p>
+                    <Badge variant={getStatusVariant(tutor?.status)}>{capitalizeFirstLetter(tutor?.status)}</Badge>
+                  </div>
                   <p className="text-xs text-gray-600 font-semibolds">
                     {tutor?.des}
                   </p>
