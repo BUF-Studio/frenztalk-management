@@ -8,10 +8,12 @@ import {
   signOut as firebaseSignOut,
   deleteUser,
   onAuthStateChanged as _onAuthStateChanged,
+  getAuth,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 
 import { auth } from "./clientApp";
+import { addUserToFirestore } from "./firestore";
 // import { auth as adminAuth } from "./serverApp";
 
 export function onAuthStateChanged(cb: (user: User | null) => void) {
@@ -31,22 +33,34 @@ export function onAuthStateChanged(cb: (user: User | null) => void) {
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
-    await signInWithPopup(auth, provider);
+    const resultUserCrendential = await signInWithPopup(auth, provider);
+    const uid = resultUserCrendential.user.uid;
+
+    addUserToFirestore(
+      uid,
+      resultUserCrendential.user.displayName || "",
+      resultUserCrendential.user.email || ""
+    );
   } catch (error) {
     console.error("Error signing in with Google:", error);
+
+    const auth = getAuth();
+    if (auth.currentUser) {
+      await deleteUserFromAuth(auth.currentUser!);
+    }
   }
   return;
 };
 
 export const signInWithEmail = async (email: string, password: string) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(
+    const resultUserCrendential = await signInWithEmailAndPassword(
       auth,
       email,
-      password,
+      password
     );
 
-    return userCredential.user;
+    return resultUserCrendential.user;
   } catch (error) {
     console.error("Error logging in with email and password:", error);
     throw error;
@@ -55,12 +69,21 @@ export const signInWithEmail = async (email: string, password: string) => {
 
 export const signUpWithEmail = async (email: string, password: string) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
+    const resultUserCrendential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password,
+      password
     );
-    return userCredential.user;
+
+    const uid = resultUserCrendential.user.uid;
+
+    addUserToFirestore(
+      uid,
+      resultUserCrendential.user.displayName || "",
+      resultUserCrendential.user.email || ""
+    );
+
+    return resultUserCrendential.user;
   } catch (error) {
     console.log("Error signing up with email and password:", error);
     throw error;
