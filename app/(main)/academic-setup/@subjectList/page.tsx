@@ -1,55 +1,39 @@
-"use client"
+"use client";
 
-import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { addSubject, subjectsStream, updateSubject, deleteSubject } from "@/lib/firebase/subject";
-import styles from "./Page.module.scss";
-import { Subject } from "@/lib/models/subject";
+import React, { useState } from "react";
 import { XCircle, CheckCircle2, Pencil, CircleMinus, Plus } from "lucide-react";
-import { getErrorMessage } from "@/utils/get-error-message";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useSubjectPage } from "@/lib/context/page/subjectPageContext";
+import {
+  addSubject,
+  updateSubject,
+  deleteSubject,
+} from "@/lib/firebase/subject";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { Subject } from "@/lib/models/subject";
+import { useAlert } from "@/lib/context/component/AlertContext";
 
 const SubjectList = () => {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [newSubjectName, setNewSubjectName] = useState<string>("");
+  const { subjects } = useSubjects();
+
+  const [newSubjectName, setNewSubjectName] = useState("");
   const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
-  const [subjectEdits, setSubjectEdits] = useState<{ [key: string]: string }>({});
-  const editInputRef = useRef<HTMLInputElement>(null);
+  const [subjectEdits, setSubjectEdits] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   const { showSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    const unsubscribeSubjects = subjectsStream((updatedSubjects) => {
-      setSubjects(updatedSubjects);
-    });
-
-    return () => unsubscribeSubjects();
-  }, []);
-
-  useEffect(() => {
-    if (editingSubjectId && editInputRef.current) {
-      editInputRef.current.focus();
-    }
-  }, [editingSubjectId]);
+  const { showAlert } = useAlert();
 
   const addItem = () => {
-    try {
-      if (!newSubjectName.trim()) {
-        showSnackbar("Subject name cannot be empty", "error");
-        return;
-      }
-      const newSubject = new Subject(null, newSubjectName.trim());
-      addSubject(newSubject);
-      setNewSubjectName("");
-    } catch (error) {
-      showSnackbar(getErrorMessage(error), "error");
+    if (!newSubjectName.trim()) {
+      showSnackbar("Subject name cannot be empty", "error");
+      return;
     }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      addItem();
-    }
+    const newSubject = new Subject(null, newSubjectName.trim());
+    addSubject(newSubject);
+    setNewSubjectName("");
+    showSnackbar("Subject added successfully", "success");
   };
 
   const handleEditSubject = (id: string) => {
@@ -61,80 +45,90 @@ const SubjectList = () => {
   };
 
   const handleConfirmEditSubject = (id: string) => {
-    try {
-      const updatedSubject = new Subject(id, subjectEdits[id].trim());
-      updateSubject(updatedSubject);
-      showSnackbar("Subject updated successfully", "success");
-      setEditingSubjectId(null);
-    } catch (error) {
-      showSnackbar(getErrorMessage(error), "error");
-    }
+    const updatedSubject = new Subject(id, subjectEdits[id].trim());
+    updateSubject(updatedSubject);
+    showSnackbar("Subject updated successfully", "success");
+    setEditingSubjectId(null);
   };
 
-  const handleEditKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
-    if (e.key === 'Enter') {
-      handleConfirmEditSubject(id);
-    }
+  const handleDeleteSubject = (subject: Subject) => {
+    showAlert({
+      title: "Confirm Delete Subject?",
+      message:
+        "Are you sure wan to delete this subject? This action cannot be undone.",
+      confirmLabel: "Confirm",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteSubject(subject);
+        showSnackbar("Subject deleted successfully", "success");
+      },
+      onCancel: () => {
+        return;
+      },
+    });
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <h2>Subjects</h2>
-        <p>Manage your subjects here</p>
+    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
+      <div className="mb-6 flex-shrink-0">
+        <h2 className="text-2xl font-bold mb-2">Subjects</h2>
+        <p className="text-gray-600">Manage your subjects here</p>
       </div>
-      <div className={styles.cardContent}>
+      <div className="flex-1 overflow-y-auto space-y-4 mb-6">
         {subjects.length === 0 && (
-          <p className={styles.emptyMessage}>
-            No subject available. Type a subject name below to add one.
+          <p className="text-center text-gray-600 italic">
+            No subject available.
           </p>
         )}
         {subjects.map((subject) => (
-          <div key={subject.id} className={styles.inputGroup}>
+          <div key={subject.id} className="flex items-center space-x-2">
             <input
               type="text"
-              ref={editingSubjectId === subject.id ? editInputRef : null}
+              className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Subject name"
-              value={editingSubjectId === subject.id ? subjectEdits[subject.id || ""] : subject.name}
-              onChange={(e) => {
-                setSubjectEdits((prev) => ({
-                  ...prev,
-                  [subject.id ? subject.id : ""]: e.target.value,
-                }));
-              }}
-              onKeyPress={(e) => handleEditKeyPress(e, subject.id || "")}
+              value={
+                editingSubjectId === subject.id
+                  ? subjectEdits[subject.id ?? ""] || ""
+                  : subject.name
+              }
+              onChange={(e) =>
+                setSubjectEdits({
+                  ...subjectEdits,
+                  [subject.id ?? ""]: e.target.value,
+                })
+              }
               disabled={editingSubjectId !== subject.id}
             />
             {editingSubjectId === subject.id ? (
-              <div className={styles.buttonGroup}>
+              <div className="flex space-x-1">
                 <button
                   type="button"
                   onClick={() => setEditingSubjectId(null)}
-                  className={[styles.btn, styles.btnDelete].join(" ")}
+                  className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                 >
                   <XCircle className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleConfirmEditSubject(subject.id ? subject.id : "")}
-                  className={[styles.btn, styles.btnSave].join(" ")}
+                  onClick={() => handleConfirmEditSubject(subject.id ?? "")}
+                  className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <div className={styles.buttonGroup}>
+              <div className="flex space-x-1">
                 <button
                   type="button"
-                  onClick={() => handleEditSubject(subject.id ? subject.id : "")}
-                  className={[styles.btnNormal, styles.btn].join(" ")}
+                  onClick={() => handleEditSubject(subject.id ?? "")}
+                  className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => deleteSubject(subject)}
-                  className={[styles.btnNormal, styles.btn].join(" ")}
+                  onClick={() => handleDeleteSubject(subject)}
+                  className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                 >
                   <CircleMinus className="w-4 h-4" />
                 </button>
@@ -142,24 +136,25 @@ const SubjectList = () => {
             )}
           </div>
         ))}
-        {/* Add new subject */}
-        <div className={styles.inputGroup}>
-          <input
-            type="text"
-            placeholder="Type new subject name and press Enter"
-            value={newSubjectName}
-            onChange={(e) => setNewSubjectName(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <button
-            type="button"
-            onClick={addItem}
-            className={[styles.btnAdd, styles.btn].join(" ")}
-          >
-            <Plus className="w-4 h-4" />
-            Add Subject
-          </button>
-        </div>
+      </div>
+      {/* Add new subject */}
+      <div className="flex items-center space-x-2 mt-auto">
+        <input
+          type="text"
+          className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Type new subject name and press Enter"
+          value={newSubjectName}
+          onChange={(e) => setNewSubjectName(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && addItem()}
+        />
+        <button
+          type="button"
+          onClick={addItem}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex items-center space-x-2"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Subject</span>
+        </button>
       </div>
     </div>
   );

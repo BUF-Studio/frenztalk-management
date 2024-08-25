@@ -23,7 +23,7 @@ const SignIn = () => {
     try {
       await signInWithEmail(email, password);
       showSnackbar("Signed in successfully", "success");
-      router.push("/");
+      router.push("/tuitions");
     } catch (error) {
       showSnackbar(getErrorMessage(error), "error");
       console.error("Error signing in with email and password:", error);
@@ -34,7 +34,7 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
       console.log("Signed in with Google successfully");
-      router.push("/");
+      router.push("/tuitions");
     } catch (err) {
       console.error("Error signing in with Google:", err);
     }
@@ -143,12 +143,12 @@ export default SignIn;
 //   </div>
 // </div>;
 
-{/* <p className="flex justify-center mt-4 font-sans text-sm font-light leading-normal text-inherit">
-  Don&apos;t have an account?
-  <Link
-    href="/signup"
-    className="block ml-1 font-sans text-sm font-bold leading-normal text-blue-gray-900"
-  >
-    Sign up
-  </Link>
-</p>; */}
+// <p className="flex justify-center mt-4 font-sans text-sm font-light leading-normal text-inherit">
+//   Don&apos;t have an account?
+//   <Link
+//     href="/signup"
+//     className="block ml-1 font-sans text-sm font-bold leading-normal text-blue-gray-900"
+//   >
+//     Sign up
+//   </Link>
+// </p>;

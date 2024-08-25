@@ -1,26 +1,56 @@
 "use client";
 
-import SearchBar from "@/app/components/dashboard/SearchBar";
-import { useState, useEffect } from "react";
-import styles from "@/styles/main/students/Page.module.scss";
-import StudentForm from "./studentForm";
-import { useStudentPage } from "@/lib/context/page/studentPageContext";
-import { Student } from "@/lib/models/student";
-import {
-  addStudent,
-  updateStudent,
-  deleteStudent,
-} from "@/lib/firebase/student";
-import { type Action, DataTable } from "@/app/components/dashboard/DataTable";
+import { DataTable } from "@/app/components/dashboard/DataTable";
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import Badge from "@/app/components/dashboard/Badge";
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
+import { addStudent, updateStudent } from "@/lib/firebase/student";
+import { Student } from "@/lib/models/student";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import StudentDialog from "./studentForm";
+import { capitalizeFirstLetter } from "@/utils/util";
 
-const StudentPage = () => {
+export default function StudentList() {
   const { students } = useStudents();
-  const { student, setStudent } = useStudentPage();
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const [changedIds, setChangedIds] = useState<string[]>([]);
+  const router = useRouter();
+  const { setStudent } = useStudentPage();
+  const { showSnackbar } = useSnackbar();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  function getStatusVariant(status: string): BadgeProps["variant"] {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "error";
+      default:
+        return "info";
+    }
+  }
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
+  };
+
+  const handleAddStudent = async (studentData: Partial<Student>) => {
+    try {
+      const newStudent = new Student(
+        null,
+        studentData.name ?? "",
+        studentData.age ?? 0,
+        studentData.status ?? "active"
+      );
+      await addStudent(newStudent);
+      showSnackbar("Successfully added student", "success");
+      toggleDialog();
+    } catch (error) {
+      showSnackbar("Error processing student", "error");
+    }
+  };
 
   const columns: { key: keyof Student; label: string }[] = [
     { key: "id", label: "ID" },
@@ -31,128 +61,45 @@ const StudentPage = () => {
 
   const renderStudentCell = (student: Student, columnKey: keyof Student) => {
     if (columnKey === "status") {
-      return <Badge status={student.status as string} />;
+      return (
+        <Badge variant={getStatusVariant(student.status)}>
+          {capitalizeFirstLetter(student.status as string)}
+        </Badge>
+      );
     }
     return student[columnKey] as React.ReactNode;
   };
 
-  useEffect(() => {
-    console.log("searchKeyword", searchKeyword);
-  }, [searchKeyword]);
-
-  const handleSearch = (keyword: string) => {
-    setSearchKeyword(keyword);
+  const viewStudent = (student: Student) => {
+    setStudent(student);
+    router.push(`/back/students/${student.id}`);
   };
-
-  const handleAddStudent = () => {
-    setShowAddForm(true);
-  };
-
-  function handleOnEdit(item: Student): void {
-    setShowAddForm(true);
-    setStudent(item);
-  }
-
-  function handleOnDelete(item: Student): void {
-    setShowAddForm(false);
-    deleteStudent(item);
-  }
-
-  const handleFormCancel = () => {
-    setShowAddForm(false); // Hide the form when cancel button is clicked
-    setStudent(null); // Reset the student state
-  };
-
-  const handleFormSubmit = async (formData: {
-    name: string;
-    age: number;
-    status: string;
-  }) => {
-    try {
-      let changedId = "";
-      if (student) {
-        const updatedStudent = new Student(
-          student.id,
-          formData.name,
-          formData.age,
-          formData.status,
-          student.tuitionsId,
-          student.tutorsId
-        );
-        await updateStudent(updatedStudent);
-        changedId = student.id || "";
-      } else {
-        const newStudent = new Student(
-          null,
-          formData.name,
-          formData.age,
-          formData.status,
-          [],
-          []
-        );
-        changedId = await addStudent(newStudent);
-      }
-      setStudent(null);
-      setShowAddForm(false);
-
-      setChangedIds((prev) => [...prev, changedId]);
-      setTimeout(() => {
-        setChangedIds((prev) => prev.filter((id) => id !== changedId));
-      }, 1000);
-    } catch (error) {
-      console.error("Failed to add/update student", error);
-    }
-  };
-
-  const actions: Action<Student>[] = [
-    {
-      label: "Edit",
-      onClick: handleOnEdit,
-      color: "primary",
-    },
-    {
-      label: "Delete",
-      onClick: handleOnDelete,
-      color: "error",
-    },
-  ];
 
   return (
-    <div className={styles.mainContainer}>
-      <div className={styles.headerContainer}>
-        <SearchBar onSearch={handleSearch} />
-        {!showAddForm && (
-          <button
-            type="submit"
-            className={styles.addStudentButton}
-            onClick={handleAddStudent}
-          >
-            Add Student
-          </button>
-        )}
+    <div>
+      <div className="flex flex-1 flex-row justify-between pb-4">
+        <h1 className="text-xl font-bold">Student List</h1>
+        <button
+          className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+          type="button"
+          onClick={toggleDialog}
+        >
+          <Plus size={16} strokeWidth={3} className="mr-1" />
+          Add Student
+        </button>
       </div>
-      <div className={styles.contentContainer}>
-        <div className={styles.studentList}>
-          <DataTable
-            data={students}
-            columns={columns}
-            actions={actions}
-            changedIds={changedIds}
-            renderCell={renderStudentCell}
-          />
-        </div>
-        {showAddForm && (
-          <div className={styles.studentForm}>
-            <StudentForm
-              student={student}
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-            />
-          </div>
-        )}
-      </div>
+      <DataTable
+        data={students}
+        columns={columns}
+        actions={[]}
+        onRowClick={(student) => viewStudent(student)}
+        renderCell={renderStudentCell}
+      />
+      <StudentDialog
+        isOpen={isDialogOpen}
+        onClose={toggleDialog}
+        onSubmit={handleAddStudent}
+      />
     </div>
   );
-};
-
-export default StudentPage;
+}
