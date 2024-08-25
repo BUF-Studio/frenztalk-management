@@ -11,7 +11,13 @@ const config = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+const adminConfig = {
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  clientEmail: process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL,
+  privateKey: process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY,
+}
+
 // firebase admin json file
-export const firebaseAdminConfig = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+export const firebaseAdminConfig = adminConfig;
 
 export const firebaseConfig = config;

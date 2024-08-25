@@ -8,15 +8,13 @@ import { getAuth } from "firebase-admin/auth";
 
 import { firebaseAdminConfig } from "./config";
 
-const serviceAccount = JSON.parse(firebaseAdminConfig || "{}");
-
 export const firebaseAdminApp =
   getApps().length === 0
     ? initializeApp({
         credential: admin.credential.cert({
-          projectId: serviceAccount.project_id,
-          clientEmail: serviceAccount.client_email,
-          privateKey: serviceAccount.private_key.replace(/\\n/g, "\n"),
+          projectId: firebaseAdminConfig.projectId,
+          clientEmail: firebaseAdminConfig.clientEmail,
+          privateKey: firebaseAdminConfig.privateKey?.replace(/\\n/g, "\n"),
         }),
       })
     : getApps()[0];
