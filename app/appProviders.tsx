@@ -29,14 +29,6 @@ function AppProvider({ children }: ScriptProps) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>; // or your loading component
-  }
-
-  if (!firebaseUserId) {
-    return <div>Please sign in</div>; // or your sign-in component
-  }
   
   return (
     <UserProvider userId="72AiGSs5ZvRLeA9MKEDz88821Y12">
