@@ -97,7 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Logout",
-      href: "/sign-in",
+      href: "/logout",
       icon: (
         <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
       ),
@@ -132,14 +132,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div>
-            <button
-              className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-              type="button"
-              onClick={() => authContext.signOut()}
-            >
-              <LogOut size={16} strokeWidth={3} className="mr-1" />
-              Log Out
-            </button>
             <SidebarLink
               link={{
                 label: authContext.user?.displayName ?? "Anonymous",
