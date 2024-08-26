@@ -55,7 +55,7 @@ const SubjectList = () => {
     showAlert({
       title: "Confirm Delete Subject?",
       message:
-        "Are you sure wan to delete this subject? This action cannot be undone.",
+        "Are you sure you want to delete this subject? This action cannot be undone.",
       confirmLabel: "Confirm",
       cancelLabel: "Cancel",
       onConfirm: () => {
@@ -69,14 +69,14 @@ const SubjectList = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
+    <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-md p-6 flex flex-col h-full mx-auto flex-1">
       <div className="mb-6 flex-shrink-0">
-        <h2 className="text-2xl font-bold mb-2">Subjects</h2>
-        <p className="text-gray-600">Manage your subjects here</p>
+        <h2 className="text-2xl font-bold mb-2 dark:text-neutral-200">Subjects</h2>
+        <p className="text-gray-600 dark:text-neutral-400">Manage your subjects here</p>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-4 mb-6">
+      <div className="flex-1 overflow-y-auto space-y-4 mb-6 p-1">
         {subjects.length === 0 && (
-          <p className="text-center text-gray-600 italic">
+          <p className="text-center text-gray-600 dark:text-neutral-400 italic">
             No subject available.
           </p>
         )}
@@ -84,7 +84,9 @@ const SubjectList = () => {
           <div key={subject.id} className="flex items-center space-x-2">
             <input
               type="text"
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-grow px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md text-sm 
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                         bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100"
               placeholder="Subject name"
               value={
                 editingSubjectId === subject.id
@@ -104,14 +106,14 @@ const SubjectList = () => {
                 <button
                   type="button"
                   onClick={() => setEditingSubjectId(null)}
-                  className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                  className="p-2 bg-red-500 dark:bg-red-600 text-white rounded-md hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                 >
                   <XCircle className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => handleConfirmEditSubject(subject.id ?? "")}
-                  className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="p-2 bg-green-500 dark:bg-green-600 text-white rounded-md hover:bg-green-600 dark:hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                 </button>
@@ -121,14 +123,14 @@ const SubjectList = () => {
                 <button
                   type="button"
                   onClick={() => handleEditSubject(subject.id ?? "")}
-                  className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                  className="p-2 bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-md hover:bg-gray-300 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteSubject(subject)}
-                  className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                  className="p-2 bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded-md hover:bg-gray-300 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                 >
                   <CircleMinus className="w-4 h-4" />
                 </button>
@@ -141,7 +143,9 @@ const SubjectList = () => {
       <div className="flex items-center space-x-2 mt-auto">
         <input
           type="text"
-          className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-grow px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md text-sm 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                     bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100"
           placeholder="Type new subject name and press Enter"
           value={newSubjectName}
           onChange={(e) => setNewSubjectName(e.target.value)}
@@ -150,7 +154,7 @@ const SubjectList = () => {
         <button
           type="button"
           onClick={addItem}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex items-center space-x-2"
+          className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Add Subject</span>

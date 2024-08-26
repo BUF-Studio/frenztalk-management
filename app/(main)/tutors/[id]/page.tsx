@@ -1,22 +1,18 @@
 "use client";
 
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import Link from "next/link";
 import TutorInvoiceList from "./tutorInvoiceList";
-import TutorTuitionList from "./tutorTuitionList";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import TutorStudentList from "./tutorStudentList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowBackIosNew } from "@mui/icons-material";
+import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import StudentInvoiceList from "../../students/[id]/studentInvoiceList";
-import StudentTuitionList from "../../students/[id]/studentTuitionList";
-import StudentTutorList from "../../students/[id]/studentTutorList";
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
+import TuitionList from "../../tuitions/tuitionList";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
   const { tutorTuition, tutor, setTutor } = useTutorPage();
@@ -39,8 +35,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
 
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
     if (!status) {
-      // Handle the case where status is undefined or null
-      return "error"; // or any appropriate fallback value
+      return "error";
     }
 
     switch (status.toLowerCase()) {
@@ -48,9 +43,8 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
         return "success";
       case "frozen":
         return "warning";
-      // Add other cases as needed
       default:
-        return "error"; // Handle unexpected statuses
+        return "error";
     }
   }
 
@@ -62,7 +56,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
         onClick={(e) => {
           router.back();
         }}
-        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
+        className="flex items-center text-gray-600 dark:text-neutral-400 hover:text-gray-800 dark:hover:text-neutral-200 transition-colors mb-4"
       >
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
         <h1 className="text-lg font-semibold">Tutor Details</h1>
@@ -72,24 +66,24 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side */}
         <div className="flex-grow">
-          <div className="bg-white border-1 border-grey-600 rounded-lg p-6 mb-4">
+          <div className="bg-white dark:bg-neutral-800 border border-grey-600 dark:border-neutral-700 rounded-lg p-6 mb-4">
             <div className="flex items-center justify-between">
               <div className="flex flex-row gap-6 items-center">
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                  {/* <span className="text-gray-500 text-xl">Avatar</span> */}
+                <div className="w-20 h-20 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
+                  {/* Avatar placeholder */}
                 </div>
                 <div className="grid grid-row-2 gap-2">
                   <div className="flex flex-row gap-2">
-                    <p className="text-lg font-semibold">{tutor?.name}</p>
+                    <p className="text-lg font-semibold dark:text-neutral-100">{tutor?.name}</p>
                     <Badge variant={getStatusVariant(tutor?.status)}>{capitalizeFirstLetter(tutor?.status)}</Badge>
                   </div>
-                  <p className="text-xs text-gray-600 font-semibolds">
+                  <p className="text-xs text-gray-600 dark:text-neutral-400 font-semibolds">
                     {tutor?.des}
                   </p>
                 </div>
               </div>
               <button
-                className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+                className="flex flex-row items-center px-4 py-2 bg-red-800 dark:bg-red-700 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] dark:hover:bg-red-600 hover:shadow-lg transition-colors"
                 type="button"
               >
                 <Edit size={16} strokeWidth={3} className="mr-1" />
@@ -97,7 +91,27 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
               </button>
             </div>
           </div>
-          <TutorTuitionList />
+          <div className="flex flex-row justify-between items-center mb-2">
+            <h1 className="text-lg font-normal dark:text-neutral-200">Classes</h1>
+            <div className="flex flex-row gap-2 items-center">
+              <div className="dark:text-neutral-400">Filter:</div>
+              {selectedDate ? (
+                <button
+                  className="flex flex-row h-10 gap-1 items-center px-2 py-2 bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-sm rounded-md font-normal hover:shadow-lg transition-colors"
+                  type="button"
+                  onClick={() => setSelectedDate(null)}
+                >
+                  {selectedDate.toDateString()}
+                  <Close className="text-neutral-500 dark:text-neutral-400" />
+                </button>
+              ) : (
+                <div className="flex flex-row h-10 items-center px-4 py-2 bg-transparent text-neutral-700 dark:text-neutral-300 text-sm rounded-md font-semibold">
+                  None
+                </div>
+              )}
+            </div>
+          </div>
+          <TuitionList tuitions={tutorTuition} filter={selectedDate}/>
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>

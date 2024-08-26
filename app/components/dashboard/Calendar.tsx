@@ -52,8 +52,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   }, [onResetDateSelect]);
 
   const findSubject = (id: string) => {
-    const subject = subjects.find((subject) => subject.id === id);
-    return subject;
+    return subjects.find((subject) => subject.id === id);
   };
 
   const daysInMonth = new Date(
@@ -109,14 +108,12 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
         ).toDateString()
     );
 
-    // Sort events by start time
     dayEvents.sort(
       (a, b) =>
         new Date(a.startTime ?? "").getTime() -
         new Date(b.startTime ?? "").getTime()
     );
 
-    // Return top 2 events and the remaining count
     return {
       topEvents: dayEvents.slice(0, 1),
       moreCount: dayEvents.length - 1,
@@ -134,7 +131,6 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
       currentDate.getMonth(),
       date
     );
-    resetDateSelect;
     setSelectedDate(newSelectedDate);
     if (onDateSelect) onDateSelect(newSelectedDate);
   };
@@ -186,14 +182,24 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   return (
     <div
       ref={calendarRef}
-      className="w-full h-full max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden"
+      className="w-full h-full max-w-3xl mx-auto bg-white dark:bg-neutral-800 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-600"
     >
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex flex-row gap-2">
-          <h2 className={cn("font-bold", styles.headerSize)}>
+          <h2
+            className={cn(
+              "font-bold text-neutral-800 dark:text-neutral-200",
+              styles.headerSize
+            )}
+          >
             {monthNames[currentDate.getMonth()]}
           </h2>
-          <span className={cn("font-light", styles.headerSize)}>
+          <span
+            className={cn(
+              "font-light text-neutral-600 dark:text-neutral-400",
+              styles.headerSize
+            )}
+          >
             {currentDate.getFullYear()}
           </span>
         </div>
@@ -202,17 +208,17 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
             type="button"
             onClick={prevMonth}
             className={cn(
-              "flex justify-center items-center rounded-full w-8 hover:bg-gray-200 transition-colors duration-200",
+              "flex justify-center items-center rounded-full w-8 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200",
               styles.buttonSize
             )}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
           </button>
           <button
             type="button"
             onClick={thisMonth}
             className={cn(
-              "flex items-center justify-center px-2 font-normal leading-none whitespace-nowrap hover:bg-gray-200 transition-colors duration-200 border border-gray-200 rounded-lg",
+              "flex items-center justify-center px-2 font-normal leading-none whitespace-nowrap hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200 border border-neutral-200 dark:border-neutral-600 rounded-lg text-neutral-600 dark:text-neutral-400",
               styles.buttonSize
             )}
           >
@@ -222,20 +228,21 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
             type="button"
             onClick={nextMonth}
             className={cn(
-              "flex justify-center items-center rounded-full w-8 hover:bg-gray-200 transition-colors duration-200",
+              "flex justify-center items-center rounded-full w-8 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200",
               styles.buttonSize
             )}
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
           </button>
         </div>
       </div>
       <div className="grid grid-cols-7">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
           <div
             key={day}
             className={cn(
-              "text-right font-light text-gray-500 pr-1 border-b border-gray-200 p-1",
+              "text-right font-light text-neutral-500 dark:text-neutral-400 pr-1 border-b border-neutral-200 dark:border-neutral-700 p-1",
+              index === 6 && "border-r-0",
               styles.daySize
             )}
           >
@@ -251,18 +258,24 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
               ? getEventsForDate(date)
               : { topEvents: [], moreCount: 0 };
 
+          const isLastColumn = (index + 1) % 7 === 0;
+          const isLastRow = index >= totalCells - 7;
+
           return (
             <button
               type="button"
-              key={`cell-${
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                index
-              }`}
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              key={`cell-${index}`}
               className={cn(
-                "aspect-square border-r border-b border-gray-200 p-1 overflow-hidden",
-                isEmptyStart || isEmptyEnd ? "bg-gray-50" : "",
-                isToday(date) ? "bg-red-100" : "",
-                "transition-colors duration-200 hover:bg-gray-50 flex flex-col",
+                "aspect-square p-1 overflow-hidden",
+                "border-r border-b border-neutral-200 dark:border-neutral-700",
+                isLastColumn && "border-r-0",
+                isLastRow && "border-b-0",
+                isEmptyStart || isEmptyEnd
+                  ? "bg-neutral-50 dark:bg-neutral-900"
+                  : "",
+                isToday(date) ? "bg-red-100 dark:bg-red-900" : "",
+                "transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex flex-col",
                 styles.daySize
               )}
               onClick={() =>
@@ -274,9 +287,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
                   <div
                     className={cn(
                       "flex font-normal h-6 w-6 items-center justify-center",
-                      isToday(date) ? "text-red-600" : "",
+                      isToday(date) ? "text-red-600 dark:text-red-300" : "",
                       isSelected(date)
-                        ? "text-white bg-red-900 rounded-full"
+                        ? "text-white bg-red-900 dark:bg-red-700 rounded-full"
                         : ""
                     )}
                   >
@@ -287,13 +300,13 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
                       {topEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="text-xs bg-blue-100 text-blue-800 rounded p-1 truncate text-left"
+                          className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded p-1 truncate text-left"
                         >
                           {findSubject(event.subjectId)?.name}
                         </div>
                       ))}
                       {moreCount > 0 && (
-                        <div className="text-xs text-gray-500 text-left px-1">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400 text-left px-1">
                           {moreCount} more...
                         </div>
                       )}
@@ -301,7 +314,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
                   )}
                   {!styles.showEvents && topEvents.length > 0 && (
                     <div className="mt-1">
-                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-red-500 dark:bg-red-400 rounded-full" />
                     </div>
                   )}
                 </>
