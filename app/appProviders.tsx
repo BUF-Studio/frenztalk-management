@@ -11,6 +11,7 @@ import LevelsProvider from "@/lib/context/collection/levelContext";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
+import ObjectProvider from "./objectProviders";
 
 function AppProvider({ children }: ScriptProps) {
   const [firebaseUserId, setFirebaseUserId] = useState<string | null>(null);
@@ -39,7 +40,10 @@ function AppProvider({ children }: ScriptProps) {
   
   return (
     <UserProvider userId={firebaseUserId}>
-      <StudentsProvider>
+      <ObjectProvider>
+        {children}
+      </ObjectProvider>
+      {/* <StudentsProvider>
         <TutorsProvider>
           <SubjectsProvider>
             <InvoicesProvider>
@@ -53,7 +57,7 @@ function AppProvider({ children }: ScriptProps) {
             </InvoicesProvider>
           </SubjectsProvider>
         </TutorsProvider>
-      </StudentsProvider>
+      </StudentsProvider> */}
     </UserProvider>
   );
 }

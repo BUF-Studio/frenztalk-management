@@ -12,30 +12,34 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { User, UserRole } from "@/lib/models/user";
+import PaymentsProvider from "@/lib/context/collection/paymentContext";
 
 function ObjectProvider({ children }: ScriptProps) {
-  const {user} = useUser();
+  const { user } = useUser();
 
-  if(user!.role === UserRole.TUTOR){
-    return(
+  if (user!.role === UserRole.TUTOR) {
+    return (
       <StudentsProvider>
-          <SubjectsProvider>
-              <TuitionsProvider tutorId={user!.id!}>
-                  <LevelsProvider>
-                    <PageProvider>{children}</PageProvider>
-                  </LevelsProvider>
-              </TuitionsProvider>
-          </SubjectsProvider>
+        <SubjectsProvider>
+          <TuitionsProvider tutorId={user!.id!}>
+            <PaymentsProvider tutorId={user!.id!}>
+              <LevelsProvider>
+                <PageProvider>{children}</PageProvider>
+              </LevelsProvider>
+            </PaymentsProvider>
+          </TuitionsProvider>
+        </SubjectsProvider>
       </StudentsProvider>
     )
   }
 
-  
+
   return (
-      <StudentsProvider>
-        <TutorsProvider>
-          <SubjectsProvider>
-            <InvoicesProvider>
+    <StudentsProvider>
+      <TutorsProvider>
+        <SubjectsProvider>
+          <InvoicesProvider>
+            <PaymentsProvider>
               <TuitionsProvider>
                 <UsersProvider>
                   <LevelsProvider>
@@ -43,10 +47,11 @@ function ObjectProvider({ children }: ScriptProps) {
                   </LevelsProvider>
                 </UsersProvider>
               </TuitionsProvider>
-            </InvoicesProvider>
-          </SubjectsProvider>
-        </TutorsProvider>
-      </StudentsProvider>
+            </PaymentsProvider>
+          </InvoicesProvider>
+        </SubjectsProvider>
+      </TutorsProvider>
+    </StudentsProvider >
   );
 }
 

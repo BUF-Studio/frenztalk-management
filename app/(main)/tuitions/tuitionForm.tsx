@@ -17,9 +17,11 @@ import { addInvoice } from '@/lib/firebase/invoice';
 import { Student } from '@/lib/models/student';
 import { Tutor } from '@/lib/models/tutor';
 import { useLevels } from '@/lib/context/collection/levelContext';
-import InvoiceType from '@/lib/models/invoiceType';
+// import InvoiceType from '@/lib/models/invoiceType';
 import axios from 'axios';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
+import { Payment } from '@/lib/models/payment';
+import { addPayment } from '@/lib/firebase/payment';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -215,14 +217,14 @@ export default function TuitionForm() {
                             duration,
                             currency,
                             studentPrice,
-                            InvoiceType.STUDENT
+                            // InvoiceType.STUDENT
                         )
 
                         siid = await addInvoice(studentInvoice)
                     }
                     if (tiid === null) {
                         const tutorRate = tutorPrice * duration / 60
-                        const tutorInvoice = new Invoice(
+                        const tutorPayment = new Payment(
                             null,
                             tuition.id!,
                             tutorId,
@@ -234,10 +236,10 @@ export default function TuitionForm() {
                             duration,
                             currency,
                             tutorPrice,
-                            InvoiceType.TUTOR,
+                            // InvoiceType.TUTOR,
                         )
 
-                        tiid = await addInvoice(tutorInvoice)
+                        tiid = await addPayment(tutorPayment)
                     }
                 }
 
