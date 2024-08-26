@@ -14,11 +14,13 @@ const SignIn = () => {
   const { signInWithEmail, signInWithGoogle, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       await signInWithEmail(email, password);
@@ -27,6 +29,8 @@ const SignIn = () => {
     } catch (error) {
       showSnackbar(getErrorMessage(error), "error");
       console.error("Error signing in with email and password:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +74,7 @@ const SignIn = () => {
               required
             />
             <button type="submit" className={styles.primaryButton}>
-              Sign In
+            {loading ? "Loading..." : "Sign In"}
             </button>
           </form>
           <div className={styles.separator}>

@@ -7,6 +7,7 @@ import AppProvider from "./appProviders";
 import { AuthContextProvider } from "@/lib/context/AuthContext";
 import { SnackbarProvider } from "@/lib/context/component/SnackbarContext";
 import { AlertProvider } from "@/lib/context/component/AlertContext";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
