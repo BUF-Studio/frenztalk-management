@@ -1,6 +1,6 @@
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { tuitionsStream } from "@/lib/firebase/tuition";
 import { Tuition } from "@/lib/models/tuition";
 
@@ -16,16 +16,21 @@ const TuitionsContext = createContext<TuitionsContextType>(initialContext);
 
 export const useTuitions = () => useContext(TuitionsContext);
 
-function TuitionsProvider({ children }: ScriptProps) {
-  const [tuitions, Tuitions] = useState<Tuition[]>([]);
+type TuitionsProviderProps = {
+  children: ReactNode;
+  tutorId?: string;
+};
+
+function TuitionsProvider({ children, tutorId }: TuitionsProviderProps) {
+  const [tuitions, setTuitions] = useState<Tuition[]>([]);
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (tuitions: Tuition[]) => {
       console.log(tuitions);
-      Tuitions(tuitions);
+      setTuitions(tuitions);
     };
-    const unsubscribe = tuitionsStream(onUpdate);
+    const unsubscribe = tuitionsStream(onUpdate,tutorId);
 
     return () => unsubscribe();
   }, []);

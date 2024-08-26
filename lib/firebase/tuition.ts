@@ -39,6 +39,7 @@ export const updateTuition = async (
 
 export const tuitionsStream = (
   onUpdate: (updatedData: Tuition[]) => void,
+  tutorId?: string
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     Tuition.fromMap(data, id);
@@ -47,9 +48,9 @@ export const tuitionsStream = (
     | ((query: Query<DocumentData>) => Query<DocumentData>)
     | undefined;
 
-  // if (tutorId) {
-  //   queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', 'array-contains', tutorId));
-  // }
+  if (tutorId) {
+    queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
+  }
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(

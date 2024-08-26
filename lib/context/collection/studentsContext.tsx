@@ -22,12 +22,12 @@ const StudentsContext = createContext<StudentsContextType>(initialContext);
 
 type StudentsProviderProps = {
   children: ReactNode;
-  tutorId?: string;
+  // tutorId?: string;
 };
 
 export const useStudents = () => useContext(StudentsContext);
 
-function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
+function StudentsProvider({ children }: StudentsProviderProps) {
   const [students, setStudents] = useState<Student[]>([]);
 
   // Fetch data from Firebase and set up listeners
@@ -36,7 +36,7 @@ function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
       setStudents(students);
     };
 
-    const unsubscribe = studentsStream(onUpdate, tutorId);
+    const unsubscribe = studentsStream(onUpdate);
 
     return () => unsubscribe();
   }, []);
