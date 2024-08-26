@@ -53,7 +53,7 @@ export const deleteStudent = async (student: Student) => {
 
 export const studentsStream = (
   onUpdate: (updatedData: Student[]) => void,
-  tutorId?: string
+  // tutorId?: string
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     Student.fromMap(data, id);
@@ -62,10 +62,10 @@ export const studentsStream = (
     | ((query: Query<DocumentData>) => Query<DocumentData>)
     | undefined;
 
-  if (tutorId) {
-    queryBuilder = (q: Query<DocumentData>) =>
-      query(q, where("tutorId", "array-contains", tutorId));
-  }
+  // if (tutorId) {
+  //   queryBuilder = (q: Query<DocumentData>) =>
+  //     query(q, where("tutorId", "array-contains", tutorId));
+  // }
 
   // Subscribe to the collection stream
   const unsubscribe = collectionStream(

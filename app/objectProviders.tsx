@@ -1,7 +1,7 @@
 import InvoicesProvider from "@/lib/context/collection/invoiceContext";
 import StudentsProvider from "@/lib/context/collection/studentsContext";
 import TutorsProvider from "@/lib/context/collection/tutorContext";
-import UserProvider from "@/lib/context/collection/userContext";
+import UserProvider, { useUser } from "@/lib/context/collection/userContext";
 import type { ScriptProps } from "next/script";
 import PageProvider from "./pageProvider";
 import SubjectsProvider from "@/lib/context/collection/subjectContext";
@@ -11,34 +11,27 @@ import LevelsProvider from "@/lib/context/collection/levelContext";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
+import { User, UserRole } from "@/lib/models/user";
 
-function AppProvider({ children }: ScriptProps) {
-  const [firebaseUserId, setFirebaseUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  // const [user] = useAuth();
-  
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setFirebaseUserId(user.uid);
-      } else {
-        setFirebaseUserId(null);
-      }
-      setLoading(false);
-    });
+function ObjectProvider({ children }: ScriptProps) {
+  const {user} = useUser();
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  if (firebaseUserId === null) {
-    return children;
+  if(user!.role === UserRole.TUTOR){
+    return(
+      <StudentsProvider>
+          <SubjectsProvider>
+              <TuitionsProvider tutorId={user!.id!}>
+                  <LevelsProvider>
+                    <PageProvider>{children}</PageProvider>
+                  </LevelsProvider>
+              </TuitionsProvider>
+          </SubjectsProvider>
+      </StudentsProvider>
+    )
   }
 
   
   return (
-    <UserProvider userId={firebaseUserId}>
       <StudentsProvider>
         <TutorsProvider>
           <SubjectsProvider>
@@ -54,8 +47,7 @@ function AppProvider({ children }: ScriptProps) {
           </SubjectsProvider>
         </TutorsProvider>
       </StudentsProvider>
-    </UserProvider>
   );
 }
 
-export default AppProvider;
+export default ObjectProvider;
