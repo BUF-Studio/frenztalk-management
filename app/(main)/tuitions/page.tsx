@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { useState } from "react";
-import TuitionList from "./tuitionList";
+import TuitionList from "../../components/main/tuitionList";
 import { Plus } from "lucide-react";
 
 export default function TuitionPage() {

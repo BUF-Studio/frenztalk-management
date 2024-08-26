@@ -8,13 +8,16 @@ import { Edit } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import TutorStudentList from "../tutors/[id]/tutorStudentList";
-import TutorInvoiceList from "../tutors/[id]/tutorInvoiceList";
 import { useAuth } from "@/lib/context/AuthContext";
 import { auth } from "firebase-admin";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/service/clientApp";
+import { TutorList } from "@/app/components/main/tutorList";
 import Image from "next/image";
+import { Tuition } from "@/lib/models/tuition";
+import TuitionList from "../../components/main/tuitionList";
+import { InvoiceList } from "@/app/components/main/invoiceList";
+import { StudentList } from "@/app/components/main/studentList";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const authContext = useAuth();
@@ -23,13 +26,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { setTuitionTutor } = useTuitionPage();
   //   const router = useRouter();
-  const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
     if (authContext.user) {
-      console.log("check user " + authContext.user.uid);
-      console.log("check email " + authContext.user.email);
-      console.log("check role " + authContext.role);
+      console.log(`check user ${authContext.user.uid}`);
+      console.log(`check user ${authContext.user.email}`);
+      console.log(`check role ${authContext.role}`);
 
       const docRef = doc(db, "tutors", authContext.user.uid);
     }
@@ -89,7 +91,9 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               </button>
             </div>
           </div>
-          {authContext.role === "tutor" && <TutorTuitionList />}
+          {authContext.role === "tutor" && (
+            <TuitionList tuitions={tutorTuition} />
+          )}
         </div>
 
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
@@ -99,8 +103,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
               onDateSelect={(date) => setSelectedDate(date)}
             />
           </div>
-          {authContext.role === "tutor" && <TutorStudentList />}
-          <TutorInvoiceList />
+          {authContext.role === "tutor" && <StudentList />}
+          <InvoiceList />
           <div className="flex flex-1 h-full" />
         </div>
       </div>

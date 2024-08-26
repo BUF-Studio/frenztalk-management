@@ -1,9 +1,7 @@
 "use client";
 
 import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import TutorInvoiceList from "./tutorInvoiceList";
 import { useTutors } from "@/lib/context/collection/tutorContext";
-import TutorStudentList from "./tutorStudentList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,10 +10,12 @@ import { Edit } from "lucide-react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
-import TuitionList from "../../tuitions/tuitionList";
+import TuitionList from "../../../components/main/tuitionList";
+import { InvoiceList } from "@/app/components/main/invoiceList";
+import { StudentList } from "@/app/components/main/studentList";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
-  const { tutorTuition, tutor, setTutor } = useTutorPage();
+  const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
   const { tutors } = useTutors();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { setTuitionTutor } = useTuitionPage();
@@ -74,8 +74,12 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 </div>
                 <div className="grid grid-row-2 gap-2">
                   <div className="flex flex-row gap-2">
-                    <p className="text-lg font-semibold dark:text-neutral-100">{tutor?.name}</p>
-                    <Badge variant={getStatusVariant(tutor?.status)}>{capitalizeFirstLetter(tutor?.status)}</Badge>
+                    <p className="text-lg font-semibold dark:text-neutral-100">
+                      {tutor?.name}
+                    </p>
+                    <Badge variant={getStatusVariant(tutor?.status)}>
+                      {capitalizeFirstLetter(tutor?.status)}
+                    </Badge>
                   </div>
                   <p className="text-xs text-gray-600 dark:text-neutral-400 font-semibolds">
                     {tutor?.des}
@@ -92,7 +96,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="flex flex-row justify-between items-center mb-2">
-            <h1 className="text-lg font-normal dark:text-neutral-200">Classes</h1>
+            <h1 className="text-lg font-normal dark:text-neutral-200">
+              Classes
+            </h1>
             <div className="flex flex-row gap-2 items-center">
               <div className="dark:text-neutral-400">Filter:</div>
               {selectedDate ? (
@@ -111,7 +117,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
               )}
             </div>
           </div>
-          <TuitionList tuitions={tutorTuition} filter={selectedDate}/>
+          <TuitionList tuitions={tutorTuition} filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
@@ -120,8 +126,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
               onDateSelect={(date) => setSelectedDate(date)}
             />
           </div>
-          <TutorStudentList />
-          <TutorInvoiceList />
+          <StudentList students={tutorStudent} />
           <div className="flex flex-1 h-full" />
         </div>
       </div>

@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { Invoice } from "@/lib/models/invoice";
+import { Badge, type BadgeProps } from "../ui/badge";
+import { capitalizeFirstLetter } from "@/utils/util";
+import { useStudents } from "@/lib/context/collection/studentsContext";
 
 interface InvoicesProps {
   invoices?: Invoice[];
@@ -10,43 +13,86 @@ interface InvoicesProps {
 
 export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
   const router = useRouter();
+  const { students } = useStudents();
 
   const handleOnClick = (id: string) => {
     router.push(`/invoices/${id}`);
   };
 
+  const findStudent = (id: string) => {
+    const student = students.find((student) => student.id === id);
+    return student;
+  };
+
+  const renderInvoice = (invoice: Invoice, index: number) => {
+    return (
+      <div key={invoice.id} className="flex flex-col ">
+        <div className="flex items-start justify-between">
+          {/* Left side: Student Name and Date */}
+          <div className="flex flex-col">
+            <button
+              type="button"
+              onClick={() => handleOnClick(invoice?.id ?? "")}
+              className="text-md font-medium hover:underline hover:text-red-700 dark:hover:text-red-500 text-left dark:text-neutral-100"
+            >
+              {findStudent(invoice.studentId)?.name}
+            </button>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">
+              {new Date(invoice.startDateTime).toDateString()}
+            </p>
+          </div>
+
+          {/* Right side: Status and Amount */}
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-md font-semibold dark:text-neutral-200">
+              {`
+              ${invoice.currency} ${invoice.rate?.toFixed(2) ?? "0.00"}
+              `}
+            </p>
+            <Badge variant={getStatusVariant(invoice.status)}>
+              {capitalizeFirstLetter(invoice.status)}
+            </Badge>
+          </div>
+        </div>
+        {index < (invoices?.length ?? 0) - 1 && (
+          <div className="my-2 border-b border-gray-200 dark:border-neutral-700" />
+        )}
+      </div>
+    );
+  };
+
+  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+    if (!status) {
+      // Handle the case where status is undefined or null
+      return "error"; // or any appropriate fallback value
+    }
+
+    switch (status.toLowerCase()) {
+      case "paid":
+        return "success";
+      case "pending":
+        return "info";
+      case "cancel":
+        return "warning";
+      // Add other cases as needed
+      default:
+        return "error"; // Handle unexpected statuses
+    }
+  }
+
   return (
     <div>
-      <span className="flex text-lg font-normal mb-2">Invoice Generated</span>
-      <div className="bg-white p-4 w-full border border-gray-200 rounded-lg overflow-hidden">
+      <span className="flex text-lg font-normal mb-2 dark:text-neutral-200">
+        Invoice Generated
+      </span>
+      <div className="bg-white dark:bg-neutral-800 p-4 w-full border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden">
         <div className="flex flex-col">
           {(!invoices || invoices.length === 0) && (
-            <h1 className="text-center font-normal text-gray-500">
+            <h1 className="text-center font-normal text-gray-500 dark:text-neutral-400">
               No Invoice Found
             </h1>
           )}
-          {invoices?.map((invoice, index) => (
-            <div key={invoice.id} className="mb-4 last:mb-0">
-              <div className="flex items-start gap-4">
-                <div className="flex flex-col">
-                  <button
-                    type="button"
-                    onClick={() => handleOnClick(invoice?.id ?? "")}
-                    className="text-md font-semibold hover:underline hover:text-red-700 text-left"
-                  >
-                    {invoice.id ?? "Unknown Invoice"}
-                  </button>
-                  <p className="text-gray-500 text-sm line-clamp-2">
-                    Hello there I am just bombing whatever to test out whether
-                    this thing is working or not
-                  </p>
-                </div>
-              </div>
-              {index < invoices.length - 1 && (
-                <div className="my-2 border-b border-gray-200" />
-              )}
-            </div>
-          ))}
+          {invoices?.map((invoice, index) => renderInvoice(invoice, index))}
         </div>
       </div>
     </div>

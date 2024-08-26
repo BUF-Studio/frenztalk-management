@@ -2,10 +2,6 @@
 
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
-import Link from "next/link";
-import StudentTutorList from "./studentTutorList";
-import StudentTuitionList from "./studentTuitionList";
-import StudentInvoiceList from "./studentInvoiceList";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
@@ -18,12 +14,14 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
-import TuitionList from "../../tuitions/tuitionList";
+import TuitionList from "../../../components/main/tuitionList";
+import { TutorList } from "@/app/components/main/tutorList";
+import { InvoiceList } from "@/app/components/main/invoiceList";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, setStudent } = useStudentPage();
   const { students } = useStudents();
-  const { studentTuition } = useStudentPage();
+  const { studentTuition, studentTutor, studentInvoice } = useStudentPage();
   const { setTuitionStudent } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
@@ -109,8 +107,12 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                 </div>
                 <div className="grid grid-row-2 gap-2">
                   <div className="flex flex-row gap-2">
-                    <p className="text-lg font-semibold dark:text-neutral-100">{student?.name}</p>
-                    <Badge variant={getStatusVariant(student?.status)}>{capitalizeFirstLetter(student?.status)}</Badge>
+                    <p className="text-lg font-semibold dark:text-neutral-100">
+                      {student?.name}
+                    </p>
+                    <Badge variant={getStatusVariant(student?.status)}>
+                      {capitalizeFirstLetter(student?.status)}
+                    </Badge>
                   </div>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Aged ${student?.age}`}</p>
                 </div>
@@ -126,7 +128,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="flex flex-row justify-between items-center mb-2">
-            <h1 className="text-lg font-normal dark:text-neutral-200">Classes</h1>
+            <h1 className="text-lg font-normal dark:text-neutral-200">
+              Classes
+            </h1>
             <div className="flex flex-row gap-2 items-center">
               <div className="dark:text-neutral-400">Filter:</div>
               {selectedDate ? (
@@ -146,7 +150,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           {/* <StudentTuitionList filter={selectedDate} /> */}
-          <TuitionList tuitions={studentTuition} filter={selectedDate}/>
+          <TuitionList tuitions={studentTuition} filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
@@ -156,8 +160,8 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               onResetDateSelect={selectedDate === null}
             />
           </div>
-          <StudentTutorList />
-          <StudentInvoiceList />
+          <TutorList tutors={studentTutor} />
+          <InvoiceList invoices={studentInvoice} />
           <div className="flex flex-1 h-full" />
         </div>
       </div>
