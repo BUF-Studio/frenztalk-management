@@ -8,7 +8,7 @@ import { Menu, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 // import { IconMenu2, IconX } from "@tabler/icons-react";
 
-interface Links {
+export interface Links {
   label: string;
   href?: string;
   onClick?: () => void;

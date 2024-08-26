@@ -11,8 +11,7 @@ const LogoutPage = () => {
   useEffect(() => {
     async function signOut() {
       try {
-        await authContext.signOut();
-        router.push("/sign-in");
+        c
       } catch (error) {
         //TODO: Show error message in a snackbar
         alert("Error signing out: " + error);

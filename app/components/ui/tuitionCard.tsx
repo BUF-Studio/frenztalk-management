@@ -1,15 +1,15 @@
 "use client";
 
 import type React from "react";
-import { User, Copy, Check } from "lucide-react";
 import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Link from "next/link";
-import type { Student } from "@/lib/models/student";
-import type { Level } from "@/lib/models/level";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import type { Student } from "@/lib/models/student";
+import type { Level } from "@/lib/models/level";
 
 interface TuitionCardProps {
   subject: string;
@@ -32,14 +32,13 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   status,
   tutor,
   student,
-  price,
   meetingLink,
   onClick,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
 
-  function getStatusVariant(status: string): BadgeProps["variant"] {
+  const getStatusVariant = (status: string): BadgeProps["variant"] => {
     switch (status.toLowerCase()) {
       case "active":
       case "end":
@@ -54,7 +53,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
       default:
         return "info";
     }
-  }
+  };
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,18 +62,42 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         await navigator.clipboard.writeText(meetingLink);
         setIsCopied(true);
         showSnackbar("Meeting link copied to clipboard", "success");
-        setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        setTimeout(() => setIsCopied(false), 2000);
       } catch (err) {
         console.error("Failed to copy text: ", err);
       }
     }
   };
 
+  const formatTime = (date: Date) => {
+    return date
+      .toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(/am|pm/i, (match) => match.toUpperCase());
+  };
+
+  const endTime = new Date(
+    new Date(time).getTime() + duration * 60 * 60 * 1000
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
-    <button
-      type="button"
+    <div
       onClick={onClick}
-      className="bg-white w-full border-1 border-grey-600 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-pressed="false"
+      className="bg-white w-full border border-grey-600 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
@@ -84,34 +107,17 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           </span>
           <span className="flex items-center text-gray-500 text-sm mb-1">
             <AccessTime className="h-4 w-4 mr-2" />
-            {new Date(time)
-              .toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              })
-              .replace(/am|pm/i, (match) => match.toUpperCase())}{" "}
-            to{" "}
-            {
-              new Date(new Date(time).getTime() + duration * 60 * 60 * 1000)
-                .toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })
-                .replace(/am|pm/i, (match) => match.toUpperCase())
-              // (minutes * 60 * 1000) +
-              // (seconds * 1000);
-            }
+            {formatTime(new Date(time))} to {formatTime(endTime)}
           </span>
         </div>
 
-        {/* Half Bottom */}
         <div className="flex justify-between items-start h-fit">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row gap-2">
               <h2 className="text-lg font-medium">{subject}</h2>
-                <Badge variant={getStatusVariant(status)}>{capitalizeFirstLetter(status)}</Badge>
+              <Badge variant={getStatusVariant(status)}>
+                {capitalizeFirstLetter(status)}
+              </Badge>
             </div>
             <p className="flex text-gray-500 text-sm justify-start">
               {level?.name ?? "No level found"}
@@ -119,10 +125,8 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
             {student && (
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  {/* Registered student */}
                   <span className="text-sm">Enrolled by </span>
                   <Link
-                    type="button"
                     className="text-sm font-medium ml-1"
                     href={`/students/${student.id}`}
                   >
@@ -155,7 +159,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 

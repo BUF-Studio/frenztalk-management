@@ -18,11 +18,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest, response: NextResponse) {
   const authorization = headers().get("Authorization");
-  
+
   if (authorization?.startsWith("Bearer ")) {
     const idToken = authorization.split("Bearer ")[1];
-    try {
-      const decodedToken = await auth.verifyIdToken(idToken);
+    const decodedToken = await auth.verifyIdToken(idToken);
+
+    if (decodedToken) {
+      //Generate session cookie
       const expiresIn = 60 * 60 * 24 * 5 * 1000;
       const sessionCookie = await auth.createSessionCookie(idToken, {
         expiresIn,
@@ -35,14 +37,12 @@ export async function POST(request: NextRequest, response: NextResponse) {
         secure: true,
       };
 
+      //Add the cookie to the browser
       cookies().set(options);
-      return NextResponse.json({}, { status: 200 });
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
   }
 
-  return NextResponse.json({ error: "Missing token" }, { status: 401 });
+  return NextResponse.json({}, { status: 200 });
 }
 
 export async function DELETE(request: NextRequest, response: NextResponse) {

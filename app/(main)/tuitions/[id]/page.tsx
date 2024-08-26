@@ -1,7 +1,7 @@
 "use client";
 
-import { InvoiceList } from "@/app/components/invoiceList";
-import { TutorList } from "@/app/components/tutorList";
+import { InvoiceList } from "@/app/components/main/invoiceList";
+import { TutorList } from "@/app/components/main/tutorList";
 import { type Step, Stepper } from "@/app/components/ui/stepper";
 import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";

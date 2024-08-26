@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 // import { signInWithEmail, signInWithGoogle } from "auth";
 
@@ -16,10 +16,6 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-
-  if (user) {
-    router.push("/tuitions");
-  }
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();

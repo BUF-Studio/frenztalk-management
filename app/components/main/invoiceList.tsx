@@ -1,51 +1,40 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { Tutor } from "@/lib/models/tutor";
 import Image from "next/image";
+import type { Invoice } from "@/lib/models/invoice";
 
-interface TutorsProps {
-  tutors?: Tutor[];
+interface InvoicesProps {
+  invoices?: Invoice[];
 }
 
-export const TutorList: React.FC<TutorsProps> = ({ tutors }) => {
+export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
   const router = useRouter();
 
   const handleOnClick = (id: string) => {
-    router.push(`/tutors/${id}`);
+    router.push(`/invoices/${id}`);
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="flex text-lg font-normal">Tutor Assigned</span>
+    <div>
+      <span className="flex text-lg font-normal mb-2">Invoice Generated</span>
       <div className="bg-white p-4 w-full border border-gray-200 rounded-lg overflow-hidden">
         <div className="flex flex-col">
-          {(!tutors || tutors.length === 0) && (
+          {(!invoices || invoices.length === 0) && (
             <h1 className="text-center font-normal text-gray-500">
-              No Tutor Found
+              No Invoice Found
             </h1>
           )}
-          {tutors && tutors.map((tutor, index) => (
-            <div key={tutor.id} className="mb-4 last:mb-0">
+          {invoices?.map((invoice, index) => (
+            <div key={invoice.id} className="mb-4 last:mb-0">
               <div className="flex items-start gap-4">
-                <div className="relative w-12 h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
-                  {tutor.pic && (
-                    <Image
-                      src={tutor.pic}
-                      alt={tutor.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-full"
-                    />
-                  )}
-                </div>
                 <div className="flex flex-col">
                   <button
                     type="button"
-                    onClick={() => handleOnClick(tutor?.id ?? '')}
+                    onClick={() => handleOnClick(invoice?.id ?? "")}
                     className="text-md font-semibold hover:underline hover:text-red-700 text-left"
                   >
-                    {tutor.name}
+                    {invoice.id ?? "Unknown Invoice"}
                   </button>
                   <p className="text-gray-500 text-sm line-clamp-2">
                     Hello there I am just bombing whatever to test out whether
@@ -53,7 +42,7 @@ export const TutorList: React.FC<TutorsProps> = ({ tutors }) => {
                   </p>
                 </div>
               </div>
-              {index < (tutors.length - 1) && (
+              {index < invoices.length - 1 && (
                 <div className="my-2 border-b border-gray-200" />
               )}
             </div>

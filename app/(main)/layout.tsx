@@ -2,8 +2,13 @@
 
 import type React from "react";
 import { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import {
+  type Links,
+  Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "../components/ui/sidebar";
+import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import Image from "next/image";
 import {
@@ -24,7 +29,8 @@ import { useAuth } from "@/lib/context/AuthContext";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const authContext = useAuth();
   const pathname = usePathname();
-  const links = [
+  const router = useRouter();
+  const links: Links[] = [
     {
       label: "Home",
       href: "/tuitions",
@@ -97,10 +103,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
     {
       label: "Logout",
-      href: "/logout",
       icon: (
         <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
       ),
+      onClick: (async () => {
+        await authContext.signOut();
+        router.push("/sign-in");
+      }),
     },
   ];
 
@@ -123,7 +132,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={idx}
                   link={link}
                   className={
-                    pathname?.startsWith(link.href)
+                    link.href && pathname?.startsWith(link.href)
                       ? "rounded-md bg-red-200 dark:bg-red-900"
                       : ""
                   }
