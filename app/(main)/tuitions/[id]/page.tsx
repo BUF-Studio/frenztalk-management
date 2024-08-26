@@ -190,13 +190,17 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
               <span className="text-sm font-medium text-gray-900">
                 Student Price
               </span>
-              <span className="text-sm">{tuition?.currency} {tuition?.studentPrice}</span>
+              <span className="text-sm">
+                {tuition?.currency} {tuition?.studentPrice}
+              </span>
             </div>
             <div className="flex  justify-between items-center">
               <span className="text-sm font-medium text-gray-900">
                 Tutor Price
               </span>
-              <span className="text-sm">{tuition?.currency} {tuition?.tutorPrice}</span>
+              <span className="text-sm">
+                {tuition?.currency} {tuition?.tutorPrice}
+              </span>
             </div>
           </div>
         </div>
