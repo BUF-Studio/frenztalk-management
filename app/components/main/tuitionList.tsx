@@ -1,6 +1,6 @@
 "use client";
 
-import TuitionCard from "@/app/components/ui/tuitionCard";
+import TuitionCard from "@/app/components/general/tuitionCard";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";

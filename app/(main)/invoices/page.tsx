@@ -7,7 +7,7 @@ import type { Invoice } from "@/lib/models/invoice";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import {

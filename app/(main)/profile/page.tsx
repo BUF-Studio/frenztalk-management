@@ -62,11 +62,12 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side */}
         <div className="flex-grow">
-          <div className="bg-white border-1 border-grey-600 rounded-lg p-6 mb-4">
+          <div className="bg-white dark:bg-neutral-800 border-1 border-grey-600 rounded-lg p-6 mb-4">
             <div className="flex items-center justify-between">
               <div className="flex flex-row gap-6 items-center">
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-gray-200 dark:bg-white rounded-full flex items-center justify-center">
                   {/* <span className="text-gray-500 text-xl">Avatar</span> */}
+                  {/* TODO: Change to Icon */}
                   <img
                     src={authContext.user?.photoURL ?? "/account-darkmode.png"}
                     alt="avatar"

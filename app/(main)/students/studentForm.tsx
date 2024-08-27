@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import type { Student } from "@/lib/models/student";
-import TextFieldComponent from "@/app/components/ui/input/textField";
+import TextFieldComponent from "@/app/components/general/input/textField";
 
 interface StudentDialogProps {
   isOpen: boolean;

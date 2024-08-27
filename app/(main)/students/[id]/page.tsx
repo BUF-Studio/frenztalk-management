@@ -12,7 +12,7 @@ import { Student } from "@/lib/models/student";
 import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { TutorList } from "@/app/components/main/tutorList";

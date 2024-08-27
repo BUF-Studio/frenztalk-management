@@ -2,8 +2,8 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "../models/invoice";
-import { Badge, BadgeProps } from "@/app/components/ui/badge";
-import DropdownButton from "@/app/components/ui/dropdown";
+import { Badge, BadgeProps } from "@/app/components/general/badge";
+import DropdownButton from "@/app/components/general/dropdown";
 import { Download, Trash2 } from "lucide-react";
 import { useStudents } from "../context/collection/studentsContext";
 import { useSubjects } from "../context/collection/subjectContext";
@@ -32,8 +32,8 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
-  const { tuitions } = useTuitions()
-  const {showSnackbar} = useSnackbar();
+  const { tuitions } = useTuitions();
+  const { showSnackbar } = useSnackbar();
 
   const tuition: Tuition | undefined = tuitions.find(
     (tuition) => tuition.id === invoice?.tuitionId
@@ -87,7 +87,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
     }
   }
 
-  const handleStatusChange = async(status: InvoiceStatus) => {
+  const handleStatusChange = async (status: InvoiceStatus) => {
     if (invoice) {
       const updatedInvoice = new Invoice(
         invoice.id,

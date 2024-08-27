@@ -7,7 +7,7 @@ import type { Tutor } from "@/lib/models/tutor";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function TutorList() {

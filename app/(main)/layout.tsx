@@ -7,7 +7,7 @@ import {
   Sidebar,
   SidebarBody,
   SidebarLink,
-} from "../components/ui/sidebar";
+} from "../components/general/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import Image from "next/image";
@@ -106,10 +106,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: (
         <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
       ),
-      onClick: (async () => {
+      onClick: async () => {
         await authContext.signOut();
         router.push("/sign-in");
-      }),
+      },
     },
   ];
 

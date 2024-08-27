@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "@/app/components/dashboard/DataTable";
-import { Tabs } from "@/app/components/ui/tabs";
+import { Tabs } from "@/app/components/general/tabs";
 import { useUsers } from "@/lib/context/collection/usersContext";
 import { useUserPage } from "@/lib/context/page/userPageContext";
 import { type User, UserRole } from "@/lib/models/user";

@@ -7,7 +7,7 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Link from "next/link";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
 import { capitalizeFirstLetter, formatTime } from "@/utils/util";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import type { Student } from "@/lib/models/student";
 import type { Level } from "@/lib/models/level";
 
@@ -100,7 +100,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         <div className="flex justify-between items-start h-fit">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row gap-2">
-              <h2 className="text-lg font-medium text-neutral-800 dark:text-neutral-100">{subject}</h2>
+              <h2 className="text-lg font-medium text-neutral-800 dark:text-neutral-100">
+                {subject}
+              </h2>
               <Badge variant={getStatusVariant(status)}>
                 {capitalizeFirstLetter(status)}
               </Badge>
@@ -111,7 +113,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
             {student && (
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <span className="text-sm text-neutral-600 dark:text-neutral-400">Enrolled by </span>
+                  <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                    Enrolled by{" "}
+                  </span>
                   <Link
                     className="text-sm font-medium ml-1 text-neutral-700 dark:text-neutral-300 hover:underline"
                     href={`/students/${student.id}`}
@@ -126,7 +130,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
             <div className="flex flex-col-reverse justify-between items-end gap-2">
               <div className="flex items-center">
                 <div className="w-6 h-6 bg-neutral-200 dark:bg-neutral-600 rounded-full mr-2" />
-                <span className="text-sm text-neutral-600 dark:text-neutral-300">{tutor}</span>
+                <span className="text-sm text-neutral-600 dark:text-neutral-300">
+                  {tutor}
+                </span>
               </div>
               <button
                 type="button"
@@ -136,7 +142,10 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
               >
                 <span className="mr-2 text-sm">Copy meeting link</span>
                 {isCopied ? (
-                  <Check size={16} className="text-green-700 dark:text-green-300" />
+                  <Check
+                    size={16}
+                    className="text-green-700 dark:text-green-300"
+                  />
                 ) : (
                   <Copy size={16} />
                 )}

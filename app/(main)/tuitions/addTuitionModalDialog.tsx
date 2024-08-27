@@ -18,10 +18,10 @@ import InvoiceType from "@/lib/models/invoiceType";
 import axios from "axios";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { X } from "lucide-react";
-import TextFieldComponent from "@/app/components/ui/input/textField";
-import SelectFieldComponent from "@/app/components/ui/input/selectFieldComponent";
+import TextFieldComponent from "@/app/components/general/input/textField";
+import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
 import { capitalizeFirstLetter } from "@/utils/util";
-import DatepickerInput from "@/app/components/ui/input/datePicker";
+import DatepickerInput from "@/app/components/general/input/datePicker";
 
 interface AddTuitionModalDialogProps {
   isOpen: boolean;
@@ -148,7 +148,6 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           />
           <TextFieldComponent id="studentPrice" label="Student Rate" />
           <TextFieldComponent id="tutorPrice" label="Tutor Rate" />
-
 
           {/* Add more form fields here with similar styling */}
 

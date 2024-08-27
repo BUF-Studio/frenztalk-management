@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
