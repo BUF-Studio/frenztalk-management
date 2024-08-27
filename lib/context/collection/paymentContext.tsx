@@ -1,8 +1,8 @@
 import { paymentsStream } from "@/lib/firebase/payment";
-import { Payment } from "@/lib/models/payment";
+import type { Payment } from "@/lib/models/payment";
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 
 type PaymentsContextType = {
   payments: Payment[];
@@ -18,7 +18,7 @@ export const usePayments = () => useContext(PaymentsContext);
 
 type PaymentsProviderProps = {
   children: ReactNode;
-  tutorId?: string;
+  tutorId?: string | null;
 };
 
 function PaymentsProvider({ children, tutorId }: PaymentsProviderProps) {
@@ -33,7 +33,7 @@ function PaymentsProvider({ children, tutorId }: PaymentsProviderProps) {
     const unsubscribe = paymentsStream(onUpdate, tutorId);
 
     return () => unsubscribe();
-  }, []);
+  }, [tutorId]);
 
   return (
     <PaymentsContext.Provider value={{ payments }}>

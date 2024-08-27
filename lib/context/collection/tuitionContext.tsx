@@ -18,7 +18,7 @@ export const useTuitions = () => useContext(TuitionsContext);
 
 type TuitionsProviderProps = {
   children: ReactNode;
-  tutorId?: string;
+  tutorId?: string | null;
 };
 
 function TuitionsProvider({ children, tutorId }: TuitionsProviderProps) {
@@ -33,7 +33,7 @@ function TuitionsProvider({ children, tutorId }: TuitionsProviderProps) {
     const unsubscribe = tuitionsStream(onUpdate,tutorId);
 
     return () => unsubscribe();
-  }, []);
+  }, [tutorId]);
 
   return (
     <TuitionsContext.Provider value={{ tuitions }}>
