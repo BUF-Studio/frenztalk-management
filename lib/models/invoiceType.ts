@@ -1,8 +1,8 @@
-enum InvoiceType {
+// enum InvoiceType {
 
   
-  TUTOR = "tutor",
-  STUDENT = "student",
-}
+//   TUTOR = "tutor",
+//   STUDENT = "student",
+// }
 
-export default InvoiceType;
+// export default InvoiceType;

@@ -15,9 +15,11 @@ import {
   formatDateRange,
   formatTimeRange,
 } from "@/utils/util";
+import { usePayments } from "@/lib/context/collection/paymentContext";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
+  const { payments } = usePayments();
   const router = useRouter();
   const { setInvoice } = useInvoicePage();
   const { students } = useStudents();
@@ -59,7 +61,7 @@ export default function InvoiceList() {
 
   const columns: { key: keyof Invoice; label: string }[] = [
     { key: "id", label: "ID" },
-    { key: "invoiceType", label: "Issuer" },
+    // { key: "invoiceType", label: "Issuer" },
     { key: "tutorId", label: "Role" },
     { key: "startDateTime", label: "Issue Date" },
     { key: "duration", label: "Due Date" },
@@ -76,15 +78,15 @@ export default function InvoiceList() {
       );
     }
 
-    if (columnKey === "invoiceType") {
-      return invoice[columnKey] === "tutor"
-        ? findTutor(invoice.tutorId)?.name
-        : findStudent(invoice.studentId)?.name;
-    }
+    // if (columnKey === "invoiceType") {
+    //   return invoice[columnKey] === "tutor"
+    //     ? findTutor(invoice.tutorId)?.name
+    //     : findStudent(invoice.studentId)?.name;
+    // }
 
-    if (columnKey === "tutorId") {
-      return invoice.invoiceType;
-    }
+    // if (columnKey === "tutorId") {
+    //   return invoice.invoiceType;
+    // }
 
     if (columnKey === "startDateTime") {
       return new Date(invoice[columnKey] as string).toDateString();

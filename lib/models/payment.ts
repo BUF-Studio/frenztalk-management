@@ -1,9 +1,8 @@
 import { Timestamp } from "firebase/firestore";
 import Currency from "./currency";
-// import InvoiceType from "./invoiceType";
 import { InvoiceStatus } from "./invoiceStatus";
 
-export class Invoice {
+export class Payment {
   constructor(
     public id: string | null,
     public tuitionId: string,
@@ -16,7 +15,6 @@ export class Invoice {
     public duration: number,
     public currency: Currency,
     public price: number,
-    // public invoiceType :InvoiceType,
 
     // public rate: string,
 
@@ -24,7 +22,7 @@ export class Invoice {
   ) { }
 
   static fromMap(data: Record<string, any>, id: string) {
-    return new Invoice(
+    return new Payment(
       id,
       data.tuitionId,
       data.tutorId,
@@ -36,7 +34,6 @@ export class Invoice {
       data.duration,
       data.currency,
       data.price,
-      // data.invoiceType,
     );
   }
 
@@ -53,7 +50,6 @@ export class Invoice {
       duration: this.duration,
       currency: this.currency,
       price: this.price,
-      // invoiceType: this.invoiceType,
 
     };
   }
