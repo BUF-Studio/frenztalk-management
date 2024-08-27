@@ -12,7 +12,7 @@ import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
-import { formatDate, formatTimeRange } from "@/utils/util";
+import { formatDate, formatTime, formatTimeRange } from "@/utils/util";
 import {
   AccessTime,
   ArrowBackIosNew,
@@ -55,12 +55,6 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     }
   }, [params, tuition, tuitions, setTuition]);
 
-  const viewInvoice = (invoiceId: string) => {
-    const invoice = invoices.find((inv) => inv.id === invoiceId);
-    setInvoice(invoice ?? null);
-    router.push(`/invoices/${invoiceId}`);
-  };
-
   const findTutor = (id: string): Tutor | undefined => {
     const tutor = tutors.find((tutor) => tutor.id === id);
     return tutor ?? undefined;
@@ -99,60 +93,62 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   ];
 
   return (
-    <div className="p-6">
+    <div>
       {/* Back Button */}
       <button
         type="button"
         onClick={(e) => {
           router.back();
         }}
-        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
+        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors mb-4"
       >
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
         <h1 className="text-lg font-semibold">Class Details</h1>
       </button>
 
       {/* Class Details Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-        <div className="flex justify-between items-start">
+      <div className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-6 mb-4">
+        <div className="flex justify-between items-start flex-col lg:flex-row gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-start gap-2">
               <div className="flex flex-col gap-1">
-                <div className="text-lg font-medium">
+                <div className="text-lg font-medium dark:text-neutral-100">
                   {tuition?.name.toUpperCase()}
                 </div>
-                <p className="text-gray-500 text-sm">STPM</p>
+                <p className="text-gray-500 dark:text-neutral-400 text-sm">
+                  STPM
+                </p>
               </div>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">
                 Active
               </span>
               <button
                 type="button"
                 onClick={() => console.log(`${tuition?.id} is pressed.`)}
-                className="ml-2 p-2 text-gray-700 hover:text-gray-500 focus:outline-none"
+                className="ml-2 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-100 focus:outline-none"
               >
                 <Pencil className="w-4 h-4" />
               </button>
             </div>
             <div className="flex items-center">
-              {/* Registered student */}
-              <span className="text-sm">Enrolled by </span>
+              <span className="text-sm dark:text-neutral-300">
+                Enrolled by{" "}
+              </span>
               <Link
-                type="button"
-                className="text-sm font-medium ml-1"
+                className="text-sm font-medium ml-1 dark:text-neutral-100 hover:underline"
                 href={`/students/${tuition?.studentId}`}
               >
                 {findStudent(tuition?.studentId ?? "")?.name}
               </Link>
             </div>
             <div className="flex gap-4">
-              <span className="flex items-center text-gray-500 text-sm">
+              <span className="flex items-center text-gray-500 dark:text-neutral-400 text-sm">
                 <CalendarToday className="h-4 w-4 mr-2" />
                 {formatDate(tuition?.startTime)}
               </span>
-              <span className="flex items-center text-gray-500 text-sm">
+              <span className="flex items-center text-gray-500 dark:text-neutral-400 text-sm">
                 <AccessTime className="h-4 w-4 mr-2" />
-                {formatTimeRange(tuition?.startTime, tuition?.duration)}
+                {formatTime(tuition?.startTime, tuition?.duration)}
               </span>
             </div>
           </div>
@@ -165,40 +161,45 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
         {/* Left Side */}
         <div className="flex-grow">
           <div className="mb-2">
-            <h1 className="text-lg font-normal">Classes</h1>
+            <h1 className="text-lg font-normal dark:text-neutral-200">
+              Classes
+            </h1>
           </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col gap-2">
-            <div className="flex  justify-between items-center">
-              <span className="text-sm font-medium text-gray-900">
+          <div className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-4 flex flex-col gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
                 Meeting Link
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="flex items-center text-left text-gray-400 hover:text-gray-600 transition-colors"
+                className="flex items-center text-left text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-neutral-300 transition-colors"
                 title={isCopied ? "Copied!" : "Copy to clipboard"}
               >
                 <span className="mr-2 text-sm">Copy meeting link</span>
                 {isCopied ? (
-                  <Check size={16} className="text-green-500" />
+                  <Check
+                    size={16}
+                    className="text-green-500 dark:text-green-400"
+                  />
                 ) : (
                   <Copy size={16} />
                 )}
               </button>
             </div>
-            <div className="flex  justify-between items-center">
-              <span className="text-sm font-medium text-gray-900">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
                 Student Price
               </span>
-              <span className="text-sm">
+              <span className="text-sm dark:text-neutral-300">
                 {tuition?.currency} {tuition?.studentPrice}
               </span>
             </div>
-            <div className="flex  justify-between items-center">
-              <span className="text-sm font-medium text-gray-900">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
                 Tutor Price
               </span>
-              <span className="text-sm">
+              <span className="text-sm dark:text-neutral-300">
                 {tuition?.currency} {tuition?.tutorPrice}
               </span>
             </div>

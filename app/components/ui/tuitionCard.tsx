@@ -6,7 +6,7 @@ import { Copy, Check } from "lucide-react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Link from "next/link";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
-import { capitalizeFirstLetter } from "@/utils/util";
+import { capitalizeFirstLetter, formatTime } from "@/utils/util";
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
 import type { Student } from "@/lib/models/student";
 import type { Level } from "@/lib/models/level";
@@ -69,20 +69,6 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date
-      .toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(/am|pm/i, (match) => match.toUpperCase());
-  };
-
-  const endTime = new Date(
-    new Date(time).getTime() + duration * 60 * 60 * 1000
-  );
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -107,7 +93,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           </span>
           <span className="flex items-center text-neutral-500 dark:text-neutral-400 text-sm mb-1">
             <AccessTime className="h-4 w-4 mr-2" />
-            {formatTime(new Date(time))} to {formatTime(endTime)}
+            {formatTime(time, duration)}
           </span>
         </div>
 

@@ -6,7 +6,10 @@
  * @param includeTime - Whether to include the time in the formatted output
  * @returns Formatted date string or an error message if the input is invalid
  */
-export function formatDate(date: string | null | undefined, includeTime?: boolean): string {
+export function formatDate(
+  date: string | null | undefined,
+  includeTime?: boolean
+): string {
   if (!date) {
     console.error("Invalid date: null or undefined");
     return "Invalid date";
@@ -35,7 +38,9 @@ function formatDateTime(date: Date): string {
     hour12: true,
   };
 
-  return date.toLocaleTimeString([], options).replace(/am|pm/i, (match) => match.toUpperCase());
+  return date
+    .toLocaleTimeString([], options)
+    .replace(/am|pm/i, (match) => match.toUpperCase());
 }
 
 /**
@@ -44,7 +49,10 @@ function formatDateTime(date: Date): string {
  * @param duration - The duration in hours
  * @returns Formatted time range string or an error message if the input is invalid
  */
-export function formatTimeRange(startTime: string | null | undefined, duration: number | null | undefined): string {
+export function formatTimeRange(
+  startTime: string | null | undefined,
+  duration: number | null | undefined
+): string {
   if (!startTime) {
     console.error("Invalid start time: null or undefined");
     return "Invalid time";
@@ -60,13 +68,46 @@ export function formatTimeRange(startTime: string | null | undefined, duration: 
   }
 }
 
+export const formatTime = (
+  date: string | null | undefined,
+  duration: number | null | undefined
+) => {
+  if (!date) {
+    console.error("Invalid start time: null or undefined");
+    return "Invalid time";
+  }
+  try {
+    const start = new Date(date);
+    const end = new Date(start.getTime() + (duration ?? 0) * 60 * 60 * 1000);
+    
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+
+    const startTime = start.toLocaleTimeString([], formatOptions)
+      .replace(/am|pm/i, (match) => match.toUpperCase());
+    const endTime = end.toLocaleTimeString([], formatOptions)
+      .replace(/am|pm/i, (match) => match.toUpperCase());
+
+    return `${startTime} to ${endTime}`;
+  } catch (error) {
+    console.error("Error formatting time range:", error);
+    return "Invalid time range";
+  }
+};
+
 /**
  * Formats the end date and time based on a start date and duration.
  * @param start - The start time string in UTC format
  * @param duration - The duration in hours
  * @returns Formatted end date string or an error message if the input is invalid
  */
-export function formatDateRange(start: string | null | undefined, duration: number | null | undefined): string {
+export function formatDateRange(
+  start: string | null | undefined,
+  duration: number | null | undefined
+): string {
   if (!start) {
     console.error("Invalid start time: null or undefined");
     return "Invalid time";
@@ -74,7 +115,9 @@ export function formatDateRange(start: string | null | undefined, duration: numb
 
   try {
     const startDate = new Date(start);
-    const endDate = new Date(startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000);
+    const endDate = new Date(
+      startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000
+    );
     return formatDateTime(endDate);
   } catch (error) {
     console.error("Error formatting time range:", error);

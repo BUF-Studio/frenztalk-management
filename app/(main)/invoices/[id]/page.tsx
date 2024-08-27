@@ -77,10 +77,10 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
         onClick={(e) => {
           router.back();
         }}
-        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
+        className="flex items-center text-gray-600 dark:text-neutral-400 hover:text-gray-800 dark:hover:text-neutral-200 transition-colors mb-4"
       >
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
-        <h1 className="text-lg font-semibold">Invoice Details</h1>
+        <h1 className="text-lg font-semibold">Tutor Details</h1>
       </button>
 
       <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">

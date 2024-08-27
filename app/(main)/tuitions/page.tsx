@@ -10,16 +10,19 @@ import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { Plus } from "lucide-react";
+import AddTuitionModalDialog from "./addTuitionModalDialog";
 
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
   const router = useRouter();
   const { setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addTuition = () => {
     setTuition(null);
-    router.push("/tuitions/add");
+    // router.push("/tuitions/add");
+    setIsModalOpen(true)
   };
   const viewTuition = (tuition: Tuition) => {
     setTuition(tuition);
@@ -69,6 +72,10 @@ export default function TuitionPage() {
         </div>
         <TuitionList tuitions={tuitions} />
       </div>
+      <AddTuitionModalDialog
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

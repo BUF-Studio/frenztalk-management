@@ -2,7 +2,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "../models/invoice";
-import { Badge, type BadgeProps } from "@/app/components/ui/badge";
+import { Badge, BadgeProps } from "@/app/components/ui/badge";
 import DropdownButton from "@/app/components/ui/dropdown";
 import { Download, Trash2 } from "lucide-react";
 import { useStudents } from "../context/collection/studentsContext";
@@ -135,7 +135,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           </div>
           <div className="flex flex-row justify-between">
             <div className="flex flex-row gap-4 items-center">
-              <h2 className="text-xl font-bold">{invoice?.id}</h2>
+              <h2 className="text-xl text-gray-900 font-bold">{invoice?.id}</h2>
               <Badge variant={getStatusVariant(invoice?.status)}>
                 {capitalizeFirstLetter(invoice?.status)}
               </Badge>
@@ -171,21 +171,21 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
         </div>
         <div className="flex w-full flex-row justify-between">
           <div className="flex flex-col">
-            <p className="text-md mb-1">Billed to:</p>
-            <strong className="font-bold text-lg mb-1">
+            <p className="text-md mb-1 text-gray-600">Billed to:</p>
+            <strong className="font-bold text-lg mb-1 text-gray-900">
               {invoice?.invoiceType === "tutor" ? tutor?.name : student?.name}
             </strong>
-            <div className="flex flex-row gap-1 text-sm">
+            <div className="flex flex-row gap-1 text-sm text-gray-900">
               <p className="font-medium">Email:</p>
               <p className="font-light">--</p>
             </div>
-            <div className="flex flex-row gap-1 text-sm">
+            <div className="flex flex-row gap-1 text-sm text-gray-900">
               <p className="font-medium">Phone No.:</p>
               <p className="font-light">--</p>
             </div>
           </div>
         </div>
-        <div className="flex flex-row justify-between border border-gray-900">
+        <div className="flex flex-row justify-between border border-gray-900 text-gray-900">
           <div className="flex-1 p-4 border-r border-gray-900">
             <p className="font-normal text-sm">Date Issued:</p>
             <p className="mt-1 font-bold text-md">
@@ -226,7 +226,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-gray-300">
+            <tr className="border-b border-gray-300 text-gray-900">
               <td className="py-3 px-4">{subject?.name}</td>
               <td className="py-3 px-4">{formatDate(tuition?.startTime)}</td>
               <td className="py-3 px-4 text-center">{tuition?.duration}</td>
@@ -245,7 +245,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
               </td>
             </tr>
           </tbody>
-          <tfoot className="pt-8">
+          <tfoot className="pt-8 text-gray-900">
             <tr>
               <td colSpan={4} className="py-4  px-4 text-right font-medium">
                 Subtotal
@@ -285,15 +285,15 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
             Thank you and have a nice day!
           </p>
         </div>
-        <div>
+        <div className="text-gray-900">
           <div className="font-bold mb-1">Payment Information</div>
-          <div className="flex flex-row gap-1 text-md">
+          <div className="flex flex-row gap-1 text-sm">
             <p className="font-medium">Account Name:</p>
-            <p className="font-light">FREN TALK HUB</p>
+            <p className="font-medium">FREN TALK HUB</p>
           </div>
-          <div className="flex flex-row gap-1 text-md">
+          <div className="flex flex-row gap-1 text-sm">
             <p className="font-medium">Account No.:</p>
-            <p className="font-light">04400099507</p>
+            <p className="font-medium">04400099507</p>
           </div>
         </div>
       </div>

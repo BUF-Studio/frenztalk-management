@@ -29,11 +29,11 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
       <div key={invoice.id} className="flex flex-col ">
         <div className="flex items-start justify-between">
           {/* Left side: Student Name and Date */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <button
               type="button"
               onClick={() => handleOnClick(invoice?.id ?? "")}
-              className="text-md font-medium hover:underline hover:text-red-700 dark:hover:text-red-500 text-left dark:text-neutral-100"
+              className="text-sm font-medium hover:underline hover:text-red-700 dark:hover:text-red-500 text-left dark:text-neutral-100"
             >
               {findStudent(invoice.studentId)?.name}
             </button>
@@ -43,8 +43,8 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
           </div>
 
           {/* Right side: Status and Amount */}
-          <div className="flex flex-col items-end gap-1">
-            <p className="text-md font-semibold dark:text-neutral-200">
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-sm font-semibold dark:text-neutral-200">
               {`
               ${invoice.currency} ${invoice.rate?.toFixed(2) ?? "0.00"}
               `}
