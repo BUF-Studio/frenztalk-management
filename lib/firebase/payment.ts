@@ -36,7 +36,7 @@ export const updatePayment = async (
 
 export const paymentsStream = (
   onUpdate: (updatedData: Payment[]) => void,
-  tutorId?: string,
+  tutorId?: string | null,
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     Payment.fromMap(data, id);

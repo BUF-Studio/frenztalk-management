@@ -14,7 +14,6 @@ import TuitionStatus from "@/lib/models/tuitionStatus";
 import { Invoice } from "@/lib/models/invoice";
 import { addInvoice } from "@/lib/firebase/invoice";
 import { useLevels } from "@/lib/context/collection/levelContext";
-import InvoiceType from "@/lib/models/invoiceType";
 import axios from "axios";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { X } from "lucide-react";

@@ -43,7 +43,6 @@ export default function TuitionForm() {
     const [tutorId, setTutorId] = useState(tuition?.tutorId || tutor?.id || '');
     const [subjectId, setSubjectId] = useState(tuition?.subjectId || subject?.id || '');
     const [status, setStatus] = useState(tuition?.status || '');
-
     const [levelId, setLevelId] = useState(tuition?.levelId || '');
 
 
@@ -54,6 +53,7 @@ export default function TuitionForm() {
     const [startDateTime, setStartDateTime] = useState(tuition?.startTime?.slice(0, 16) || '');
     const [duration, setDuration] = useState(tuition?.duration || 60);
     const [repeatWeeks, setRepeatWeeks] = useState(1);
+    const [trial, setTrial] = useState<boolean>(tuition?.trial || true);
 
 
 
@@ -247,6 +247,7 @@ export default function TuitionForm() {
                             null,
                             null,
                             meetingid,
+                            (i === 0 && trial)
                         );
                         const tid = await addTuition(newTuition);
                     } else {
@@ -342,7 +343,8 @@ export default function TuitionForm() {
                     currency,
                     siid,
                     tiid,
-                    tuition.meetingId
+                    tuition.meetingId,
+                    trial
                 )
                 await updateTuition(updatedTuition)
 
@@ -501,7 +503,16 @@ export default function TuitionForm() {
                     onChange={(e) => setRepeatWeeks(Number(e.target.value))}
                 />
             </div>}
-
+            <div>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={trial}
+                        onChange={(e) => setTrial(e.target.checked)}
+                    />
+                    Set First Class as Trial
+                </label>
+            </div>
 
             <div>
                 <button type="submit">Save</button>

@@ -17,13 +17,13 @@ const LevelsContext = createContext<LevelsContextType>(initialContext);
 export const useLevels = () => useContext(LevelsContext);
 
 function LevelsProvider({ children }: ScriptProps) {
-  const [levels, Levels] = useState<Level[]>([]);
+  const [levels, setLevels] = useState<Level[]>([]);
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
     const onUpdate = (levels: Level[]) => {
       console.log(levels);
-      Levels(levels);
+      setLevels(levels);
     };
     const unsubscribe = levelsStream(onUpdate);
 

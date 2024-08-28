@@ -19,6 +19,7 @@ export class Tuition {
     public studentInvoiceId: string | null,
     public tutorInvoiceId: string | null,
     public meetingId: string | null,
+    public trial: boolean,
 
   ) { }
 
@@ -40,6 +41,7 @@ export class Tuition {
       data.studentInvoiceId,
       data.tutorInvoiceId,
       data.meetingId,
+      data.trial,
     );
   }
 
@@ -60,6 +62,7 @@ export class Tuition {
       studentInvoiceId: this.studentInvoiceId,
       tutorInvoiceId: this.tutorInvoiceId,
       meetingId: this.meetingId,
+      trial: this.trial,
     };
   }
 }
