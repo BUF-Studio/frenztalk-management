@@ -12,6 +12,7 @@ import {
   LogOut,
   Monitor,
 } from "lucide-react";
+import ViewZoom from "./viewZoom";
 
 type Theme = "light" | "dark" | "system";
 
@@ -53,6 +54,8 @@ const SettingsPage = () => {
     <div className="min-h-screen bg-gray-100 dark:bg-neutral-900 text-gray-900 dark:text-neutral-100">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
+
+        <ViewZoom></ViewZoom>
 
         <div className="space-y-6">
           {/* Appearance */}

@@ -1,10 +1,18 @@
 import axios from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+type TokenRequestBody = {
+  clientId: string;
+  clientSecret: string;
+  accountId: string;
+
+};
+
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const clientId = process.env.ZOOM_CLIENT_ID;
-  const clientSecret = process.env.ZOOM_CLIENT_SECRET;
-  const accountId = process.env.ZOOM_ACCOUNT_ID; // Replace with your Zoom account ID
+
+  const { clientId, clientSecret, accountId } :TokenRequestBody= req.body;
+
 
   if (!clientId || !clientSecret || !accountId) {
     return res.status(400).json({ error: 'Missing environment variables' });
