@@ -12,10 +12,12 @@ import React, {
 
 type UserContextType = {
   user: User | null | undefined;
+  // setUser: (user: User | null) => void;
 };
 
 const initialContext: UserContextType = {
   user: null,
+  // setUser: () => {},
 };
 // Create a context to hold the data
 const UserContext = createContext<UserContextType>(initialContext);
@@ -28,7 +30,7 @@ type UserProviderProps = {
 export const useUser = () => useContext(UserContext);
 
 function UserProvider({ children, userId }: UserProviderProps) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>();
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {

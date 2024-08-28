@@ -25,12 +25,17 @@ import { cn } from "@/utils/manage-class-name";
 import Link from "next/link";
 import { motion, useAnimationControls } from "framer-motion";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useUser } from "@/lib/context/collection/userContext";
+import { UserRole } from "@/lib/models/user";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const authContext = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const links: Links[] = [
+  const { user } = useUser()
+
+
+  const allLinks: Links[] = [
     {
       label: "Home",
       href: "/tuitions",
@@ -40,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
     },
     {
       label: "Students",
@@ -50,6 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
     },
     {
       label: "Tutors",
@@ -60,6 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN], // Available only to ADMIN
     },
     {
       label: "Users",
@@ -70,6 +78,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN], // Available only to ADMIN
     },
     {
       label: "Invoices",
@@ -80,6 +89,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
+    },
+    {
+      label: "Payments",
+      href: "/payments",
+      icon: (
+        <Receipt
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
     },
     {
       label: "Academic Setup",
@@ -90,6 +111,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN], // Available only to ADMIN
     },
     {
       label: "Settings",
@@ -100,6 +122,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
+      roles: [UserRole.ADMIN], // Available only to ADMIN
     },
     {
       label: "Logout",
@@ -110,9 +133,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         await authContext.signOut();
         router.push("/sign-in");
       },
+      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
     },
   ];
 
+
+  const links: Links[] = allLinks.filter(link => link.roles!.includes(user?.role! ?? UserRole.TUTOR));
   const [open, setOpen] = useState(false);
   return (
     <div

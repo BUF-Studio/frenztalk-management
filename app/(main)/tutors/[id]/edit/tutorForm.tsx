@@ -19,7 +19,7 @@ export default function TutorForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const updatedTutor = new Tutor(tutor!.id, name, des, status, '');
+            const updatedTutor = new Tutor(tutor!.id, name,[], des, status, '');
             await updateTutor(updatedTutor)
 
             setTutor(updatedTutor)
