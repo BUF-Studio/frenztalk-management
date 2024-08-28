@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { UserRole } from "@/lib/models/user";
 
 export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
@@ -40,12 +41,12 @@ export async function middleware(request: NextRequest) {
     }
 
     // If the user role is non-verified and not already on the non-verify page, redirect to non-verify
-    if (data.role === 'non-verified' && !isNonVerifyPath) {
+    if (data.role === UserRole.NON_VERIFIED && !isNonVerifyPath) {
       return NextResponse.redirect(new URL("/non-verify", request.url));
     }
 
     // If the user role is verified and on the non-verify page, redirect to tuitions
-    if (data.role !== 'non-verified' && isNonVerifyPath) {
+    if (data.role !== UserRole.NON_VERIFIED && isNonVerifyPath) {
       return NextResponse.redirect(new URL("/tuitions", request.url));
     }
   }
