@@ -1,4 +1,4 @@
-import { auth } from "@/lib/firebase/service/serverApp";
+import { auth, db } from "@/lib/firebase/service/serverApp";
 import { cookies, headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -10,8 +10,18 @@ export async function GET(request: NextRequest) {
 
   try {
     const decodedClaims = await auth.verifySessionCookie(session, true);
-    return NextResponse.json({ isLogged: true }, { status: 200 });
+    
+    // Fetch user role from Firestore
+    const userDoc = await db.collection('users').doc(decodedClaims.uid).get();
+    if (!userDoc.exists) {
+      console.error("User document does not exist");
+      return NextResponse.json({ isLogged: true, role: null }, { status: 200 });
+    }
+
+    const userData = userDoc.data();
+    return NextResponse.json({ isLogged: true, role: userData?.role }, { status: 200 });
   } catch (error) {
+    console.error("Error verifying session:", error);
     return NextResponse.json({ isLogged: false }, { status: 401 });
   }
 }
