@@ -1,5 +1,5 @@
 import { type DocumentData, type Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import { addData, collectionStream, setData, deleteData } from "./service/firestoreService";
 import { Tuition } from "../models/tuition";
 
 const PATH = "tuitions";
@@ -17,6 +17,16 @@ export const addTuition = async (
     console.error("Error adding tuition to Firestore:", error);
 
     throw error;
+  }
+};
+
+export const deleteTuition = async (tuition: Tuition) => {
+  try {
+    const path = `${PATH}/${tuition.id}`;
+    await deleteData(path);
+    console.log(`Tuition ${tuition.id} deleted in Firestore`);
+  } catch (error) {
+    console.error(`Error deleting tuition ${tuition.id} in Firestore:`, error);
   }
 };
 

@@ -78,7 +78,7 @@ export const formatTime = (
   }
   try {
     const start = new Date(date);
-    const end = new Date(start.getTime() + (duration ?? 0) * 60 * 60 * 1000);
+    const end = new Date(start.getTime() + (duration ?? 0) * 60 * 1000);
     
     const formatOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",

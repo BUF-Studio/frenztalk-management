@@ -2,7 +2,6 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { addTuition, updateTuition } from "@/lib/firebase/tuition";
 import { Tuition } from "@/lib/models/tuition";
@@ -35,7 +34,6 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   isOpen,
   onClose,
 }) => {
-  const router = useRouter();
   const { levels } = useLevels();
   const { tuition, setTuition } = useTuitionPage();
   const { students } = useStudents();
@@ -346,8 +344,6 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
         await updateTuition(updatedTuition);
         setTuition(updatedTuition);
       }
-
-      router.back();
     } catch (error) {
       console.error("Failed to submit the form", error);
     }
@@ -373,7 +369,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {tuition ? "Edit Class" : "Add Class"}
@@ -386,7 +382,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             <X size={24} />
           </button>
         </div>
-
+  
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextFieldComponent
             id="name"
@@ -396,54 +392,61 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             value={formData.name}
             onChange={handleInputChange}
           />
-          <SelectFieldComponent
-            id="student"
-            name="studentId"
-            label="Student"
-            required
-            options={[
-              { value: "", label: "Choose Student" },
-              ...optionsMap.student,
-            ]}
-            value={formData.studentId}
-            onChange={handleInputChange}
-          />
-          <SelectFieldComponent
-            id="tutor"
-            name="tutorId"
-            label="Tutor"
-            required
-            options={[
-              { value: "", label: "Choose Tutor" },
-              ...optionsMap.tutor,
-            ]}
-            value={formData.tutorId}
-            onChange={handleInputChange}
-          />
-          <SelectFieldComponent
-            id="subject"
-            name="subjectId"
-            label="Subject"
-            required
-            options={[
-              { value: "", label: "Choose Subject" },
-              ...optionsMap.subject,
-            ]}
-            value={formData.subjectId}
-            onChange={handleInputChange}
-          />
-          <SelectFieldComponent
-            id="level"
-            name="levelId"
-            label="Level"
-            required
-            options={[
-              { value: "", label: "Choose Level" },
-              ...optionsMap.level,
-            ]}
-            value={formData.levelId}
-            onChange={handleInputChange}
-          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SelectFieldComponent
+              id="student"
+              name="studentId"
+              label="Student"
+              required
+              options={[
+                { value: "", label: "Choose Student" },
+                ...optionsMap.student,
+              ]}
+              value={formData.studentId}
+              onChange={handleInputChange}
+            />
+            <SelectFieldComponent
+              id="tutor"
+              name="tutorId"
+              label="Tutor"
+              required
+              options={[
+                { value: "", label: "Choose Tutor" },
+                ...optionsMap.tutor,
+              ]}
+              value={formData.tutorId}
+              onChange={handleInputChange}
+            />
+          </div>
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SelectFieldComponent
+              id="subject"
+              name="subjectId"
+              label="Subject"
+              required
+              options={[
+                { value: "", label: "Choose Subject" },
+                ...optionsMap.subject,
+              ]}
+              value={formData.subjectId}
+              onChange={handleInputChange}
+            />
+            <SelectFieldComponent
+              id="level"
+              name="levelId"
+              label="Level"
+              required
+              options={[
+                { value: "", label: "Choose Level" },
+                ...optionsMap.level,
+              ]}
+              value={formData.levelId}
+              onChange={handleInputChange}
+            />
+          </div>
+  
           <SelectFieldComponent
             id="status"
             name="status"
@@ -462,43 +465,50 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             value={formData.currency}
             onChange={handleInputChange}
           />
-          <TextFieldComponent
-            id="studentPrice"
-            name="studentPrice"
-            label="Student Rate"
-            type="number"
-            step="0.01"
-            required
-            value={formData.studentPrice}
-            onChange={handleInputChange}
-          />
-          <TextFieldComponent
-            id="tutorPrice"
-            name="tutorPrice"
-            label="Tutor Rate"
-            type="number"
-            step="0.01"
-            required
-            value={formData.tutorPrice}
-            onChange={handleInputChange}
-          />
-          <DatepickerInput
-            id="startDateTime"
-            name="startDateTime"
-            label="Date & Time"
-            required
-            value={formData.startDateTime}
-            onChange={handleInputChange}
-          />
-          <TextFieldComponent
-            id="duration"
-            name="duration"
-            type="number"
-            label="Duration (Min)"
-            required
-            value={formData.duration}
-            onChange={handleInputChange}
-          />
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TextFieldComponent
+              id="studentPrice"
+              name="studentPrice"
+              label="Student Rate"
+              type="number"
+              step="0.01"
+              required
+              value={formData.studentPrice}
+              onChange={handleInputChange}
+            />
+            <TextFieldComponent
+              id="tutorPrice"
+              name="tutorPrice"
+              label="Tutor Rate"
+              type="number"
+              step="0.01"
+              required
+              value={formData.tutorPrice}
+              onChange={handleInputChange}
+            />
+          </div>
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DatepickerInput
+              id="startDateTime"
+              name="startDateTime"
+              label="Date & Time"
+              required
+              value={formData.startDateTime}
+              onChange={handleInputChange}
+            />
+            <TextFieldComponent
+              id="duration"
+              name="duration"
+              type="number"
+              label="Duration (Min)"
+              required
+              value={formData.duration}
+              onChange={handleInputChange}
+            />
+          </div>
+  
           <TextFieldComponent
             id="repeatWeeks"
             name="repeatWeeks"
@@ -509,18 +519,18 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             onChange={handleInputChange}
             min={1}
           />
-
+  
           <div className="flex justify-end space-x-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-neutral-300 dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100 rounded-md hover:bg-neutral-400 dark:hover:bg-neutral-500 transition-colors"
+              className="px-4 py-2 bg-neutral-300 dark:bg-neutral-600 text-neutral-800 dark:text-neutral-100 rounded hover:bg-neutral-400 dark:hover:bg-neutral-500 transition-colors font-sans text-xs font-bold uppercase"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-neutral-800 dark:bg-neutral-200 text-neutral-100 dark:text-neutral-800 rounded-md hover:bg-neutral-700 dark:hover:bg-neutral-300 transition-colors"
+              className="block select-none rounded bg-gradient-to-tr from-red-900 to-red-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             >
               Save
             </button>
