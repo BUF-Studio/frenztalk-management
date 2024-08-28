@@ -18,10 +18,12 @@ import {
   ArrowBackIosNew,
   CalendarToday,
 } from "@mui/icons-material";
-import { Check, Copy, CreditCard, FileText, Pencil, User } from "lucide-react";
+import { Check, Copy, CreditCard, FileText, Pencil, Trash2, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DropdownButton from "@/app/components/general/dropdown";
+import generatePDF from "@/lib/pdf/pdf";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
@@ -122,13 +124,29 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
               <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">
                 Active
               </span>
-              <button
+              {/* <button
                 type="button"
                 onClick={() => console.log(`${tuition?.id} is pressed.`)}
                 className="ml-2 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-100 focus:outline-none"
               >
                 <Pencil className="w-4 h-4" />
-              </button>
+              </button> */}
+              <DropdownButton
+                title="..."
+                arrowDown={false}
+                items={[
+                  {
+                    icon: <Pencil size={16} />,
+                    label: "Edit",
+                    onClick: () => console.log("Delete"),
+                  },
+                  {
+                    icon: <Trash2 size={16} />,
+                    label: "Delete",
+                    onClick: () => console.log("Delete"),
+                  },
+                ]}
+              />
             </div>
             <div className="flex items-center">
               <span className="text-sm dark:text-neutral-300">
