@@ -21,8 +21,8 @@ export default function TuitionPage() {
 
   const addTuition = () => {
     setTuition(null);
-    router.push("/tuitions/add");
-    // setIsModalOpen(true)
+    // router.push("/tuitions/add");
+    setIsModalOpen(true)
   };
   const viewTuition = (tuition: Tuition) => {
     setTuition(tuition);

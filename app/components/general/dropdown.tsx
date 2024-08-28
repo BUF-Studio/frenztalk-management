@@ -42,15 +42,15 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
   };
 
   const handleItemClick = (onClick: () => void) => {
-    onClick(); // Execute the item's action
-    setIsOpen(false); // Close the dropdown after the action is executed
+    onClick();
+    setIsOpen(false);
   };
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="text-gray bg-white hover:bg-gray-100 border-1 border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+        className="text-gray-700 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:text-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-600 dark:focus:ring-gray-700"
         type="button"
       >
         {title}
@@ -73,15 +73,17 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
         )}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 z-10">
+        <div className="absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-800 dark:divide-gray-700 z-10">
           <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
             {items.map((item, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              <li key={index}>
+              <li
+                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                key={`dropdown-item-${index}`}
+              >
                 <button
                   type="button"
                   onClick={() => handleItemClick(item.onClick)}
-                  className="flex w-full flex-row items-center gap-2 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="flex w-full flex-row items-center gap-2 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   {item.icon}
                   {item.label}
@@ -95,4 +97,4 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
   );
 };
 
-export default DropdownButton;
+export default DropdownButton
