@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { InputHTMLAttributes } from 'react';
 
-interface TextFieldProps extends c {
+interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
 }

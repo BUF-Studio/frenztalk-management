@@ -38,6 +38,7 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
       console.log("Signed in with Google successfully");
+      showSnackbar("Signed in successfully", "success");
       router.push("/tuitions");
     } catch (err) {
       console.error("Error signing in with Google:", err);
