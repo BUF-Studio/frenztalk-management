@@ -22,6 +22,9 @@ import axios from 'axios';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 import { Payment } from '@/lib/models/payment';
 import { addPayment } from '@/lib/firebase/payment';
+import { useZoomAccounts } from '@/lib/context/collection/zoomContext';
+import { Meeting, ZoomAccount } from '@/lib/models/zoom';
+import { updateZoomAccount } from '@/lib/firebase/zoomAccount';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -31,6 +34,8 @@ export default function TuitionForm() {
     const { students } = useStudents()
     const { tutors } = useTutors()
     const { subjects } = useSubjects()
+    // const { subjects } = useTuition()
+    const { zoomAccounts } = useZoomAccounts()
 
 
     const [name, setName] = useState(tuition?.name || '');
@@ -76,9 +81,18 @@ export default function TuitionForm() {
     }, [levelId, currency]);
 
 
-    const authToken = async () => {
+    const authToken = async (zoom: ZoomAccount) => {
+
         try {
-            const response = await axios.post('/api/auth/authorize');
+            console.log('token')
+            console.log(zoom.clientid)
+            console.log(zoom.clientsecret)
+            console.log(zoom.accountid)
+            const response = await axios.post('/api/auth/authorize', {
+                clientId: zoom.clientid,
+                clientSecret: zoom.clientsecret,
+                accountId: zoom.accountid,
+            });
             const data = response.data['access_token']
             console.error(data);
             return data
@@ -87,9 +101,9 @@ export default function TuitionForm() {
         }
     }
 
-    const createZoom = async (topic: string, start_time: string, duration: number) => {
+    const createZoom = async (account: ZoomAccount, topic: string, start_time: string, duration: number) => {
         try {
-            const token = await authToken()
+            const token = await authToken(account)
             const response = await axios.post('/api/addZoom', {
                 accessToken: token,
                 topic: topic,
@@ -108,9 +122,9 @@ export default function TuitionForm() {
     }
 
 
-    const updateZoom = async (meetingId: string, topic: string, start_time: string, duration: number) => {
+    const updateZoom = async (zoom: ZoomAccount, meetingId: string, topic: string, start_time: string, duration: number) => {
         try {
-            const token = await authToken()
+            const token = await authToken(zoom)
             const response = await axios.post('/api/updateZoom', {
                 accessToken: token,
                 meetingId: meetingId,
@@ -143,6 +157,47 @@ export default function TuitionForm() {
 
 
 
+    function getZoomAcc(zoomStartTime: string, duration: number): ZoomAccount | null {
+        // Convert the proposed start time and duration to a comparable format
+        const newStartTime = new Date(zoomStartTime).getTime();
+        const newEndTime = newStartTime + duration * 60 * 1000; // Convert duration from minutes to milliseconds
+        console.log('zoom')
+        console.log(zoomAccounts)
+        for (const zoom of zoomAccounts) {
+            let hasOverlap = false;
+            console.log(zoom.email)
+
+            if (zoom.meetings.length === 0) {
+                console.log('no meeting')
+                return zoom
+            }
+
+            for (const meeting of zoom.meetings) {
+                // Convert existing meeting start time to a comparable format
+                const meetingStartTime = new Date(meeting.start).getTime();
+                const meetingEndTime = meetingStartTime + meeting.duration * 60 * 1000; // Convert duration from minutes to milliseconds
+
+                // Check if the new meeting overlaps with any existing meeting
+                if (
+                    (newStartTime >= meetingStartTime && newStartTime < meetingEndTime) ||
+                    (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
+                    (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
+                ) {
+                    console.log('overlap')
+                    hasOverlap = true;
+                    break; // No need to check further meetings for this account
+                }
+            }
+
+            if (!hasOverlap) {
+                return zoom; // Return the first account without overlaps
+            }
+        }
+
+        return null; // All accounts have overlaps
+    }
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -158,7 +213,21 @@ export default function TuitionForm() {
                     const zoomStartTime = newStartTime.toISOString();
                     // const 
 
-                    const zoom = await createZoom(name, zoomStartTime, duration)
+                    const zoomAcc = getZoomAcc(zoomStartTime, duration)
+
+                    if (zoomAcc === null) {
+                        console.log('No Zoom Account Available')
+                        throw ('No Zoom Account Available')
+                    }
+
+                    const zoom = await createZoom(zoomAcc!, name, zoomStartTime, duration)
+
+                    let meeting = zoomAcc.meetings
+                    const meet = new Meeting(zoomStartTime, duration)
+                    meeting.push(meet)
+                    const upZoom = new ZoomAccount(zoomAcc.id, zoomAcc.email, zoomAcc.clientid, zoomAcc.clientsecret, zoomAcc.accountid, meeting)
+                    updateZoomAccount(upZoom)
+
                     if (zoom !== null) {
                         const { meetingid, url } = zoom
                         const newTuition = new Tuition(
@@ -182,6 +251,7 @@ export default function TuitionForm() {
                         const tid = await addTuition(newTuition);
                     } else {
                         console.log('Failed to create zoom meeting')
+                        throw ('Failed to create zoom meeting')
                     }
 
 
@@ -194,9 +264,21 @@ export default function TuitionForm() {
                 const zoomStartTime = newStartTime.toISOString()
 
                 if (tuition.startTime !== zoomStartTime || tuition.name !== name || tuition.duration !== duration) {
+                    const zoomAcc = getZoomAcc(zoomStartTime, duration)
+
+                    if (zoomAcc === null) {
+                        console.log('No Zoom Account Available')
+                        throw ('No Zoom Account Available')
+                    }
                     console.log(tuition.meetingId!)
-                    await updateZoom(tuition.meetingId!, name, zoomStartTime, duration,)
+                    await updateZoom(zoomAcc!, tuition.meetingId!, name, zoomStartTime, duration,)
+
                     // error handling
+                    let meeting = zoomAcc.meetings
+                    const meet = new Meeting(zoomStartTime, duration)
+                    meeting.push(meet)
+                    const upZoom = new ZoomAccount(zoomAcc.id, zoomAcc.email, zoomAcc.clientid, zoomAcc.clientsecret, zoomAcc.accountid, meeting)
+                    updateZoomAccount(upZoom)
                 }
 
                 // let newInvoice: boolean = false

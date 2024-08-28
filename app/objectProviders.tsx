@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { User, UserRole } from "@/lib/models/user";
 import PaymentsProvider from "@/lib/context/collection/paymentContext";
+import ZoomAccountsProvider from "@/lib/context/collection/zoomContext";
 
 function ObjectProvider({ children }: ScriptProps) {
   const { user } = useUser();
@@ -21,15 +22,18 @@ function ObjectProvider({ children }: ScriptProps) {
   if (user?.role === UserRole.TUTOR) {
     return (
       <TuitionsProvider tutorId={user?.id}>
-        <StudentsProvider tutorId={user?.id}>
-          <SubjectsProvider>
-            <PaymentsProvider tutorId={user?.id}>
-              <LevelsProvider>
-                <PageProvider>{children}</PageProvider>
-              </LevelsProvider>
-            </PaymentsProvider>
-          </SubjectsProvider>
-        </StudentsProvider>
+        <ZoomAccountsProvider>
+
+          <StudentsProvider tutorId={user?.id}>
+            <SubjectsProvider>
+              <PaymentsProvider tutorId={user?.id}>
+                <LevelsProvider>
+                  <PageProvider>{children}</PageProvider>
+                </LevelsProvider>
+              </PaymentsProvider>
+            </SubjectsProvider>
+          </StudentsProvider>
+        </ZoomAccountsProvider>
       </TuitionsProvider>
     )
   }
@@ -37,21 +41,24 @@ function ObjectProvider({ children }: ScriptProps) {
 
   return (
     <TuitionsProvider>
-      <StudentsProvider>
-        <TutorsProvider>
-          <SubjectsProvider>
-            <InvoicesProvider>
-              <PaymentsProvider>
-                <UsersProvider>
-                  <LevelsProvider>
-                    <PageProvider>{children}</PageProvider>
-                  </LevelsProvider>
-                </UsersProvider>
-              </PaymentsProvider>
-            </InvoicesProvider>
-          </SubjectsProvider>
-        </TutorsProvider>
-      </StudentsProvider >
+      <ZoomAccountsProvider>
+
+        <StudentsProvider>
+          <TutorsProvider>
+            <SubjectsProvider>
+              <InvoicesProvider>
+                <PaymentsProvider>
+                  <UsersProvider>
+                    <LevelsProvider>
+                      <PageProvider>{children}</PageProvider>
+                    </LevelsProvider>
+                  </UsersProvider>
+                </PaymentsProvider>
+              </InvoicesProvider>
+            </SubjectsProvider>
+          </TutorsProvider>
+        </StudentsProvider >
+      </ZoomAccountsProvider>
     </TuitionsProvider>
   );
 }
