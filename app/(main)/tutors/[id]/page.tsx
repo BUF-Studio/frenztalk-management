@@ -23,10 +23,12 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (tutor === null || tutor.id !== params.id) {
+      console.log('find tutor')
       const foundTutor = tutors.find((s) => s.id === params.id);
+      console.log('tutor')
       if (foundTutor) setTutor(foundTutor);
     }
-  }, [tutor, tutors, params, setTutor]);
+  }, [params,tutors,tutor]);
 
   const addTuition = () => {
     setTuitionTutor(tutor);

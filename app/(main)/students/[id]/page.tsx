@@ -37,7 +37,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
       const foundStudent = students.find((s) => s.id === params.id);
       if (foundStudent) setStudent(foundStudent);
     }
-  }, [params, student, students, setStudent]);
+  }, [student,params,students]);
 
   useEffect(() => {
     console.log(selectedDate?.toISOString());

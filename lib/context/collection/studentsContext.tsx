@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useTuitions } from "./tuitionContext";
 
 type StudentsContextType = {
   students: Student[];
@@ -22,24 +23,46 @@ const StudentsContext = createContext<StudentsContextType>(initialContext);
 
 type StudentsProviderProps = {
   children: ReactNode;
-  // tutorId?: string;
+  tutorId?: string | null;
 };
 
 export const useStudents = () => useContext(StudentsContext);
 
-function StudentsProvider({ children }: StudentsProviderProps) {
+function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
   const [students, setStudents] = useState<Student[]>([]);
+
+  const { tuitions } = useTuitions()
+
+  const setStu = (students: Student[]) => {
+    if (tutorId) {
+      let tutorStudents: Student[] = [];
+
+      students.forEach(student => {
+        const checkStudent = tuitions.some(tuition => {
+          return tuition.tutorId === tutorId && tuition.studentId === student.id;
+        });
+
+        if (checkStudent && !tutorStudents.some(s => s.id === student.id)) {
+          tutorStudents.push(student);
+        }
+      });
+      setStudents(tutorStudents);
+    } else {
+      setStudents(students);
+    }
+  }
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
+
     const onUpdate = (students: Student[]) => {
-      setStudents(students);
+      setStu(students);
     };
 
     const unsubscribe = studentsStream(onUpdate);
 
     return () => unsubscribe();
-  }, []);
+  }, [tutorId]);
 
   return (
     <StudentsContext.Provider value={{ students }}>

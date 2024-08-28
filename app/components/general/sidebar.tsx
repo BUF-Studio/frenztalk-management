@@ -6,6 +6,7 @@ import { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { UserRole } from "@/lib/models/user";
 // import { IconMenu2, IconX } from "@tabler/icons-react";
 
 export interface Links {
@@ -13,6 +14,7 @@ export interface Links {
   href?: string;
   onClick?: () => void;
   icon: React.JSX.Element | React.ReactNode;
+  roles?: UserRole[]
 }
 
 interface SidebarContextProps {

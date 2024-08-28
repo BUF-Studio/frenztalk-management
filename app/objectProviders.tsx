@@ -17,41 +17,42 @@ import PaymentsProvider from "@/lib/context/collection/paymentContext";
 function ObjectProvider({ children }: ScriptProps) {
   const { user } = useUser();
 
+
   if (user?.role === UserRole.TUTOR) {
     return (
-      <StudentsProvider>
-        <SubjectsProvider>
-          <TuitionsProvider tutorId={user?.id}>
+      <TuitionsProvider tutorId={user?.id}>
+        <StudentsProvider tutorId={user?.id}>
+          <SubjectsProvider>
             <PaymentsProvider tutorId={user?.id}>
               <LevelsProvider>
                 <PageProvider>{children}</PageProvider>
               </LevelsProvider>
             </PaymentsProvider>
-          </TuitionsProvider>
-        </SubjectsProvider>
-      </StudentsProvider>
+          </SubjectsProvider>
+        </StudentsProvider>
+      </TuitionsProvider>
     )
   }
 
 
   return (
-    <StudentsProvider>
-      <TutorsProvider>
-        <SubjectsProvider>
-          <InvoicesProvider>
-            <PaymentsProvider>
-              <TuitionsProvider>
+    <TuitionsProvider>
+      <StudentsProvider>
+        <TutorsProvider>
+          <SubjectsProvider>
+            <InvoicesProvider>
+              <PaymentsProvider>
                 <UsersProvider>
                   <LevelsProvider>
                     <PageProvider>{children}</PageProvider>
                   </LevelsProvider>
                 </UsersProvider>
-              </TuitionsProvider>
-            </PaymentsProvider>
-          </InvoicesProvider>
-        </SubjectsProvider>
-      </TutorsProvider>
-    </StudentsProvider >
+              </PaymentsProvider>
+            </InvoicesProvider>
+          </SubjectsProvider>
+        </TutorsProvider>
+      </StudentsProvider >
+    </TuitionsProvider>
   );
 }
 

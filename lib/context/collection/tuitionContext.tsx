@@ -26,6 +26,8 @@ function TuitionsProvider({ children, tutorId }: TuitionsProviderProps) {
 
   // Fetch data from Firebase and set up listeners
   useEffect(() => {
+    console.log('tuition tutor')
+    console.log(tutorId)
     const onUpdate = (tuitions: Tuition[]) => {
       console.log(tuitions);
       setTuitions(tuitions);

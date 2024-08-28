@@ -39,7 +39,7 @@ export const updateTuition = async (
 
 export const tuitionsStream = (
   onUpdate: (updatedData: Tuition[]) => void,
-  tutorId?: string
+  tutorId?: string | null
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
     Tuition.fromMap(data, id);

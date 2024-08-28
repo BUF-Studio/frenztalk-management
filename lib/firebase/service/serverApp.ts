@@ -7,7 +7,7 @@ import { initializeApp, getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { firebaseAdminConfig } from "./config";
 
-const serviceAccount = require("@/frenztalk-firebase-adminsdk-h68uw-bdf3fd79a7.json");
+const serviceAccount = require("@/frenztalk-firebase-adminsdk-h68uw-8c7b585859.json");
 
 export const firebaseAdminApp =
   getApps().length === 0

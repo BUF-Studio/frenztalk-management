@@ -11,7 +11,7 @@ import { Tutor } from "@/lib/models/tutor";
 export default function UserForm() {
   const router = useRouter();
   const { user, setUser } = useUserPage();
-  const { setTutor } = useTutorPage();
+  // const { setTutor } = useTutorPage();
   const [name, setName] = useState(user!.name);
   const [role, setRole] = useState(user!.role);
 
@@ -19,6 +19,7 @@ export default function UserForm() {
 
   const viewTutor = () => {
     if (user && user.id) {
+      // setTutor(user.id)
       router.push(`/tutors/${user.id}`);
     }
   };
@@ -40,7 +41,7 @@ export default function UserForm() {
       await updateUser(updatedUser);
 
       if (role === UserRole.TUTOR) {
-        const newTutor = new Tutor(user!.id, user!.name, "", "active", "");
+        const newTutor = new Tutor(user!.id, user!.name,[], "", "active", "");
 
         //updateTutor() will create a new tutor with the id specified if it does not exist
         await updateTutor(newTutor);
@@ -91,7 +92,7 @@ export default function UserForm() {
 
       <div>
         {user !== null && user.role === UserRole.TUTOR && (
-          <button onClick={viewTutor}>View Tutor</button>
+          <button type="button" onClick={viewTutor}>View Tutor</button>
         )}
       </div>
 
