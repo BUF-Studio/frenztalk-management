@@ -1,5 +1,10 @@
-import type React from "react";
-import { createContext, useState, useContext, type ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  type ReactNode,
+} from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -39,27 +44,32 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<AlertOptions | null>(null);
 
-  const showAlert = (alertOptions: AlertOptions) => {
+  const showAlert = useCallback((alertOptions: AlertOptions) => {
     setOptions(alertOptions);
     setOpen(true);
-  };
+  }, []);
 
-  const hideAlert = () => {
+  const hideAlert = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     options?.onConfirm?.();
     hideAlert();
-  };
+  }, [options, hideAlert]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     options?.onCancel?.();
     hideAlert();
-  };
+  }, [options, hideAlert]);
+
+  const contextValue = React.useMemo(
+    () => ({ showAlert, hideAlert }),
+    [showAlert, hideAlert]
+  );
 
   return (
-    <AlertContext.Provider value={{ showAlert, hideAlert }}>
+    <AlertContext.Provider value={contextValue}>
       {children}
       <Dialog
         open={open}

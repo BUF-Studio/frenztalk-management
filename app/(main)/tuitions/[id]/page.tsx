@@ -8,7 +8,6 @@ import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
@@ -18,16 +17,25 @@ import {
   ArrowBackIosNew,
   CalendarToday,
 } from "@mui/icons-material";
-import { Check, Copy, CreditCard, FileText, Pencil, Trash2, User } from "lucide-react";
+import {
+  Check,
+  Copy,
+  CreditCard,
+  FileText,
+  Pencil,
+  Trash2,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DropdownButton from "@/app/components/general/dropdown";
-import generatePDF from "@/lib/pdf/pdf";
+import { useAlert } from "@/lib/context/component/AlertContext";
+import { deleteTuition } from "@/lib/firebase/tuition";
+import { AddTuitionModalDialog } from "../addTuitionModalDialog";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
-  const { invoice, setInvoice } = useInvoicePage();
   const { tuitions } = useTuitions();
   const { invoices } = useInvoices();
   const router = useRouter();
@@ -35,6 +43,8 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { students } = useStudents();
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const { showAlert } = useAlert();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -94,6 +104,28 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     },
   ];
 
+  const handleDelete = useCallback(() => {
+    if (tuition) {
+      showAlert({
+        title: "Confirm Delete Class?",
+        message:
+          "Are you sure you want to delete this tuition? This action cannot be undone.",
+        confirmLabel: "Confirm",
+        cancelLabel: "Cancel",
+        onConfirm: async () => {
+          await deleteTuition(tuition);
+          router.back();
+          showSnackbar("Tuition deleted successfully", "success");
+        },
+        onCancel: () => {},
+      });
+    }
+  }, [tuition, showAlert, showSnackbar, router]);
+
+  function handleEdit(): void {
+    setIsModalOpen(true);
+  }
+
   return (
     <div>
       {/* Back Button */}
@@ -138,12 +170,15 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
                   {
                     icon: <Pencil size={16} />,
                     label: "Edit",
-                    onClick: () => console.log("Delete"),
+                    onClick: handleEdit,
                   },
                   {
                     icon: <Trash2 size={16} />,
                     label: "Delete",
-                    onClick: () => console.log("Delete"),
+                    onClick: async () => {
+                      handleDelete();
+                      return;
+                    },
                   },
                 ]}
               />
@@ -236,6 +271,10 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
           />
         </div>
       </div>
+      <AddTuitionModalDialog
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
