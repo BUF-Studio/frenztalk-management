@@ -43,31 +43,7 @@ function formatDateTime(date: Date): string {
     .replace(/am|pm/i, (match) => match.toUpperCase());
 }
 
-/**
- * Formats the given start time and duration to a readable time range.
- * @param startTime - The start time string in UTC format
- * @param duration - The duration in hours
- * @returns Formatted time range string or an error message if the input is invalid
- */
-export function formatTimeRange(
-  startTime: string | null | undefined,
-  duration: number | null | undefined
-): string {
-  if (!startTime) {
-    console.error("Invalid start time: null or undefined");
-    return "Invalid time";
-  }
-
-  try {
-    const start = new Date(startTime);
-    const end = new Date(start.getTime() + (duration ?? 0) * 60 * 60 * 1000);
-    return `${formatDateTime(start)} to ${formatDateTime(end)}`;
-  } catch (error) {
-    console.error("Error formatting time range:", error);
-    return "Invalid time range";
-  }
-}
-
+// Used at tuition card and tuition detail
 export const formatTime = (
   date: string | null | undefined,
   duration: number | null | undefined
@@ -77,18 +53,22 @@ export const formatTime = (
     return "Invalid time";
   }
   try {
+    // Create a date object in UTC
     const start = new Date(date);
     const end = new Date(start.getTime() + (duration ?? 0) * 60 * 1000);
-    
+
     const formatOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
+      timeZone: 'UTC'  // Specify UTC timezone
     };
 
-    const startTime = start.toLocaleTimeString([], formatOptions)
+    const startTime = start
+      .toLocaleTimeString([], formatOptions)
       .replace(/am|pm/i, (match) => match.toUpperCase());
-    const endTime = end.toLocaleTimeString([], formatOptions)
+    const endTime = end
+      .toLocaleTimeString([], formatOptions)
       .replace(/am|pm/i, (match) => match.toUpperCase());
 
     return `${startTime} to ${endTime}`;
@@ -140,7 +120,7 @@ export function capitalizeFirstLetter(str: string | null | undefined): string {
 
 /**
  * Copies meeting details to the clipboard.
- * 
+ *
  * @param meetingLink - The Zoom meeting link
  * @param tutorName - The name of the tutor
  * @param studentName - The name of the student

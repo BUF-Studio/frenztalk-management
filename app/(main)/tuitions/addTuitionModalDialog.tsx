@@ -24,6 +24,7 @@ import TuitionStatus from "@/lib/models/tuitionStatus";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import axios from "axios";
 import { Payment } from "@/lib/models/payment";
+import CheckboxFieldComponent from "@/app/components/general/input/checkBox";
 
 interface AddTuitionModalDialogProps {
   isOpen: boolean;
@@ -38,14 +39,12 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   tuition,
   setTuition,
 }) => {
-
   const { levels } = useLevels();
   // const { tuition, setTuition } = useTuitionPage();
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { zoomAccounts } = useZoomAccounts();
-
 
   const [formData, setFormData] = useState({
     name: tuition?.name || "",
@@ -57,9 +56,10 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
     currency: tuition?.currency || Currency.MYR,
     studentPrice: tuition?.studentPrice || 0,
     tutorPrice: tuition?.tutorPrice || 0,
-    startDateTime: tuition?.startTime?.slice(0, 16) || "",
+    startDateTime: tuition?.startTime || "",
     duration: tuition?.duration || 60,
     repeatWeeks: 1,
+    trial: tuition?.trial ?? true,
   });
 
   useEffect(() => {
@@ -76,6 +76,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
       startDateTime: tuition?.startTime?.slice(0, 16) || "",
       duration: tuition?.duration || 60,
       repeatWeeks: 1,
+      trial: tuition?.trial ?? true,
     });
   }, [tuition]);
 
@@ -107,10 +108,18 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: checked,
     }));
   };
 
@@ -215,8 +224,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-            i * 7 * 24 * 60 * 60 * 1000 +
-            8 * 60 * 60 * 1000
+              i * 7 * 24 * 60 * 60 * 1000 +
+              8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
 
@@ -248,7 +257,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             formData.currency as Currency,
             null,
             null,
-            meetingid, false
+            meetingid,
+            i === 0 && formData.trial
           );
           await addTuition(newTuition);
 
@@ -362,7 +372,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           formData.currency as Currency,
           siid,
           tiid,
-          tuition.meetingId, false
+          tuition.meetingId,
+          formData.trial
         );
         await updateTuition(updatedTuition);
         setTuition(updatedTuition);
@@ -542,7 +553,13 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             onChange={handleInputChange}
             min={1}
           />
-
+          <CheckboxFieldComponent
+            id="trial"
+            name="trial"
+            label="Trial Class"
+            checked={formData.trial}
+            onChange={handleCheckboxChange}
+          />
           <div className="flex justify-end space-x-2 mt-6">
             <button
               type="button"

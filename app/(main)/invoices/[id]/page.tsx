@@ -84,7 +84,7 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
       </button>
 
       <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">
-        <InvoicePDF invoice={invoice} role={invoice?.invoiceType || "tutor"}/>
+        <InvoicePDF invoice={invoice}/>
       </div>
     </div>
   );

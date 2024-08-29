@@ -9,6 +9,7 @@ import { AccessTime, CalendarToday } from "@mui/icons-material";
 import {
   capitalizeFirstLetter,
   copyMeetingLink,
+  formatDate,
   formatTime,
 } from "@/utils/util";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
@@ -108,7 +109,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         <div className="flex justify-between items-start mb-2">
           <span className="flex items-center text-neutral-500 dark:text-neutral-400 text-sm mb-1">
             <CalendarToday className="h-4 w-4 mr-2" />
-            {new Date(time).toDateString()}
+            {formatDate(time)}
           </span>
           <span className="flex items-center text-neutral-500 dark:text-neutral-400 text-sm mb-1">
             <AccessTime className="h-4 w-4 mr-2" />

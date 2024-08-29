@@ -12,7 +12,6 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import {
   capitalizeFirstLetter,
   formatDateRange,
-  formatTimeRange,
 } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useState } from "react";
