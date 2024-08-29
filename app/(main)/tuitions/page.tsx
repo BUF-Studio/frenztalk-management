@@ -10,44 +10,19 @@ import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { Plus } from "lucide-react";
-import AddTuitionModalDialog from "./addTuitionModalDialog";
+import { AddTuitionModalDialog } from "./addTuitionModalDialog";
 
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
   const router = useRouter();
-  const { setTuition } = useTuitionPage();
+  const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addTuition = () => {
     setTuition(null);
-    router.push("/tuitions/add");
-    // setIsModalOpen(true)
+    setIsModalOpen(true);
   };
-  const viewTuition = (tuition: Tuition) => {
-    setTuition(tuition);
-    router.push(`/tuitions/${tuition.id}`);
-  };
-
-  // const zoom = async () => {
-  //     try {
-  //         const response = await axios.post<MeetingData>('/api/addZoom', {
-  //             topic: "Hello",
-  //             start_time: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-  //             duration: 60,
-  //             password: null,
-  //         });
-
-  //         console.log(response.data);
-  //         console.log(response.data.join_url);
-  //     } catch (error) {
-  //         console.error(error);
-  //     }
-  // }
-
-  // const zoomAuth = () => {
-  //     window.location.href = '/api/auth/authorize';
-  //   };
 
   return (
     <div className="flex flex-1 h-full w-full flex-row gap-4 justify-start items-start overflow-hidden">
@@ -74,7 +49,11 @@ export default function TuitionPage() {
       </div>
       <AddTuitionModalDialog
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false)
+        }}
+        tuition={null}
+        setTuition={setTuition}
       />
     </div>
   );

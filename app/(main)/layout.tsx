@@ -138,7 +138,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
 
-  const links: Links[] = allLinks.filter(link => link.roles!.includes(user?.role! ?? UserRole.TUTOR));
+  const links: Links[] = allLinks.filter(link => link.roles?.includes(user?.role ?? UserRole.TUTOR));
   const [open, setOpen] = useState(false);
   return (
     <div

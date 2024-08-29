@@ -13,6 +13,7 @@ import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
+import EditTutorForm from "../editTutorForm";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
   const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
@@ -21,6 +22,12 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
   const { setTuitionTutor } = useTuitionPage();
   const router = useRouter();
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
+  };
+
   useEffect(() => {
     if (tutor === null || tutor.id !== params.id) {
       console.log('find tutor')
@@ -28,7 +35,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
       console.log('tutor')
       if (foundTutor) setTutor(foundTutor);
     }
-  }, [params,tutors,tutor]);
+  }, [params,tutors,tutor, setTutor]);
 
   const addTuition = () => {
     setTuitionTutor(tutor);
@@ -89,6 +96,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 </div>
               </div>
               <button
+                onClick={toggleDialog}
                 className="flex flex-row items-center px-4 py-2 bg-red-800 dark:bg-red-700 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] dark:hover:bg-red-600 hover:shadow-lg transition-colors"
                 type="button"
               >
@@ -132,6 +140,10 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
           <div className="flex flex-1 h-full" />
         </div>
       </div>
+      <EditTutorForm
+        isOpen={isDialogOpen}
+        onClose={toggleDialog}
+      />
     </div>
   );
 }

@@ -4,27 +4,55 @@ import type { Student } from "@/lib/models/student";
 import TextFieldComponent from "@/app/components/general/input/textField";
 import { X } from "lucide-react";
 import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
+import { useRouter } from "next/navigation";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useTutorPage } from "@/lib/context/page/tutorPageContext";
+import { updateTutor } from "@/lib/firebase/tutor";
+import { Tutor } from "@/lib/models/tutor";
 
-interface StudentDialogProps {
+interface EditTutorFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (student: Partial<Student>) => void;
-  initialStudent?: Student | null;
 }
 
-const StudentDialog: React.FC<StudentDialogProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  initialStudent,
-}) => {
-  const [name, setName] = useState(initialStudent?.name || "");
-  const [age, setAge] = useState<number | string>(initialStudent?.age || "");
-  const [status, setStatus] = useState(initialStudent?.status || "active");
+const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
+  const router = useRouter();
+  const { subjects } = useSubjects();
+  const { tutor, setTutor } = useTutorPage();
+  const [name, setName] = useState(tutor?.name || "");
+  const [prefer, setPrefer] = useState("");
+  const [preferSubject, setPreferSubect] = useState(tutor?.subjects || []);
+  const [des, setDes] = useState(tutor?.des || "");
+  const [status, setStatus] = useState(tutor?.status || "active");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, age: Number(age), status });
+    try {
+      const updatedTutor = new Tutor(
+        tutor?.id ?? "",
+        name,
+        preferSubject,
+        des,
+        status,
+        ""
+      );
+      await updateTutor(updatedTutor);
+
+      setTutor(updatedTutor);
+
+      router.back();
+    } catch (error) {
+      console.error("Failed to submit the form", error);
+    }
+  };
+
+  const addPreferSubject = () => {
+    if (prefer !== "") {
+      const preSub = preferSubject;
+      preSub.push(prefer);
+      setPrefer("");
+      setPreferSubect(preSub);
+    }
   };
 
   if (!isOpen) return null;
@@ -41,7 +69,7 @@ const StudentDialog: React.FC<StudentDialogProps> = ({
       <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            {initialStudent ? "Edit Student" : "Add Student"}
+            Edit Tutor
           </h2>
           <button
             type="button"
@@ -62,15 +90,11 @@ const StudentDialog: React.FC<StudentDialogProps> = ({
             required
           />
           <TextFieldComponent
-            id="name"
-            type="number"
-            label="Age"
-            value={age}
-            onChange={(e) =>
-              setAge(
-                e.target.value === "" ? "" : Number.parseInt(e.target.value)
-              )
-            }
+            id="des"
+            type="text"
+            label="Description"
+            value={des}
+            onChange={(e) => setDes(e.target.value)}
             required
           />
           <SelectFieldComponent
@@ -82,6 +106,39 @@ const StudentDialog: React.FC<StudentDialogProps> = ({
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
+          <div>Prefer Subject</div>
+          <div>
+            {preferSubject.map((subject) => {
+              const subjectDetails = subjects.find((sub) => sub.id === subject);
+              return (
+                <li key={subject}>
+                  {subjectDetails ? subjectDetails.name : "Unknown Subject"}
+                </li>
+              );
+            })}
+          </div>
+          <div>
+            <label htmlFor="prefer">Add Prefer Subject</label>
+            <select value={prefer} onChange={(e) => setPrefer(e.target.value)}>
+              <option value="" disabled>
+                Choose prefer subject
+              </option>
+
+              {subjects
+                .filter(
+                  (sub) =>
+                    !preferSubject.some((tutorSub) => tutorSub === sub.id)
+                )
+                .map((sub) => (
+                  <option key={sub.id} value={sub.id ?? ""}>
+                    {sub.name}
+                  </option>
+                ))}
+            </select>
+            <button type="button" onClick={() => addPreferSubject()}>
+              Add Prefer Subject
+            </button>
+          </div>
 
           <div className="flex justify-end space-x-2 mt-6">
             <button
@@ -104,4 +161,4 @@ const StudentDialog: React.FC<StudentDialogProps> = ({
   );
 };
 
-export default StudentDialog;
+export default EditTutorForm;

@@ -8,40 +8,70 @@ import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
-import { formatDate, formatTime, formatTimeRange } from "@/utils/util";
+import {
+  copyMeetingLink,
+  formatDate,
+  formatTime,
+  formatTimeRange,
+} from "@/utils/util";
 import {
   AccessTime,
   ArrowBackIosNew,
   CalendarToday,
 } from "@mui/icons-material";
-import { Check, Copy, CreditCard, FileText, Pencil, User } from "lucide-react";
+import {
+  Check,
+  Copy,
+  CreditCard,
+  FileText,
+  Pencil,
+  Trash2,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import DropdownButton from "@/app/components/general/dropdown";
+import { useAlert } from "@/lib/context/component/AlertContext";
+import { deleteTuition } from "@/lib/firebase/tuition";
+import { AddTuitionModalDialog } from "../addTuitionModalDialog";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useLevels } from "@/lib/context/collection/levelContext";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
-  const { invoice, setInvoice } = useInvoicePage();
   const { tuitions } = useTuitions();
   const { invoices } = useInvoices();
   const router = useRouter();
   const { tutors } = useTutors();
   const { students } = useStudents();
+  const { subjects } = useSubjects();
+  const { levels } = useLevels();
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const { showAlert } = useAlert();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(tuition?.url ?? "");
-        setIsCopied(true);
-        showSnackbar("Meeting link copied to clipboard", "success");
-        setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        if (tuition) {
+          await copyMeetingLink(
+            tuition.url ?? "",
+            findTutor(tuition.tutorId)?.name ?? "",
+            findStudent(tuition.studentId)?.name ?? "",
+            findSubject(tuition.subjectId)?.name ?? "",
+            findLevel(tuition.levelId)?.name ?? ""
+          );
+          // await navigator.clipboard.writeText(tuition?.url ?? "");
+          setIsCopied(true);
+          showSnackbar("Meeting link copied to clipboard", "success");
+          setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        }
       } catch (err) {
         console.error("Failed to copy text: ", err);
       }
@@ -67,7 +97,17 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
 
   const findStudent = (id: string) => {
     const student = students.find((student) => student.id === id);
-    return student ?? undefined;
+    return student;
+  };
+
+  const findSubject = (id: string) => {
+    const subject = subjects.find((subject) => subject.id === id);
+    return subject ?? undefined;
+  };
+
+  const findLevel = (id: string) => {
+    const level = levels.find((level) => level.id === id);
+    return level ?? undefined;
   };
 
   const steps: Step[] = [
@@ -92,12 +132,35 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     },
   ];
 
+  const handleDelete = useCallback(() => {
+    if (tuition) {
+      showAlert({
+        title: "Confirm Delete Class?",
+        message:
+          "Are you sure you want to delete this tuition? This action cannot be undone.",
+        confirmLabel: "Confirm",
+        cancelLabel: "Cancel",
+        onConfirm: async () => {
+          await deleteTuition(tuition);
+          router.back();
+          showSnackbar("Tuition deleted successfully", "success");
+        },
+        onCancel: () => {},
+      });
+    }
+  }, [tuition, showAlert, showSnackbar, router]);
+
+  function handleEdit(): void {
+    setIsModalOpen(true);
+  }
+
   return (
     <div>
       {/* Back Button */}
       <button
         type="button"
         onClick={(e) => {
+          setTuition(null);
           router.back();
         }}
         className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors mb-4"
@@ -122,13 +185,32 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
               <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">
                 Active
               </span>
-              <button
+              {/* <button
                 type="button"
                 onClick={() => console.log(`${tuition?.id} is pressed.`)}
                 className="ml-2 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-100 focus:outline-none"
               >
                 <Pencil className="w-4 h-4" />
-              </button>
+              </button> */}
+              <DropdownButton
+                title="..."
+                arrowDown={false}
+                items={[
+                  {
+                    icon: <Pencil size={16} />,
+                    label: "Edit",
+                    onClick: handleEdit,
+                  },
+                  {
+                    icon: <Trash2 size={16} />,
+                    label: "Delete",
+                    onClick: async () => {
+                      handleDelete();
+                      return;
+                    },
+                  },
+                ]}
+              />
             </div>
             <div className="flex items-center">
               <span className="text-sm dark:text-neutral-300">
@@ -218,6 +300,15 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
           />
         </div>
       </div>
+      <AddTuitionModalDialog
+        isOpen={isModalOpen}
+        onClose={() => {
+          // setTuition(null)
+          setIsModalOpen(false);
+        }}
+        tuition={tuition}
+        setTuition={setTuition}
+      />
     </div>
   );
 }

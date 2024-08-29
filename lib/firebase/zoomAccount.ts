@@ -11,10 +11,10 @@ export const addZoomAccount = async (
     const path = PATH;
     const data = zoomAccount.toMap();
     const id = await addData(path, data);
-    console.log("ZoomAccount added to Firestore");
+    console.log("Zoom Account added to Firestore");
     return id;
   } catch (error) {
-    console.error("Error adding avaSubject to Firestore:", error);
+    console.error("Error adding Zoom Account to Firestore:", error);
     throw error;
   }
 };
@@ -26,10 +26,10 @@ export const updateZoomAccount = async (
     const path = `${PATH}/${zoomAccount.id}`;
     const data = zoomAccount.toMap();
     await setData(path, data);
-    console.log(`Education Level ${zoomAccount.id} updated in Firestore`);
+    console.log(`Zoom Account ${zoomAccount.id} updated in Firestore`);
   } catch (error) {
     console.error(
-      `Error setting education ${zoomAccount.id} in Firestore:`,
+      `Error setting Zoom Account ${zoomAccount.id} in Firestore:`,
       error,
     );
   }
