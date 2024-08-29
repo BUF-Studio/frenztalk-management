@@ -17,14 +17,16 @@ import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useState } from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import InvoiceModalDialog from "./invoiceModalDialog";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
   const { payments } = usePayments();
   const router = useRouter();
-  const { setInvoice } = useInvoicePage();
+  const { invoice, setInvoice } = useInvoicePage();
   const { students } = useStudents();
   const { tutors } = useTutors();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [columns, setColumns] = useState<
     { key: keyof Invoice; label: string; order: string }[]
@@ -112,6 +114,10 @@ export default function InvoiceList() {
     return invoice[columnKey] as React.ReactNode;
   };
 
+  function handleAdd(): void {
+    setIsModalOpen(true);
+  }
+
   return (
     <div>
       <div className="flex flex-1 flex-row justify-between pb-4">
@@ -119,7 +125,7 @@ export default function InvoiceList() {
         <button
           className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
           type="button"
-          onClick={() => router.push("/invoices/new")}
+          onClick={handleAdd}
         >
           <Plus size={16} strokeWidth={3} className="mr-1" />
           Add invoice
@@ -133,6 +139,15 @@ export default function InvoiceList() {
         onColumnClick={(column) => sortColumn(column, columns)}
         renderCell={renderInvoiceCell}
         showId
+      />
+      <InvoiceModalDialog
+        isOpen={isModalOpen}
+        onClose={() => {
+          // setTuition(null)
+          setIsModalOpen(false);
+        }}
+        invoice={invoice}
+        setInvoice={setInvoice}
       />
     </div>
   );

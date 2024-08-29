@@ -26,7 +26,6 @@ import { useInvoicePage } from "../context/page/invoicePageContext";
 
 type InvoiceTemplateProps = {
   invoice: Invoice | null;
-  role: "tutor" | "student";
 };
 
 const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {

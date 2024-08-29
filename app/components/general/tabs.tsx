@@ -109,7 +109,7 @@ export const Tabs = ({
       {/* Content display area */}
       <div
         className={cn(
-          "mt-4 p-4 bg-white dark:bg-zinc-900 rounded-lg",
+          "mt-4 bg-white dark:bg-zinc-900 rounded-lg",
           contentClassName
         )}
       >
