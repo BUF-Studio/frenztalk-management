@@ -20,7 +20,6 @@ import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 
-// TODO: Make the component do its thing only. Use string instead of pass in object
 interface TuitionCardProps {
   subject: string;
   level?: string;

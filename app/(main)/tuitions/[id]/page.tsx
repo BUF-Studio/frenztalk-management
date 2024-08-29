@@ -37,7 +37,7 @@ import { useCallback, useEffect, useState } from "react";
 import DropdownButton from "@/app/components/general/dropdown";
 import { useAlert } from "@/lib/context/component/AlertContext";
 import { deleteTuition } from "@/lib/firebase/tuition";
-import { AddTuitionModalDialog } from "../addTuitionModalDialog";
+import { AddTuitionModalDialog } from "../tuitionModalDialog";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import type { Level } from "@/lib/models/level";
