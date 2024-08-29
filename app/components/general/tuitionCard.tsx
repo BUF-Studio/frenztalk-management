@@ -6,11 +6,20 @@ import { Copy, Check } from "lucide-react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Link from "next/link";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
-import { capitalizeFirstLetter, formatTime } from "@/utils/util";
+import {
+  capitalizeFirstLetter,
+  copyMeetingLink,
+  formatTime,
+} from "@/utils/util";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import type { Student } from "@/lib/models/student";
 import type { Level } from "@/lib/models/level";
+import { useInvoices } from "@/lib/context/collection/invoiceContext";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { useTuitions } from "@/lib/context/collection/tuitionContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 
+// TODO: Make the component do its thing only. Use string instead of pass in object
 interface TuitionCardProps {
   subject: string;
   level?: Level;
@@ -37,6 +46,10 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const { tuitions } = useTuitions();
+  const { invoices } = useInvoices();
+  const { tutors } = useTutors();
+  const { students } = useStudents();
 
   const getStatusVariant = (status: string): BadgeProps["variant"] => {
     switch (status.toLowerCase()) {
@@ -59,7 +72,14 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
     e.stopPropagation();
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(meetingLink);
+        await copyMeetingLink(
+          meetingLink,
+          tutor ?? "",
+          student?.name ?? "",
+          subject,
+          level?.name ?? ""
+        );
+        // await navigator.clipboard.writeText(meetingLink);
         setIsCopied(true);
         showSnackbar("Meeting link copied to clipboard", "success");
         setTimeout(() => setIsCopied(false), 2000);

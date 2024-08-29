@@ -130,9 +130,56 @@ export function formatDateRange(
  * @param str - The string to capitalize
  * @returns The string with the first letter capitalized or an error message if the input is invalid
  */
+
 export function capitalizeFirstLetter(str: string | null | undefined): string {
   if (!str) {
     return "Invalid string";
   }
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+/**
+ * Copies meeting details to the clipboard.
+ * 
+ * @param meetingLink - The Zoom meeting link
+ * @param tutorName - The name of the tutor
+ * @param studentName - The name of the student
+ * @param subject - The subject of the class
+ * @param level - The level of the class
+ * @returns A promise that resolves when copying is successful, or rejects with an error
+ */
+export const copyMeetingLink = async (
+  meetingLink: string,
+  tutorName: string,
+  studentName: string,
+  subject: string,
+  level: string
+): Promise<void> => {
+  if (!navigator.clipboard) {
+    throw new Error("Clipboard access not available");
+  }
+
+  const template = `
+Hi, here is the Zoom link for your upcoming class:
+
+Details:
+  • Tutor: ${tutorName}
+  • Student: ${studentName}
+  • Subject: ${subject}
+  • Level: ${level}
+
+Zoom Link: ${meetingLink}
+
+Please be ready a few minutes before the scheduled time. If you have any questions or need assistance, feel free to reach out.
+
+Best regards,
+Frenztalk
+  `.trim();
+
+  try {
+    await navigator.clipboard.writeText(template);
+  } catch (err) {
+    console.error("Failed to copy text: ", err);
+    throw new Error("Failed to copy meeting details");
+  }
+};

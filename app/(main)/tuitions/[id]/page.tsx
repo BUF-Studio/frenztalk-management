@@ -11,7 +11,12 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
-import { formatDate, formatTime, formatTimeRange } from "@/utils/util";
+import {
+  copyMeetingLink,
+  formatDate,
+  formatTime,
+  formatTimeRange,
+} from "@/utils/util";
 import {
   AccessTime,
   ArrowBackIosNew,
@@ -33,6 +38,8 @@ import DropdownButton from "@/app/components/general/dropdown";
 import { useAlert } from "@/lib/context/component/AlertContext";
 import { deleteTuition } from "@/lib/firebase/tuition";
 import { AddTuitionModalDialog } from "../addTuitionModalDialog";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useLevels } from "@/lib/context/collection/levelContext";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
@@ -41,6 +48,8 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { tutors } = useTutors();
   const { students } = useStudents();
+  const { subjects } = useSubjects();
+  const { levels } = useLevels();
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
   const { showAlert } = useAlert();
@@ -50,10 +59,19 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     e.stopPropagation();
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(tuition?.url ?? "");
-        setIsCopied(true);
-        showSnackbar("Meeting link copied to clipboard", "success");
-        setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        if (tuition) {
+          await copyMeetingLink(
+            tuition.url ?? "",
+            findTutor(tuition.tutorId)?.name ?? "",
+            findStudent(tuition.studentId)?.name ?? "",
+            findSubject(tuition.subjectId)?.name ?? "",
+            findLevel(tuition.levelId)?.name ?? ""
+          );
+          // await navigator.clipboard.writeText(tuition?.url ?? "");
+          setIsCopied(true);
+          showSnackbar("Meeting link copied to clipboard", "success");
+          setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+        }
       } catch (err) {
         console.error("Failed to copy text: ", err);
       }
@@ -79,7 +97,17 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
 
   const findStudent = (id: string) => {
     const student = students.find((student) => student.id === id);
-    return student ?? undefined;
+    return student;
+  };
+
+  const findSubject = (id: string) => {
+    const subject = subjects.find((subject) => subject.id === id);
+    return subject ?? undefined;
+  };
+
+  const findLevel = (id: string) => {
+    const level = levels.find((level) => level.id === id);
+    return level ?? undefined;
   };
 
   const steps: Step[] = [
@@ -117,7 +145,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
           router.back();
           showSnackbar("Tuition deleted successfully", "success");
         },
-        onCancel: () => { },
+        onCancel: () => {},
       });
     }
   }, [tuition, showAlert, showSnackbar, router]);
@@ -132,7 +160,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
       <button
         type="button"
         onClick={(e) => {
-          setTuition(null)
+          setTuition(null);
           router.back();
         }}
         className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors mb-4"
@@ -276,7 +304,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
         isOpen={isModalOpen}
         onClose={() => {
           // setTuition(null)
-          setIsModalOpen(false)
+          setIsModalOpen(false);
         }}
         tuition={tuition}
         setTuition={setTuition}
