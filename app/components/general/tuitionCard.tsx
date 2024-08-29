@@ -79,7 +79,6 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           subject,
           level?.name ?? ""
         );
-        // await navigator.clipboard.writeText(meetingLink);
         setIsCopied(true);
         showSnackbar("Meeting link copied to clipboard", "success");
         setTimeout(() => setIsCopied(false), 2000);
