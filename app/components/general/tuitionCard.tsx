@@ -23,12 +23,13 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 // TODO: Make the component do its thing only. Use string instead of pass in object
 interface TuitionCardProps {
   subject: string;
-  level?: Level;
+  level?: string;
   time: string;
   duration: number;
   status: string;
   tutor?: string;
-  student?: Student;
+  student?: string;
+  studentId?: string;
   price: string;
   meetingLink: string;
   onClick?: () => void;
@@ -42,6 +43,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   status,
   tutor,
   student,
+  studentId,
   meetingLink,
   onClick,
 }) => {
@@ -76,9 +78,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         await copyMeetingLink(
           meetingLink,
           tutor ?? "",
-          student?.name ?? "",
+          student ?? "",
           subject,
-          level?.name ?? ""
+          level ?? ""
         );
         setIsCopied(true);
         showSnackbar("Meeting link copied to clipboard", "success");
@@ -128,7 +130,7 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
               </Badge>
             </div>
             <p className="flex text-neutral-600 dark:text-neutral-400 text-sm justify-start">
-              {level?.name ?? "No level found"}
+              {level ?? "No level found"}
             </p>
             {student && (
               <div className="flex justify-between items-center">
@@ -138,9 +140,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
                   </span>
                   <Link
                     className="text-sm font-medium ml-1 text-neutral-700 dark:text-neutral-300 hover:underline"
-                    href={`/students/${student.id}`}
+                    href={`/students/${studentId}`}
                   >
-                    {student.name}
+                    {student}
                   </Link>
                 </div>
               </div>
