@@ -9,6 +9,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
+import React from "react";
+import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 
 export default function TutorList() {
   const { tutors } = useTutors();
@@ -33,12 +36,17 @@ export default function TutorList() {
     }
   }
 
-  const columns: { key: keyof Tutor; label: string }[] = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "des", label: "Description" },
-    { key: "status", label: "Status" },
+  const initialColumns: { key: keyof Tutor; label: string; order: string }[] = [
+    { key: "id", label: "ID", order: TableOrderEnum.NONE },
+    { key: "name", label: "Name", order: TableOrderEnum.NONE },
+    { key: "des", label: "Description", order: TableOrderEnum.NONE },
+    { key: "status", label: "Status", order: TableOrderEnum.NONE },
   ];
+
+  const [columns, setColumns] = React.useState(initialColumns);
+
+  const { sortedData: sortedTutors, sortColumn: sortTutorByColumn } =
+    useTableColumn(tutors, columns, setColumns);
 
   const viewTutor = (tutor: Tutor) => {
     setTutor(tutor);
@@ -82,10 +90,11 @@ export default function TutorList() {
         <h1 className="text-xl font-bold">Tutor List</h1>
       </div>
       <DataTable
-        data={tutors}
+        data={sortedTutors}
         columns={columns}
         actions={[]}
         onRowClick={(tutor) => viewTutor(tutor)}
+        onColumnClick={(column) => sortTutorByColumn(column, columns)}
         renderCell={renderTutorCell}
       />
     </div>

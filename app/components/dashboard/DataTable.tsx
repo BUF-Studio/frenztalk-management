@@ -1,4 +1,6 @@
 import type React from "react";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 
 export type Action<T> = {
   label: string;
@@ -17,21 +19,23 @@ export type Action<T> = {
 
 type DataTableProps<T> = {
   data: T[];
-  columns: { key: keyof T; label: string }[];
+  columns: { key: keyof T; label: string; order: string }[];
   actions: Action<T>[];
   changedIds?: string[];
   renderCell?: (item: T, columnKey: keyof T) => React.ReactNode;
   onRowClick: (item: T) => void; // Changed from onItemClick to onRowClick
+  onColumnClick: (columnLabel: string) => void;
   showId?: boolean;
 };
 
 export const DataTable = <T extends { id: string | null }>({
   data,
   columns,
-  actions,
+  actions = [],
   changedIds,
   renderCell,
   onRowClick,
+  onColumnClick,
   showId,
 }: DataTableProps<T>) => {
   const filteredColumns = columns.filter((column) => {
@@ -60,7 +64,15 @@ export const DataTable = <T extends { id: string | null }>({
           <tr>
             {filteredColumns.map((column) => (
               <th key={String(column.key)} scope="col" className="px-6 py-3">
-                {column.label}
+                <button
+                  type="button"
+                  onClick={() => onColumnClick(column.label)}
+                  className="flex items-center gap-1"
+                >
+                  {column.label}
+                  {column.order === TableOrderEnum.ASC && <ArrowUpwardIcon />}
+                  {column.order === TableOrderEnum.DESC && (<ArrowUpwardIcon style={{ transform: "rotate(180deg)" }} />)}
+                </button>
               </th>
             ))}
             {actions.length > 0 && (

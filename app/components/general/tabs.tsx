@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/manage-class-name";
 
@@ -39,6 +39,15 @@ export const Tabs = ({
   };
 
   const [hovering, setHovering] = useState(false);
+
+  //TODO: Optimize this useEffect : kyang
+  useEffect(() => {
+    setTabs(propTabs);
+    setActive((prev) => {
+      const newActive = propTabs.find((tab) => tab.value === prev.value);
+      return newActive ?? propTabs[0];
+    });
+  }, [propTabs]);
 
   return (
     <div className="w-full">

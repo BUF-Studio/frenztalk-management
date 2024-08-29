@@ -12,6 +12,8 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import StudentDialog from "./studentForm";
 import { capitalizeFirstLetter } from "@/utils/util";
+import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 
 export default function StudentList() {
   const { students } = useStudents();
@@ -52,12 +54,18 @@ export default function StudentList() {
     }
   };
 
-  const columns: { key: keyof Student; label: string }[] = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "age", label: "Age" },
-    { key: "status", label: "Status" },
-  ];
+  const initialColumns: { key: keyof Student; label: string; order: string }[] =
+    [
+      { key: "id", label: "ID", order: TableOrderEnum.NONE },
+      { key: "name", label: "Name", order: TableOrderEnum.NONE },
+      { key: "age", label: "Age", order: TableOrderEnum.NONE },
+      { key: "status", label: "Status", order: TableOrderEnum.NONE },
+    ];
+
+  const [columns, setColumns] = useState(initialColumns);
+
+  const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
+    useTableColumn(students, columns, setColumns);
 
   const renderStudentCell = (student: Student, columnKey: keyof Student) => {
     if (columnKey === "status") {
@@ -89,10 +97,11 @@ export default function StudentList() {
         </button>
       </div>
       <DataTable
-        data={students}
+        data={sortedStudents}
         columns={columns}
         actions={[]}
         onRowClick={(student) => viewStudent(student)}
+        onColumnClick={(column) => sortStudentByColumns(column, columns)}
         renderCell={renderStudentCell}
       />
       <StudentDialog
