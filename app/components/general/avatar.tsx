@@ -4,7 +4,7 @@ import { User } from "lucide-react";
 import { cn } from "@/utils/manage-class-name";
 
 type AvatarProps = {
-  url: string | null;
+  url?: string | null;
 };
 
 const UserAvatar: React.FC<AvatarProps> = ({ url, ...props }) => {
