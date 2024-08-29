@@ -88,15 +88,16 @@ export const Tabs = ({
             <span className="relative block text-black dark:text-white">
               {tab.title}
             </span>
-            {tab.notify && tab.notify > 0 && (
+            {tab.notify !== undefined && tab.notify > 0 && (
               <span
                 className={cn(
                   "z-10 bg-red-500 text-xs font-medium text-white",
                   "flex items-center justify-center",
-                  "w-5 h-5 rounded-full",
+                  "w-5 h-5 rounded-full ml-2",
                   active.value === tab.value
                     ? "absolute -top-1 -right-1"
-                    : "relative ml-2"
+                    : "relative",
+                  notificationClassName
                 )}
               >
                 {tab.notify}
