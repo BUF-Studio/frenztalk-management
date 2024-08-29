@@ -15,6 +15,9 @@ import {
 } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { usePaymentPage } from "@/lib/context/page/paymentPageContext";
+import { useState } from "react";
+import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 
 export default function PaymentList() {
   const { payments } = usePayments();
@@ -57,15 +60,21 @@ export default function PaymentList() {
     }
   }
 
-  const columns: { key: keyof Payment; label: string }[] = [
-    { key: "id", label: "ID" },
-    // { key: "paymentType", label: "Issuer" },
-    { key: "tutorId", label: "Role" },
-    { key: "startDateTime", label: "Issue Date" },
-    { key: "duration", label: "Due Date" },
-    { key: "status", label: "Status" },
-    { key: "rate", label: "Rate" },
-  ];
+  const initialColumns: { key: keyof Payment; label: string; order: string }[] =
+    [
+      { key: "id", label: "ID", order: TableOrderEnum.NONE },
+      // { key: "paymentType", label: "Issuer" },
+      { key: "tutorId", label: "Role", order: TableOrderEnum.NONE },
+      { key: "startDateTime", label: "Issue Date", order: TableOrderEnum.NONE },
+      { key: "duration", label: "Due Date", order: TableOrderEnum.NONE },
+      { key: "status", label: "Status", order: TableOrderEnum.NONE },
+      { key: "rate", label: "Rate", order: TableOrderEnum.NONE },
+    ];
+
+  const [columns, setColumns] = useState(initialColumns);
+
+  const { sortedData: sortedPayments, sortColumn: sortPaymentByColumn } =
+    useTableColumn(payments, columns, setColumns);
 
   const renderPaymentCell = (payment: Payment, columnKey: keyof Payment) => {
     if (columnKey === "status") {
@@ -119,6 +128,7 @@ export default function PaymentList() {
         columns={columns}
         actions={[]}
         onRowClick={(payment) => viewPayment(payment)}
+        onColumnClick={(column) => sortPaymentByColumn(column, columns)}
         renderCell={renderPaymentCell}
         showId
       />

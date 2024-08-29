@@ -5,7 +5,6 @@ import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import { Plus } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
@@ -16,6 +15,9 @@ import {
   formatTimeRange,
 } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
+import { useState } from "react";
+import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
@@ -24,6 +26,24 @@ export default function InvoiceList() {
   const { setInvoice } = useInvoicePage();
   const { students } = useStudents();
   const { tutors } = useTutors();
+
+  const [columns, setColumns] = useState<
+    { key: keyof Invoice; label: string; order: string }[]
+  >([
+    { key: "id", label: "ID", order: TableOrderEnum.NONE },
+    // { key: "invoiceType", label: "Issuer" },
+    { key: "tutorId", label: "Role", order: TableOrderEnum.NONE },
+    { key: "startDateTime", label: "Issue Date", order: TableOrderEnum.NONE },
+    { key: "duration", label: "Due Date", order: TableOrderEnum.NONE },
+    { key: "status", label: "Status", order: TableOrderEnum.NONE },
+    { key: "rate", label: "Rate", order: TableOrderEnum.NONE },
+  ]);
+
+  const { sortedData: orderedInvoices, sortColumn } = useTableColumn(
+    invoices,
+    columns,
+    setColumns
+  );
 
   const viewInvoice = (invoice: Invoice) => {
     setInvoice(invoice);
@@ -58,16 +78,6 @@ export default function InvoiceList() {
         return "error"; // Handle unexpected statuses
     }
   }
-
-  const columns: { key: keyof Invoice; label: string }[] = [
-    { key: "id", label: "ID" },
-    // { key: "invoiceType", label: "Issuer" },
-    { key: "tutorId", label: "Role" },
-    { key: "startDateTime", label: "Issue Date" },
-    { key: "duration", label: "Due Date" },
-    { key: "status", label: "Status" },
-    { key: "rate", label: "Rate" },
-  ];
 
   const renderInvoiceCell = (invoice: Invoice, columnKey: keyof Invoice) => {
     if (columnKey === "status") {
@@ -117,10 +127,11 @@ export default function InvoiceList() {
         </button>
       </div>
       <DataTable
-        data={invoices}
+        data={orderedInvoices}
         columns={columns}
         actions={[]}
         onRowClick={(invoice) => viewInvoice(invoice)}
+        onColumnClick={(column) => sortColumn(column, columns)}
         renderCell={renderInvoiceCell}
         showId
       />
