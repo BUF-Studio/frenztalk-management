@@ -117,7 +117,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
           router.back();
           showSnackbar("Tuition deleted successfully", "success");
         },
-        onCancel: () => {},
+        onCancel: () => { },
       });
     }
   }, [tuition, showAlert, showSnackbar, router]);
@@ -132,6 +132,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
       <button
         type="button"
         onClick={(e) => {
+          setTuition(null)
           router.back();
         }}
         className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors mb-4"
@@ -273,7 +274,12 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
       </div>
       <AddTuitionModalDialog
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          // setTuition(null)
+          setIsModalOpen(false)
+        }}
+        tuition={tuition}
+        setTuition={setTuition}
       />
     </div>
   );

@@ -28,18 +28,24 @@ import { Payment } from "@/lib/models/payment";
 interface AddTuitionModalDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  tuition: Tuition | null;
+  setTuition: (tuition: Tuition | null) => void;
 }
 
 export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   isOpen,
   onClose,
+  tuition,
+  setTuition,
 }) => {
+
   const { levels } = useLevels();
-  const { tuition, setTuition } = useTuitionPage();
+  // const { tuition, setTuition } = useTuitionPage();
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { zoomAccounts } = useZoomAccounts();
+
 
   const [formData, setFormData] = useState({
     name: tuition?.name || "",
@@ -55,6 +61,23 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
     duration: tuition?.duration || 60,
     repeatWeeks: 1,
   });
+
+  useEffect(() => {
+    setFormData({
+      name: tuition?.name || "",
+      studentId: tuition?.studentId || "",
+      tutorId: tuition?.tutorId || "",
+      subjectId: tuition?.subjectId || "",
+      levelId: tuition?.levelId || "",
+      status: tuition?.status || "",
+      currency: tuition?.currency || Currency.MYR,
+      studentPrice: tuition?.studentPrice || 0,
+      tutorPrice: tuition?.tutorPrice || 0,
+      startDateTime: tuition?.startTime?.slice(0, 16) || "",
+      duration: tuition?.duration || 60,
+      repeatWeeks: 1,
+    });
+  }, [tuition]);
 
   useEffect(() => {
     if (formData.levelId !== "") {
@@ -192,8 +215,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-              i * 7 * 24 * 60 * 60 * 1000 +
-              8 * 60 * 60 * 1000
+            i * 7 * 24 * 60 * 60 * 1000 +
+            8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
 
@@ -225,7 +248,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             formData.currency as Currency,
             null,
             null,
-            meetingid
+            meetingid, false
           );
           await addTuition(newTuition);
 
@@ -339,7 +362,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           formData.currency as Currency,
           siid,
           tiid,
-          tuition.meetingId
+          tuition.meetingId, false
         );
         await updateTuition(updatedTuition);
         setTuition(updatedTuition);
@@ -382,7 +405,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             <X size={24} />
           </button>
         </div>
-  
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextFieldComponent
             id="name"
@@ -392,7 +415,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             value={formData.name}
             onChange={handleInputChange}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectFieldComponent
               id="student"
@@ -419,7 +442,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               onChange={handleInputChange}
             />
           </div>
-  
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectFieldComponent
               id="subject"
@@ -446,7 +469,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               onChange={handleInputChange}
             />
           </div>
-  
+
           <SelectFieldComponent
             id="status"
             name="status"
@@ -465,7 +488,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             value={formData.currency}
             onChange={handleInputChange}
           />
-  
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextFieldComponent
               id="studentPrice"
@@ -488,7 +511,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               onChange={handleInputChange}
             />
           </div>
-  
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DatepickerInput
               id="startDateTime"
@@ -508,7 +531,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               onChange={handleInputChange}
             />
           </div>
-  
+
           <TextFieldComponent
             id="repeatWeeks"
             name="repeatWeeks"
@@ -519,7 +542,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             onChange={handleInputChange}
             min={1}
           />
-  
+
           <div className="flex justify-end space-x-2 mt-6">
             <button
               type="button"

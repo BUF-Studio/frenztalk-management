@@ -15,13 +15,12 @@ import { AddTuitionModalDialog } from "./addTuitionModalDialog";
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
   const router = useRouter();
-  const { setTuition } = useTuitionPage();
+  const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addTuition = () => {
     setTuition(null);
-    // router.push("/tuitions/add");
     setIsModalOpen(true);
   };
 
@@ -50,7 +49,11 @@ export default function TuitionPage() {
       </div>
       <AddTuitionModalDialog
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false)
+        }}
+        tuition={null}
+        setTuition={setTuition}
       />
     </div>
   );
