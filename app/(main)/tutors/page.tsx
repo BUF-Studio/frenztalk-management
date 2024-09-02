@@ -12,10 +12,14 @@ import { capitalizeFirstLetter } from "@/utils/util";
 import React from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
+import { SearchBar } from "@/app/components/general/input/searchBar";
 
 export default function TutorList() {
   const { tutors } = useTutors();
   const { setTutor } = useTutorPage();
+
+  const [searchTerm, setSearchTerm] = React.useState<string>("");
 
   const router = useRouter();
 
@@ -47,6 +51,11 @@ export default function TutorList() {
 
   const { sortedData: sortedTutors, sortColumn: sortTutorByColumn } =
     useTableColumn(tutors, columns, setColumns);
+
+  const { filteredData: filteredTutors } = useSearchTableData(
+    sortedTutors,
+    searchTerm
+  );
 
   const viewTutor = (tutor: Tutor) => {
     setTutor(tutor);
@@ -86,11 +95,14 @@ export default function TutorList() {
 
   return (
     <div>
-      <div className="flex flex-1 flex-row justify-between pb-4">
+      <div className="flex flex-1 flex-row justify-between items-center pb-4">
         <h1 className="text-xl font-bold">Tutor List</h1>
+        <div className="flex flex-row items-center space-x-4">
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </div>
       </div>
       <DataTable
-        data={sortedTutors}
+        data={filteredTutors}
         columns={columns}
         actions={[]}
         onRowClick={(tutor) => viewTutor(tutor)}

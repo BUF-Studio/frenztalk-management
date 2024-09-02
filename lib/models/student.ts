@@ -3,17 +3,17 @@ export class Student {
     public id: string | null,
     public name: string,
     public age: number,
-    public status: string,
-    // public tuitionsId: string[],
-    // public tutorsId: string[],
-  ) { }
+    public status: string
+  ) // public tuitionsId: string[],
+  // public tutorsId: string[],
+  {}
 
   static fromMap(data: Record<string, any>, id: string) {
     return new Student(
       id,
       data.name,
       data.age,
-      data.status,
+      data.status
       // data.tuitionsId ?? [],
       // data.tutorsId ?? [],
     );

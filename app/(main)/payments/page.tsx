@@ -18,6 +18,8 @@ import { usePaymentPage } from "@/lib/context/page/paymentPageContext";
 import { useState } from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
+import { SearchBar } from "@/app/components/general/input/searchBar";
 
 export default function PaymentList() {
   const { payments } = usePayments();
@@ -25,6 +27,8 @@ export default function PaymentList() {
   const { setPayment } = usePaymentPage();
   const { students } = useStudents();
   const { tutors } = useTutors();
+
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const viewPayment = (payment: Payment) => {
     setPayment(payment);
@@ -76,6 +80,11 @@ export default function PaymentList() {
   const { sortedData: sortedPayments, sortColumn: sortPaymentByColumn } =
     useTableColumn(payments, columns, setColumns);
 
+  const { filteredData: filteredPayments } = useSearchTableData(
+    sortedPayments,
+    searchTerm
+  );
+
   const renderPaymentCell = (payment: Payment, columnKey: keyof Payment) => {
     if (columnKey === "status") {
       return (
@@ -112,19 +121,23 @@ export default function PaymentList() {
 
   return (
     <div>
-      <div className="flex flex-1 flex-row justify-between pb-4">
-        <h1 className="text-xl font-bold">Payment List</h1>
-        <button
-          className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-          type="button"
-          onClick={() => router.push("/payments/new")}
-        >
-          <Plus size={16} strokeWidth={3} className="mr-1" />
-          Add payment
-        </button>
-      </div>
+<div className="flex flex-1 flex-row justify-between items-center pb-4">
+  <h1 className="text-xl font-bold">Payment List</h1>
+  <div className="flex flex-row items-center space-x-4">
+    <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} label="search payment" />
+    <button
+      className="flex flex-row items-center w-full px-4 py-2 bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+      type="button"
+      onClick={() => router.push("/payments/new")}
+    >
+      <Plus size={16} strokeWidth={3} className="mr-1" />
+      Add payment
+    </button>
+  </div>
+</div>
+
       <DataTable
-        data={payments}
+        data={filteredPayments}
         columns={columns}
         actions={[]}
         onRowClick={(payment) => viewPayment(payment)}

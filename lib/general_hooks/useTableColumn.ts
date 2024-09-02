@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TableOrderEnum } from "../enums/TableOrderEnum";
 
 //TODO : Make sure this is type safe : kyang
@@ -8,6 +8,10 @@ export const useTableColumn = (
   setColumns: Dispatch<SetStateAction<any[]>>
 ) => {
   const [sortedData, setSortedData] = useState<any[]>(data);
+
+  useEffect(() => {
+    setSortedData(data);
+  }, [data]);
 
   const sortColumn = (columnLabel: string | null, columns: any) => {
     if (!columnLabel) return sortedData;
@@ -48,18 +52,25 @@ export const useTableColumn = (
       sortedDataTemp = JSON.parse(JSON.stringify(data));
     }
 
+    console.log("haha");
+    console.log(sortedDataTemp);
+
     setSortedData(sortedDataTemp);
   };
 
   const setColumnOrder = (columnKey: any) => {
     const updatedColumns = columns.map((column) => {
       if (column.key === columnKey) {
-        if (column.order === TableOrderEnum.NONE) {
-          column.order = TableOrderEnum.ASC;
-        } else if (column.order === TableOrderEnum.ASC) {
-          column.order = TableOrderEnum.DESC;
-        } else {
-          column.order = TableOrderEnum.NONE;
+        switch (column.order) {
+          case TableOrderEnum.NONE:
+            column.order = TableOrderEnum.ASC;
+            break;
+          case TableOrderEnum.ASC:
+            column.order = TableOrderEnum.DESC;
+            break;
+          default:
+            column.order = TableOrderEnum.NONE;
+            break;
         }
       } else {
         column.order = TableOrderEnum.NONE;

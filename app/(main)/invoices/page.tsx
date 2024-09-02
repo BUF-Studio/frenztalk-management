@@ -18,6 +18,8 @@ import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useState } from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import { SearchBar } from "@/app/components/general/input/searchBar";
+import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
@@ -26,6 +28,9 @@ export default function InvoiceList() {
   const { setInvoice } = useInvoicePage();
   const { students } = useStudents();
   const { tutors } = useTutors();
+
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [orderFlag, setOrderFlag] = useState<boolean>(false);
 
   const [columns, setColumns] = useState<
     { key: keyof Invoice; label: string; order: string }[]
@@ -39,10 +44,14 @@ export default function InvoiceList() {
     { key: "rate", label: "Rate", order: TableOrderEnum.NONE },
   ]);
 
-  const { sortedData: orderedInvoices, sortColumn } = useTableColumn(
-    invoices,
-    columns,
-    setColumns
+  console.log("rending invoice list");
+
+  const { sortedData: orderedInvoices, sortColumn: sortInvoiceByColumn } =
+    useTableColumn(invoices, columns, setColumns);
+
+  const { filteredData: filteredInvoices } = useSearchTableData(
+    orderedInvoices,
+    searchTerm
   );
 
   const viewInvoice = (invoice: Invoice) => {
@@ -115,23 +124,30 @@ export default function InvoiceList() {
 
   return (
     <div>
-      <div className="flex flex-1 flex-row justify-between pb-4">
-        <h1 className="text-xl font-bold">Invoice List</h1>
-        <button
-          className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-          type="button"
-          onClick={() => router.push("/invoices/new")}
-        >
-          <Plus size={16} strokeWidth={3} className="mr-1" />
-          Add invoice
-        </button>
+      <div className="flex flex-1 flex-row justify-between items-center pb-4">
+        <h1 className="text-xl font-bold">Payment List</h1>
+        <div className="flex flex-row items-center space-x-4">
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm} 
+            label="search invoice"
+          />
+          <button
+            className="flex flex-row items-center w-full px-3 py-2 bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+            type="button"
+            onClick={() => router.push("/payments/new")}
+          >
+            <Plus size={16} strokeWidth={3} className="mr-1" />
+            Add invoice
+          </button>
+        </div>
       </div>
       <DataTable
-        data={orderedInvoices}
+        data={filteredInvoices}
         columns={columns}
         actions={[]}
         onRowClick={(invoice) => viewInvoice(invoice)}
-        onColumnClick={(column) => sortColumn(column, columns)}
+        onColumnClick={(column) => sortInvoiceByColumn(column, columns)}
         renderCell={renderInvoiceCell}
         showId
       />
