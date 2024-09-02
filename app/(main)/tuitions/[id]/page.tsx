@@ -12,10 +12,10 @@ import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
 import {
+  capitalizeFirstLetter,
   copyMeetingLink,
   formatDate,
   formatTime,
-  formatTimeRange,
 } from "@/utils/util";
 import {
   AccessTime,
@@ -37,9 +37,13 @@ import { useCallback, useEffect, useState } from "react";
 import DropdownButton from "@/app/components/general/dropdown";
 import { useAlert } from "@/lib/context/component/AlertContext";
 import { deleteTuition } from "@/lib/firebase/tuition";
-import { AddTuitionModalDialog } from "../addTuitionModalDialog";
+import { AddTuitionModalDialog } from "../tuitionModalDialog";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
+import type { Level } from "@/lib/models/level";
+import type { Student } from "@/lib/models/student";
+import type { Subject } from "@/lib/models/subject";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
@@ -55,6 +59,23 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { showAlert } = useAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const getStatusVariant = (status: string): BadgeProps["variant"] => {
+    switch (status.toLowerCase()) {
+      case "active":
+      case "end":
+        return "success";
+      case "pending":
+        return "info";
+      case "on hold":
+        return "warning";
+      case "failed":
+      case "":
+        return "error";
+      default:
+        return "info";
+    }
+  };
+
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (navigator.clipboard) {
@@ -67,7 +88,6 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
             findSubject(tuition.subjectId)?.name ?? "",
             findLevel(tuition.levelId)?.name ?? ""
           );
-          // await navigator.clipboard.writeText(tuition?.url ?? "");
           setIsCopied(true);
           showSnackbar("Meeting link copied to clipboard", "success");
           setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
@@ -85,29 +105,29 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     }
   }, [params, tuition, tuitions, setTuition]);
 
-  const findTutor = (id: string): Tutor | undefined => {
-    const tutor = tutors.find((tutor) => tutor.id === id);
-    return tutor ?? undefined;
+  const findTutor = (id: string | undefined): Tutor | undefined => {
+    if (!id) return undefined;
+    return tutors.find((tutor) => tutor.id === id);
   };
 
-  const findInvoice = (id: string): Invoice | undefined => {
-    const invoice = invoices.find((invoice) => invoice.id === id);
-    return invoice ?? undefined;
+  const findInvoice = (id: string | undefined): Invoice | undefined => {
+    if (!id) return undefined;
+    return invoices.find((invoice) => invoice.id === id);
   };
 
-  const findStudent = (id: string) => {
-    const student = students.find((student) => student.id === id);
-    return student;
+  const findStudent = (id: string | undefined): Student | undefined => {
+    if (!id) return undefined;
+    return students.find((student) => student.id === id);
   };
 
-  const findSubject = (id: string) => {
-    const subject = subjects.find((subject) => subject.id === id);
-    return subject ?? undefined;
+  const findSubject = (id: string | undefined): Subject | undefined => {
+    if (!id) return undefined;
+    return subjects.find((subject) => subject.id === id);
   };
 
-  const findLevel = (id: string) => {
-    const level = levels.find((level) => level.id === id);
-    return level ?? undefined;
+  const findLevel = (id: string | undefined): Level | undefined => {
+    if (!id) return undefined;
+    return levels.find((level) => level.id === id);
   };
 
   const steps: Step[] = [
@@ -179,19 +199,12 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
                   {tuition?.name.toUpperCase()}
                 </div>
                 <p className="text-gray-500 dark:text-neutral-400 text-sm">
-                  STPM
+                  {findLevel(tuition?.levelId)?.name}
                 </p>
               </div>
-              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm">
-                Active
-              </span>
-              {/* <button
-                type="button"
-                onClick={() => console.log(`${tuition?.id} is pressed.`)}
-                className="ml-2 p-2 text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-100 focus:outline-none"
-              >
-                <Pencil className="w-4 h-4" />
-              </button> */}
+              <Badge variant={getStatusVariant(tuition?.status ?? "")}>
+                {capitalizeFirstLetter(tuition?.status)}
+              </Badge>
               <DropdownButton
                 title="..."
                 arrowDown={false}

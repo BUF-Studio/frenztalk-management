@@ -27,7 +27,7 @@ const TuitionList: React.FC<TuitionListProps> = ({ tuitions, filter }) => {
 
   const findTutor = (id: string) => {
     const tutor = tutors.find((tutor) => tutor.id === id);
-    return tutor?.name ?? "";
+    return tutor;
   };
 
   const findStudent = (id: string) => {
@@ -66,12 +66,13 @@ const TuitionList: React.FC<TuitionListProps> = ({ tuitions, filter }) => {
           <TuitionCard
             key={tuition.id}
             subject={findSubject(tuition.subjectId)}
-            level={findLevel(tuition.levelId)}
+            level={findLevel(tuition.levelId)?.name}
             time={tuition.startTime ?? ""}
             duration={tuition.duration}
             status={tuition.status}
-            tutor={findTutor(tuition.tutorId)}
-            student={findStudent(tuition.studentId)}
+            tutor={findTutor(tuition.tutorId)?.name}
+            student={findStudent(tuition.studentId)?.name}
+            studentId={findStudent(tuition.studentId)?.id ?? ""}
             price="Unset"
             meetingLink={tuition.url}
             onClick={() => handleCardClick(tuition.id ?? "")}

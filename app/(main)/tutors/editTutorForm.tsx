@@ -2,7 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import type { Student } from "@/lib/models/student";
 import TextFieldComponent from "@/app/components/general/input/textField";
-import { X } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
 import { useRouter } from "next/navigation";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
@@ -21,7 +21,7 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
   const { tutor, setTutor } = useTutorPage();
   const [name, setName] = useState(tutor?.name || "");
   const [prefer, setPrefer] = useState("");
-  const [preferSubject, setPreferSubect] = useState(tutor?.subjects || []);
+  const [preferSubject, setPreferSubject] = useState(tutor?.subjects || []);
   const [des, setDes] = useState(tutor?.des || "");
   const [status, setStatus] = useState(tutor?.status || "active");
 
@@ -51,7 +51,7 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
       const preSub = preferSubject;
       preSub.push(prefer);
       setPrefer("");
-      setPreferSubect(preSub);
+      setPreferSubject(preSub);
     }
   };
 
@@ -63,6 +63,14 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
       { value: "frozen", label: "Frozen" },
     ],
   };
+
+  const removePreferSubject = (subjectId: string) => {
+    setPreferSubject(preferSubject.filter((id) => id !== subjectId));
+  };
+
+  const preferSubjectOptions = subjects
+    .filter((sub) => !preferSubject.includes(sub.id ?? ""))
+    .map((sub) => ({ value: sub.id ?? "", label: sub.name }));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -106,38 +114,54 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
-          <div>Prefer Subject</div>
-          <div>
-            {preferSubject.map((subject) => {
-              const subjectDetails = subjects.find((sub) => sub.id === subject);
-              return (
-                <li key={subject}>
-                  {subjectDetails ? subjectDetails.name : "Unknown Subject"}
-                </li>
-              );
-            })}
-          </div>
-          <div>
-            <label htmlFor="prefer">Add Prefer Subject</label>
-            <select value={prefer} onChange={(e) => setPrefer(e.target.value)}>
-              <option value="" disabled>
-                Choose prefer subject
-              </option>
-
-              {subjects
-                .filter(
-                  (sub) =>
-                    !preferSubject.some((tutorSub) => tutorSub === sub.id)
-                )
-                .map((sub) => (
-                  <option key={sub.id} value={sub.id ?? ""}>
-                    {sub.name}
-                  </option>
-                ))}
-            </select>
-            <button type="button" onClick={() => addPreferSubject()}>
-              Add Prefer Subject
-            </button>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              Preferred Subjects
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {preferSubject.map((subjectId) => {
+                const subjectDetails = subjects.find(
+                  (sub) => sub.id === subjectId
+                );
+                return (
+                  <div
+                    key={subjectId}
+                    className="flex items-center bg-neutral-100 dark:bg-neutral-700 rounded-full px-3 py-1"
+                  >
+                    <span className="text-sm text-neutral-800 dark:text-neutral-200">
+                      {subjectDetails ? subjectDetails.name : "Unknown Subject"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removePreferSubject(subjectId)}
+                      className="ml-2 text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center space-x-2 pt-4">
+              <SelectFieldComponent
+                id="prefer-subject"
+                name="prefer-subject"
+                label="Add Preferred Subject"
+                options={[
+                  { value: "", label: "Choose prefer subject" },
+                  ...preferSubjectOptions,
+                ]}
+                value={prefer}
+                onChange={(e) => setPrefer(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={addPreferSubject}
+                className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              >
+                <Plus size={20} />
+              </button>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 mt-6">
@@ -150,7 +174,7 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
             </button>
             <button
               type="submit"
-              className="block select-none rounded bg-gradient-to-tr from-red-900 to-red-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              className="block select-none rounded bg-gradient-to-tr from-red-900 to-red-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-neutral-900/10 transition-all hover:shadow-lg hover:shadow-neutral-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             >
               Save
             </button>

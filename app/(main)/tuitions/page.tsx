@@ -10,7 +10,7 @@ import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { Plus } from "lucide-react";
-import { AddTuitionModalDialog } from "./addTuitionModalDialog";
+import { AddTuitionModalDialog } from "./tuitionModalDialog";
 
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
@@ -50,7 +50,7 @@ export default function TuitionPage() {
       <AddTuitionModalDialog
         isOpen={isModalOpen}
         onClose={() => {
-          setIsModalOpen(false)
+          setIsModalOpen(false);
         }}
         tuition={null}
         setTuition={setTuition}

@@ -2,9 +2,9 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Invoice } from "../models/invoice";
-import { Badge, BadgeProps } from "@/app/components/general/badge";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import DropdownButton from "@/app/components/general/dropdown";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Pencil, Trash2 } from "lucide-react";
 import { useStudents } from "../context/collection/studentsContext";
 import { useSubjects } from "../context/collection/subjectContext";
 import { useTuitions } from "../context/collection/tuitionContext";
@@ -21,28 +21,27 @@ import {
 import { updateInvoice } from "../firebase/invoice";
 import { InvoiceStatus } from "../models/invoiceStatus";
 import { useSnackbar } from "../context/component/SnackbarContext";
+import InvoiceModalDialog from "@/app/(main)/invoices/invoiceModalDialog";
+import { useInvoicePage } from "../context/page/invoicePageContext";
 
 type InvoiceTemplateProps = {
   invoice: Invoice | null;
-  role: "tutor" | "student";
 };
 
 const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
+  const { setInvoice } = useInvoicePage();
   const [logoLoaded, setLogoLoaded] = useState(false);
   const { students } = useStudents();
-  const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
   const { showSnackbar } = useSnackbar();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const tuition: Tuition | undefined = tuitions.find(
     (tuition) => tuition.id === invoice?.tuitionId
   );
   const student: Student | undefined = students.find(
     (student) => student.id === invoice?.studentId
-  );
-  const tutor: Tutor | undefined = tutors.find(
-    (tutor) => tutor.id === invoice?.tutorId
   );
   const subject: Subject | undefined = subjects.find(
     (subject) => subject.id === invoice?.subjectId
@@ -100,13 +99,16 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
         invoice.startDateTime,
         invoice.duration,
         invoice.currency,
-        invoice.price,
-        invoice.invoiceType
+        invoice.price
       );
       await updateInvoice(updatedInvoice);
       showSnackbar("Invoice status updated", "success");
     }
   };
+
+  function handleEdit(): void {
+    setIsModalOpen(true);
+  }
 
   return (
     <div id="invoice" className="font-sans min-w-3xl max-w-3xl mx-auto p-6">
@@ -160,6 +162,11 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
                     onClick: generatePDF,
                   },
                   {
+                    icon: <Pencil size={16} />,
+                    label: "Edit",
+                    onClick: handleEdit,
+                  },
+                  {
                     icon: <Trash2 size={16} />,
                     label: "Delete",
                     onClick: () => console.log("Delete"),
@@ -173,7 +180,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           <div className="flex flex-col">
             <p className="text-md mb-1 text-gray-600">Billed to:</p>
             <strong className="font-bold text-lg mb-1 text-gray-900">
-              {invoice?.invoiceType === "tutor" ? tutor?.name : student?.name}
+              {student?.name}
             </strong>
             <div className="flex flex-row gap-1 text-sm text-gray-900">
               <p className="font-medium">Email:</p>
@@ -231,16 +238,11 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
               <td className="py-3 px-4">{formatDate(tuition?.startTime)}</td>
               <td className="py-3 px-4 text-center">{tuition?.duration}</td>
               <td className="py-3 px-4 text-center">
-                {(invoice?.invoiceType === "tutor"
-                  ? tuition?.tutorPrice
-                  : tuition?.studentPrice
-                )?.toFixed(2)}
+                {tuition?.studentPrice.toFixed(2)}
               </td>
               <td className="py-3 px-4 text-right">
                 {(
-                  (invoice?.invoiceType === "tutor"
-                    ? tuition?.tutorPrice ?? 0
-                    : tuition?.studentPrice ?? 0) * (tuition?.duration ?? 0)
+                  (tuition?.studentPrice ?? 0) * (tuition?.duration ?? 0)
                 ).toFixed(2)}
               </td>
             </tr>
@@ -297,6 +299,15 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           </div>
         </div>
       </div>
+      <InvoiceModalDialog
+        isOpen={isModalOpen}
+        onClose={() => {
+          // setTuition(null)
+          setIsModalOpen(false);
+        }}
+        invoice={invoice}
+        setInvoice={setInvoice}
+      />
     </div>
   );
 };

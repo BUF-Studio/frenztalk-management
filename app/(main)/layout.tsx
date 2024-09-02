@@ -26,14 +26,21 @@ import Link from "next/link";
 import { motion, useAnimationControls } from "framer-motion";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUser } from "@/lib/context/collection/userContext";
-import { UserRole } from "@/lib/models/user";
+import { type User, UserRole } from "@/lib/models/user";
+import { useUsers } from "@/lib/context/collection/usersContext";
+import UserAvatar from "../components/general/avatar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const authContext = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useUser()
+  const { user } = useUser();
+  const { verifiedUsers } = useUsers();
 
+  const findVerifiedUser = (id: string | undefined): User | undefined => {
+    if (!id) return undefined;
+    return verifiedUsers.find((user) => user.id === id);
+  };
 
   const allLinks: Links[] = [
     {
@@ -137,8 +144,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
   ];
 
-
-  const links: Links[] = allLinks.filter(link => link.roles?.includes(user?.role ?? UserRole.TUTOR));
+  const links: Links[] = allLinks.filter((link) =>
+    link.roles?.includes(user?.role ?? UserRole.TUTOR)
+  );
   const [open, setOpen] = useState(false);
   return (
     <div
@@ -169,17 +177,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div>
             <SidebarLink
               link={{
-                label: authContext.user?.displayName ?? "Anonymous",
+                label:
+                  findVerifiedUser(authContext.user?.uid)?.name ?? "Anonymous",
                 href: "/profile",
                 icon: (
                   //TODO: Change the default image type based on the theme mode
-                  <Image
-                    src={authContext.user?.photoURL ?? "/account-darkmode.png"}
-                    className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
-                    width={24}
-                    height={24}
-                    alt="Avatar"
-                  />
+                  // <Image
+                  //   src={authContext.user?.photoURL ?? "/account-darkmode.png"}
+                  //   className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
+                  //   width={24}
+                  //   height={24}
+                  //   alt="Avatar"
+                  // />
+                  <div className="w-8 h-8">
+                    {" "}
+                    {/* Or any other size you want */}
+                    <UserAvatar url={authContext.user?.photoURL} />
+                  </div>
                 ),
               }}
             />

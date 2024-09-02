@@ -28,11 +28,13 @@ type Tab = {
   content?: string | React.ReactNode;
   notify?: number;
 };
+import UserModalDialog from "./userModalDialog";
 
 export default function UserList() {
   const { verifiedUsers, unverifiedUsers } = useUsers();
-  const { setUser } = useUserPage();
+  const { user, setUser } = useUserPage();
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -104,7 +106,7 @@ export default function UserList() {
 
   const editUser = (user: User) => {
     setUser(user);
-    router.push(`/users/${user.id}`);
+    setIsModalOpen(true);;
   };
 
   return (
@@ -184,6 +186,14 @@ export default function UserList() {
         showId
       /> */}
       {/* <Tabs tabs={tabs} searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
+      <UserModalDialog
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        user={user}
+        setUser={setUser}
+      />
     </div>
   );
 }

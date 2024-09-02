@@ -3,15 +3,27 @@ import type React from 'react';
 interface DateTimeInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
+  value?: string;
 }
 
-const DateTimeInputComponent: React.FC<DateTimeInputProps> = ({ label, id, ...props }) => {
+const DateTimeInputComponent: React.FC<DateTimeInputProps> = ({ label, id, value, ...props }) => {
+  // Function to format ISO 8601 date string to local datetime string
+  const formatDateTimeLocal = (isoString: string): string => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    // Adjust for local timezone offset
+    const offset = date.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(date.getTime() - offset)).toISOString();
+    return localISOTime.slice(0, 16); // Remove seconds and milliseconds
+  };
+
   return (
     <div className="relative h-11 w-full min-w-[200px]">
       <input
         type="datetime-local"
         id={id}
         className="peer w-full h-full bg-transparent text-neutral-700 dark:text-neutral-200 font-sans font-normal outline-none focus:outline-none disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-neutral-300 dark:placeholder-shown:border-neutral-600 placeholder-shown:border-t-neutral-300 dark:placeholder-shown:border-t-neutral-600 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-neutral-300 dark:border-neutral-600 focus:border-neutral-900 dark:focus:border-neutral-100"
+        value={formatDateTimeLocal(value as string)}
         {...props}
       />
       <label

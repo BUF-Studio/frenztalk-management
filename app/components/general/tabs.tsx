@@ -93,35 +93,32 @@ export const Tabs = ({
                 />
               )}
 
-              <span className="relative block text-black dark:text-white">
-                {tab.title}
+            <span className="relative block text-black dark:text-white">
+              {tab.title}
+            </span>
+            {tab.notify !== undefined && tab.notify > 0 && (
+              <span
+                className={cn(
+                  "z-10 bg-red-500 text-xs font-medium text-white",
+                  "flex items-center justify-center",
+                  "w-5 h-5 rounded-full ml-2",
+                  active.value === tab.value
+                    ? "absolute -top-1 -right-1"
+                    : "relative",
+                  notificationClassName
+                )}
+              >
+                {tab.notify}
               </span>
-              {tab.notify && tab.notify > 0 && (
-                <span
-                  className={cn(
-                    "z-10 bg-red-500 text-xs font-medium text-white",
-                    "flex items-center justify-center",
-                    "w-5 h-5 rounded-full",
-                    active.value === tab.value
-                      ? "absolute -top-1 -right-1"
-                      : "relative ml-2"
-                  )}
-                >
-                  {tab.notify}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-row items-center space-x-4 mr-4">
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Content display area */}
       <div
         className={cn(
-          "mt-4 p-4 bg-white dark:bg-zinc-900 rounded-lg",
+          "mt-4 bg-white dark:bg-zinc-900 rounded-lg",
           contentClassName
         )}
       >
