@@ -14,6 +14,8 @@ import StudentDialog from "./studentForm";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
+import { SearchBar } from "@/app/components/general/input/searchBar";
 
 export default function StudentList() {
   const { students } = useStudents();
@@ -22,6 +24,7 @@ export default function StudentList() {
   const { showSnackbar } = useSnackbar();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   function getStatusVariant(status: string): BadgeProps["variant"] {
     switch (status.toLowerCase()) {
@@ -67,6 +70,11 @@ export default function StudentList() {
   const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
     useTableColumn(students, columns, setColumns);
 
+  const { filteredData: filteredStudents } = useSearchTableData(
+    sortedStudents,
+    searchTerm
+  );
+
   const renderStudentCell = (student: Student, columnKey: keyof Student) => {
     if (columnKey === "status") {
       return (
@@ -85,19 +93,27 @@ export default function StudentList() {
 
   return (
     <div>
-      <div className="flex flex-1 flex-row justify-between pb-4">
+      <div className="flex flex-1 flex-row justify-between items-center pb-4">
         <h1 className="text-xl font-bold">Student List</h1>
-        <button
-          className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-          type="button"
-          onClick={toggleDialog}
-        >
-          <Plus size={16} strokeWidth={3} className="mr-1" />
-          Add Student
-        </button>
+        <div className="flex flex-row items-center space-x-4">
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            label="search student"
+          />
+
+          <button
+            className="flex flex-row items-center w-full px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
+            type="button"
+            onClick={toggleDialog}
+          >
+            <Plus size={16} strokeWidth={3} className="mr-1" />
+            Add Student
+          </button>
+        </div>
       </div>
       <DataTable
-        data={sortedStudents}
+        data={filteredStudents}
         columns={columns}
         actions={[]}
         onRowClick={(student) => viewStudent(student)}
