@@ -21,7 +21,7 @@ import {
 import { updateInvoice } from "../firebase/invoice";
 import { InvoiceStatus } from "../models/invoiceStatus";
 import { useSnackbar } from "../context/component/SnackbarContext";
-import InvoiceModalDialog from "@/app/(main)/invoices/invoiceModalDialog";
+import InvoiceModalDialog from "@/app/(main)/invoices/components/invoiceModalDialog";
 import { useInvoicePage } from "../context/page/invoicePageContext";
 
 type InvoiceTemplateProps = {

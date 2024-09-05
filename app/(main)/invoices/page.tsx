@@ -9,17 +9,14 @@ import { useRouter } from "next/navigation";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
-import {
-  capitalizeFirstLetter,
-  formatDateRange,
-} from "@/utils/util";
+import { capitalizeFirstLetter, formatDateRange } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useState } from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { SearchBar } from "@/app/components/general/input/searchBar";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
-import InvoiceModalDialog from "./invoiceModalDialog";
+import InvoiceModalDialog from "./components/invoiceModalDialog";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
@@ -134,7 +131,7 @@ export default function InvoiceList() {
         <div className="flex flex-row items-center space-x-4">
           <SearchBar
             searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm} 
+            setSearchTerm={setSearchTerm}
             label="search invoice"
           />
           <button

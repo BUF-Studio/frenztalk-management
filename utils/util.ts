@@ -1,4 +1,5 @@
 // util.ts
+// TODO: Move this file to /lib/utils
 
 /**
  * Formats the given date to a readable date format or date and time.

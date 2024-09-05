@@ -1,7 +1,7 @@
 'use client';
 
 import { AppProps } from "next/app";
-import { ScriptProps } from "next/script";
+import type { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { ZoomAccount } from "@/lib/models/zoom";
 import { updateZoomAccount, zoomAccountStream } from "@/lib/firebase/zoomAccount";
