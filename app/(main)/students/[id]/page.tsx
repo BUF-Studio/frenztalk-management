@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { Edit } from "lucide-react";
-import StudentDialog from "../studentForm";
+import StudentDialog from "../components/studentForm";
 import { Student } from "@/lib/models/student";
 import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";

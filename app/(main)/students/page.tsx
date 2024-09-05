@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import StudentDialog from "./studentForm";
+import StudentDialog from "./components/studentForm";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
