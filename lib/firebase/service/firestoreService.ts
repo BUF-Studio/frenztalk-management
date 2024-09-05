@@ -15,13 +15,60 @@ import {
   Firestore,
   type DocumentData,
   type CollectionReference,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 import { db } from "./clientApp";
 
+export async function paginateCollection<T>(
+  path: string,
+  builder: (data: Record<string, any>, documentID: string) => T,
+  pageSize = 10
+): Promise<T[]> {
+  try {
+    console.log("Entering paginateCollection function");
+    console.log("Path:", path);
+    console.log("PageSize:", pageSize);
+    console.log("DB object:", db);
+
+    const collectionRef = collection(db, path);
+    console.log("Collection reference:", collectionRef);
+
+    const q = query(
+      collectionRef,
+      orderBy("createdAt", "desc"),
+      limit(pageSize)
+    );
+    console.log("Query object:", q);
+
+    const querySnapshot = await getDocs(q);
+    console.log("Query snapshot:", querySnapshot);
+
+    const docs = querySnapshot.docs;
+    console.log("Number of documents:", docs.length);
+
+    const result = docs.map((doc) => builder(doc.data(), doc.id));
+    console.log("Mapped results:", result);
+
+    return result;
+  } catch (error) {
+    console.error("Detailed error in paginateCollection:", error);
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+    throw error;
+  }
+}
+
 export const setData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<void> => {
   try {
     const reference = doc(db, path);
@@ -35,7 +82,7 @@ export const setData = async (
 
 export const updateData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<void> => {
   try {
     const reference = doc(db, path);
@@ -49,7 +96,7 @@ export const updateData = async (
 
 export const addData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<string> => {
   try {
     const reference = collection(db, path);
@@ -77,7 +124,7 @@ export const deleteData = async (path: string): Promise<void> => {
 export function documentStream<T>(
   path: string,
   builder: (data: Record<string, any>, documentID: string) => T,
-  onUpdate: (updatedData: T) => void,
+  onUpdate: (updatedData: T) => void
 ): () => void {
   const reference = doc(db, path);
   let previousData: T | undefined;
@@ -98,11 +145,11 @@ export function collectionStream<T>(
   builder: (data: Record<string, any>, documentID: string) => T,
   onUpdate: (updatedData: T[]) => void,
   queryBuilder?: (query: Query<DocumentData>) => Query<DocumentData>,
-  sort?: (lhs: T, rhs: T) => number,
+  sort?: (lhs: T, rhs: T) => number
 ): () => void {
   let q: CollectionReference<DocumentData> | Query<DocumentData> = collection(
     db,
-    path,
+    path
   );
 
   if (queryBuilder) {
