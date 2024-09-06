@@ -20,15 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/ui/table";
-import { Button } from "./button";
 import React from "react";
 import { Input } from "./input";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "./dropdown-menu";
 import { DataTablePagination } from "./data-table/pagination";
 import { DataTableViewOptions } from "./data-table/view-option";
 
@@ -68,16 +61,16 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
         <DataTableViewOptions table={table} />
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border mb-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
