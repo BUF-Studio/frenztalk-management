@@ -1,4 +1,4 @@
-import { firestore } from "firebase-admin";
+import type { firestore } from "firebase-admin";
 import { db } from "./serverApp";
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
