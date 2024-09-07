@@ -17,6 +17,8 @@ import { useLevels } from '@/lib/context/collection/levelContext';
 import InvoiceType from '@/lib/models/invoiceType';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 import axios from 'axios';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
 
 export default function TuitionDialogForm() {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,7 +79,7 @@ export default function TuitionDialogForm() {
               </SelectTrigger>
               <SelectContent>
                 {students.map(student => (
-                  <SelectItem key={student.id} value={student.id!}>{student.name}</SelectItem>
+                  <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
