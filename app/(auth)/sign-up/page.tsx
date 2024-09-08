@@ -1,26 +1,21 @@
 "use client";
 
-import { type ChangeEvent, useState, useRef } from "react";
-import {
-  deleteUserFromAuth,
-  signUpWithEmail,
-} from "@/lib/firebase/service/auth";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { addUserToFirestore } from "@/lib/firebase/service/firestore";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "@/styles/auth/sign-up/Sign-up.module.scss";
+import Link from "next/link";
 import {
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  TextField,
-} from "@mui/material";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+  signUpWithEmail,
+  deleteUserFromAuth,
+} from "@/lib/firebase/service/auth";
+import { addUserToFirestore } from "@/lib/firebase/service/firestore";
 import { getErrorMessage } from "@/utils/get-error-message";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Separator } from "@/app/components/ui/separator";
 
-const SignUp = () => {
+export default function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,8 +23,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
-
-  const passwordInputRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,135 +45,98 @@ const SignUp = () => {
     }
   };
 
-  const handleSignIn = () => {
-    router.push("/sign-in");
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword((show) => !show);
-    // Set a timeout to move the cursor to the end after the input re-renders
-    setTimeout(() => {
-      if (passwordInputRef.current) {
-        const input = passwordInputRef.current.querySelector("input");
-        if (input) {
-          const length = input.value.length;
-          input.setSelectionRange(length, length);
-          input.focus();
-        }
-      }
-    }, 0);
-  };
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
   return (
-    <div className={styles.formSectionContainer}>
-      <div className={styles.formContainer}>
-        <div className={styles.titleContainer}>
-          <h1 className={styles.title}>Join FrenzTalk today</h1>
-          <p className={styles.subtitle}>It&apos;s quick and easy</p>
-        </div>
-        <div className={styles.inputContainer}>
-          <form className={styles.form} onSubmit={handleSubmit}>
-            {/* <input
+    <div className="flex flex-1 flex-col justify-between min-h-full">
+      <div className="flex flex-col justify-start flex-grow md:justify-center">
+        <div className="space-y-6">
+          <div className="flex flex-col gap-4">
+            <h1 className="scroll-m-20 text-3xl font-medium tracking-tight lg:text-4xl">
+              Join FrenzTalk today
+            </h1>
+            <p className="leading-7">It&apos;s quick and easy</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Username"
-              className={styles.input}
               required
-            /> */}
-            <TextField
-              id="name"
-              label="Username"
-              name="name"
-              variant="outlined"
-              placeholder="Johnny Depp"
-              onChange={(e) => setName(e.target.value)}
-              className={styles.input}
             />
-            <TextField
-              id="email"
-              label="Email"
-              name="email"
-              variant="outlined"
-              placeholder="johnny@gmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
-            />
-            <FormControl
-              className={styles.input}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-            >
-              <InputLabel htmlFor="password">Password</InputLabel>
-              <OutlinedInput
-                id="password"
-                ref={passwordInputRef}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setPassword(e.target.value)
-                }
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
-            {/* <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
-              className={styles.input}
               required
             />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="New Password"
-              className={styles.input}
-              required
-            /> */}
-            <button type="submit" className={styles.primaryButton}>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            <Button
+              type="submit"
+              variant="default"
+              className="flex w-full"
+              disabled={loading}
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? "Loading..." : "Sign Up"}
-            </button>
+            </Button>
           </form>
-          <p className={styles.terms}>
+          <p className="text-sm text-muted-foreground">
             By clicking continue, you agree to our{" "}
-            <a href="/terms">Terms of Service</a> and{" "}
-            <a href="/privacy">Privacy Policy</a> including{" "}
-            <a href="/cookies">Cookies Use</a>.
+            <Link
+              href="/terms"
+              className="text-sm text-primary hover:underline"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              className="text-sm text-primary hover:underline"
+            >
+              Privacy Policy
+            </Link>{" "}
+            including{" "}
+            <Link
+              href="/cookies"
+              className="text-sm text-primary hover:underline"
+            >
+              Cookies Use
+            </Link>
+            .
           </p>
         </div>
-        <div className={styles.signInContainer}>
-          <h4 className={styles.signInText}>Already have an account?</h4>
-          <button
-            type="submit"
-            className={styles.signInButton}
-            onClick={handleSignIn}
-          >
-            Sign In
-          </button>
-        </div>
+      </div>
+      <div className="text-center">
+        <Button
+          variant="link"
+          className="text-sm md:text-base"
+          onClick={() => router.push("/sign-in")}
+        >
+          Already have an account? Sign In
+        </Button>
       </div>
     </div>
   );
-};
-
-export default SignUp;
+}
