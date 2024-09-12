@@ -8,6 +8,7 @@ import { AuthContextProvider } from "@/lib/context/AuthContext";
 import { SnackbarProvider } from "@/lib/context/component/SnackbarContext";
 import { AlertProvider } from "@/lib/context/component/AlertContext";
 import { useEffect } from "react";
+import { ThemeProvider } from "./components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,18 +25,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AlertProvider>
-          <SnackbarProvider>
-            <AuthContextProvider>
-              {/* <AppProvider> */}
-                <div className="flex">
-                  {/* <Sidebar /> */}
-                  <main className="flex-1">{children}</main>
-                </div>
-              {/* </AppProvider> */}
-            </AuthContextProvider>
-          </SnackbarProvider>
-        </AlertProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AlertProvider>
+            <SnackbarProvider>
+              <AuthContextProvider>
+                {/* <AppProvider> */}
+                  <div className="flex">
+                    {/* <Sidebar /> */}
+                    <main className="flex-1">{children}</main>
+                  </div>
+                {/* </AppProvider> */}
+              </AuthContextProvider>
+            </SnackbarProvider>
+          </AlertProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

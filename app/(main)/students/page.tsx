@@ -1,4 +1,7 @@
-"use client";
+import { DataTable } from "@/app/components/ui/data-table";
+import { columns } from "./columns";
+import { serverSidePaginateCollection } from "@/lib/firebase/service/serverFirestore";
+import { studentFromMap, type Student } from "@/lib/models/student";
 
 import { DataTable } from "@/app/components/dashboard/DataTable";
 // import { useStudents } from "@/lib/context/collection/studentsContext";
@@ -109,36 +112,9 @@ export default function StudentList() {
     <div>
       <div className="flex flex-1 flex-row justify-between items-center pb-4">
         <h1 className="text-xl font-bold">Student List</h1>
-        <div className="flex flex-row items-center space-x-4">
-          <SearchBar
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            label="search student"
-          />
-
-          <button
-            className="flex flex-row items-center w-full px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-            type="button"
-            onClick={toggleDialog}
-          >
-            <Plus size={16} strokeWidth={3} className="mr-1" />
-            Add Student
-          </button>
-        </div>
+        <div className="flex flex-row items-center space-x-4"/>
       </div>
-      <DataTable
-        data={filteredStudents}
-        columns={columns}
-        actions={[]}
-        onRowClick={(student) => viewStudent(student)}
-        onColumnClick={(column) => sortStudentByColumns(column, columns)}
-        renderCell={renderStudentCell}
-      />
-      <StudentDialog
-        isOpen={isDialogOpen}
-        onClose={toggleDialog}
-        onSubmit={handleAddStudent}
-      />
+      <DataTable columns={columns} data={studentData} />
     </div>
   );
 }
