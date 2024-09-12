@@ -8,13 +8,14 @@ import { getErrorMessage } from "@/utils/get-error-message";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Separator } from "@/app/components/ui/separator";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
@@ -63,13 +64,28 @@ export default function SignIn() {
               placeholder="Email address"
               required
             />
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
             <Button
               type="submit"
               variant="default"
@@ -142,7 +158,7 @@ export default function SignIn() {
       </div>
       <div className="text-center">
         <Link href="/sign-up">
-          <Button variant="link" className="text-sm md:text-base" >
+          <Button variant="link" className="text-sm md:text-base">
             Don&apos;t have an account? Sign Up
           </Button>
         </Link>

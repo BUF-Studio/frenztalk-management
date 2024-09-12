@@ -13,7 +13,6 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { Separator } from "@/app/components/ui/separator";
 
 export default function SignUp() {
   const [name, setName] = useState("");

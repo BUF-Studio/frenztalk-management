@@ -20,29 +20,81 @@ import {
   limit,
   startAfter,
   type QueryDocumentSnapshot,
+  type QueryConstraint,
+  where,
+  getCountFromServer,
 } from "firebase/firestore";
 
 import { db } from "./clientApp";
 
+export interface PaginationOptions {
+  pageSize?: number;
+  lastDocumentId?: string;
+  sortField?: string;
+  sortDirection?: "asc" | "desc";
+  filterField?: string;
+  filterValue?: any;
+}
+
+export interface PaginationResult<T> {
+  items: T[];
+  lastDocumentId: string | undefined;
+  hasMore: boolean;
+  totalCount: number;
+}
+
 export async function paginateCollection<T>(
   path: string,
   builder: (data: Record<string, any>, documentID: string) => T,
-  pageSize = 10
-): Promise<T[]> {
+  options: PaginationOptions = {}
+): Promise<PaginationResult<T>> {
   try {
     console.log("Entering paginateCollection function");
     console.log("Path:", path);
-    console.log("PageSize:", pageSize);
-    console.log("DB object:", db);
+    console.log("Options:", options);
+
+    const {
+      pageSize = 10,
+      lastDocumentId,
+      sortField = "",
+      sortDirection = "asc",
+      filterField,
+      filterValue,
+    } = options;
 
     const collectionRef = collection(db, path);
     console.log("Collection reference:", collectionRef);
 
-    const q = query(
-      collectionRef,
-      orderBy("createdAt", "desc"),
-      limit(pageSize)
+    const queryConstraints: QueryConstraint[] = [];
+
+    // Apply filtering
+    if (filterField && filterValue !== undefined) {
+      queryConstraints.push(where(filterField, "==", filterValue));
+    }
+
+    if (sortField) {
+      // Apply sorting
+      queryConstraints.push(orderBy(sortField, sortDirection));
+    }
+
+    // Get total count (before pagination)
+    const countSnapshot = await getCountFromServer(
+      query(collectionRef, ...queryConstraints)
     );
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    if (lastDocumentId) {
+      const lastDocRef = doc(db, path, lastDocumentId);
+      const lastDocSnapshot = await getDoc(lastDocRef);
+      if (lastDocSnapshot.exists()) {
+        queryConstraints.push(startAfter(lastDocSnapshot));
+      }
+    }
+
+    queryConstraints.push(limit(pageSize + 1));
+
+    const q = query(collectionRef, ...queryConstraints);
     console.log("Query object:", q);
 
     const querySnapshot = await getDocs(q);
@@ -51,10 +103,24 @@ export async function paginateCollection<T>(
     const docs = querySnapshot.docs;
     console.log("Number of documents:", docs.length);
 
-    const result = docs.map((doc) => builder(doc.data(), doc.id));
-    console.log("Mapped results:", result);
+    const hasMore = docs.length > pageSize;
+    const items = docs
+      .slice(0, pageSize)
+      .map((doc) => builder(doc.data(), doc.id));
+    const lastDoc = docs[pageSize - 1];
+    const newLastDocumentId = lastDoc ? lastDoc.id : undefined;
 
-    return result;
+    console.log("Mapped results:", items);
+    console.log("Has more:", hasMore);
+    console.log("Last document ID:", newLastDocumentId);
+    console.log("Total count:", totalCount);
+
+    return {
+      items,
+      lastDocumentId: newLastDocumentId,
+      hasMore,
+      totalCount,
+    };
   } catch (error) {
     console.error("Detailed error in paginateCollection:", error);
     if (error instanceof Error) {

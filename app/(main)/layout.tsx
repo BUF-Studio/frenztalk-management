@@ -201,7 +201,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </SidebarBody>
       </Sidebar>
       <div className="flex flex-col flex-grow py-4 pr-4 overflow-hidden">
-        <div className="flex-grow min-h-0 max-h-full overflow-auto rounded-xl p-4 bg-neutral-100 dark:bg-neutral-900">
+        <div className="flex-grow min-h-0 max-h-full overflow-auto rounded-xl p-4 ">
           {children}
         </div>
       </div>
