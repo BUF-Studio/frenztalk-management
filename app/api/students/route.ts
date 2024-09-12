@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Student } from '@/lib/models/student';
-import { createDocument, deleteDocument, getData, getPaginatedData, setDocument } from '@/lib/firebase/service/firebaseCRUD';
+import { createDocument, deleteDocument, getData, getPaginatedData, updateDocument } from '@/lib/firebase/service/firebaseCRUD';
+import Student from '@/lib/models/student';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
     if (id) {
         try {
-            const result = await getData<Student>('students');
+            const result = await getData<Student>('students', id);
             return NextResponse.json(result);
         } catch (error) {
             console.error('Error fetching students:', error);
@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
 
         try {
             const result = await getPaginatedData<Student>('students', page, pageSize);
+            console.log('result')
+            console.log(result)
             return NextResponse.json(result);
         } catch (error) {
             console.error('Error fetching students:', error);
@@ -43,7 +45,7 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
         const { id, ...data } = body;
-        await setDocument('students', id, data);
+        await updateDocument('students', id, data);
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error updating student:', error);

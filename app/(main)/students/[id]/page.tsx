@@ -1,6 +1,6 @@
 "use client";
 
-import { useStudents } from "@/lib/context/collection/studentsContext";
+// import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,7 @@ import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { Edit } from "lucide-react";
 import StudentDialog from "../components/studentForm";
-import { Student } from "@/lib/models/student";
-import { updateStudent } from "@/lib/firebase/student";
+// import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
@@ -17,12 +16,22 @@ import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { TutorList } from "@/app/components/main/tutorList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
+import Student from "@/lib/models/student";
+import { Invoice } from "@/lib/models/invoice";
+import { Tutor } from "@/lib/models/tutor";
+import { Tuition } from "@/lib/models/tuition";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
-  const { student, setStudent } = useStudentPage();
-  const { students } = useStudents();
-  const { studentTuition, studentTutor, studentInvoice } = useStudentPage();
-  const { setTuitionStudent } = useTuitionPage();
+  // const { student, setStudent } = useStudentPage();
+  // const { students } = useStudents();
+  // const studentInvoice: Invoice[] = [];
+  // const studentTutor: Tutor[] = [];
+  // const studentTuition: Tuition[] = [];
+  // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
+  // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
+  // const { setTuitionStudent } = useTuitionPage();
+  const [student, setStudent] = useState<Student>()
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -33,33 +42,58 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    if (student === null || student.id !== params.id) {
-      const foundStudent = students.find((s) => s.id === params.id);
-      if (foundStudent) setStudent(foundStudent);
-    }
-  }, [student, params, students, setStudent]);
+    fetchStudent()
+  }, [])
+
+  async function fetchStudent() {
+    console.log('id')
+    console.log(params.id)
+    const response = await fetch(`/api/students?id=${params.id}`)
+    const data = await response.json()
+    console.log(data)
+    setStudent(data)
+  }
+
+
+
+  // useEffect(() => {
+  //   if (student === null || student.id !== params.id) {
+  //     const foundStudent = students.find((s) => s.id === params.id);
+  //     if (foundStudent) setStudent(foundStudent);
+  //   }
+  // }, [student, params, students, setStudent]);
 
   useEffect(() => {
     console.log(selectedDate?.toISOString());
   }, [selectedDate]);
 
   const addTuition = () => {
-    setTuitionStudent(student);
+    // setTuitionStudent(student);
     router.push("/tuitions/add");
   };
 
   const handleUpdateStudent = async (studentData: Partial<Student>) => {
     try {
-      const updatedStudent = new Student(
-        student?.id ?? null,
-        studentData.name ?? "",
-        studentData.age ?? 0,
-        studentData.status ?? "active"
-      );
+      const updatedStudent: Student = {
+        id: student?.id ?? null,
+        age: studentData.age ?? 0,
+        name: studentData.name ?? "",
+        status: studentData.status ?? "active"
+      }
+
       console.log(updatedStudent);
-      await updateStudent(updatedStudent);
-      showSnackbar("Successfully updated student", "success");
-      toggleDialog();
+
+      const response = await fetch('/api/students', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedStudent)
+      })
+
+      if (response.ok) {
+        showSnackbar("Successfully updated student", "success");
+        toggleDialog();
+      }
+      // await updateStudent(updatedStudent);
     } catch (error) {
       showSnackbar("Error processing student", "error");
     }
@@ -150,18 +184,18 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           {/* <StudentTuitionList filter={selectedDate} /> */}
-          <TuitionList tuitions={studentTuition} filter={selectedDate} />
+          {/* <TuitionList tuitions={studentTuition} filter={selectedDate} /> */}
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
-            <MonthCalendar
+            {/* <MonthCalendar
               events={studentTuition}
               onDateSelect={(date) => setSelectedDate(date)}
               onResetDateSelect={selectedDate === null}
-            />
+            /> */}
           </div>
-          <TutorList tutors={studentTutor} />
-          <InvoiceList invoices={studentInvoice} />
+          {/* <TutorList tutors={studentTutor} /> */}
+          {/* <InvoiceList invoices={studentInvoice} /> */}
           <div className="flex flex-1 h-full" />
         </div>
       </div>

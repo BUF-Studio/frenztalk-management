@@ -1,25 +1,16 @@
-import { DataTable } from "@/app/components/ui/data-table";
-import { columns } from "./columns";
-import { serverSidePaginateCollection } from "@/lib/firebase/service/serverFirestore";
-import { studentFromMap, type Student } from "@/lib/models/student";
-
-import { DataTable } from "@/app/components/dashboard/DataTable";
-// import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useStudentPage } from "@/lib/context/page/studentPageContext";
-// import { addStudent, updateStudent } from "@/lib/firebase/student";
-import { Student } from "@/lib/models/student";
-import { Plus } from "lucide-react";
+'use client'
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import StudentDialog from "./components/studentForm";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
-import { SearchBar } from "@/app/components/general/input/searchBar";
 import PaginatedResult from "@/lib/models/paginationResult";
+import { DataTable } from "@/app/components/ui/data-table";
+import { columns } from "./columns";
+import Student from "@/lib/models/student";
 
 export default function StudentList() {
   // const { students } = useStudents();
@@ -33,12 +24,12 @@ export default function StudentList() {
 
   useEffect(() => {
     fetchStudents()
-    
   }, [])
 
-  async function fetchStudents(page = 1) {
-    const response = await fetch(`/api/students?page=${page}&pageSize=10`)
+  async function fetchStudents(page = 1, pageSize = 10) {
+    const response = await fetch(`/api/students?page=${page}&pageSize=${pageSize}`)
     const data = await response.json()
+    console.log(data)
     setStudents(data)
   }
 
@@ -57,18 +48,28 @@ export default function StudentList() {
     setIsDialogOpen(!isDialogOpen);
   };
 
+
+
   const handleAddStudent = async (studentData: Partial<Student>) => {
     try {
-      const newStudent = new Student(
-        null,
-        studentData.name ?? "",
-        studentData.age ?? 0,
-        studentData.status ?? "active"
-      );
+      const newStudent: Student = {
+        id: null,
+        name: studentData.name ?? "",
+        age: studentData.age ?? 0,
+        status: studentData.status ?? "active"
+      }
 
-      // await addStudent(newStudent);
-      showSnackbar("Successfully added student", "success");
-      toggleDialog();
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStudent)
+      })
+      if (response.ok) {
+        showSnackbar("Successfully added student", "success");
+        toggleDialog();
+        fetchStudents()
+      }
+
     } catch (error) {
       showSnackbar("Error processing student", "error");
     }
@@ -82,26 +83,26 @@ export default function StudentList() {
       { key: "status", label: "Status", order: TableOrderEnum.NONE },
     ];
 
-  const [columns, setColumns] = useState(initialColumns);
+  // const [columns, setColumns] = useState(initialColumns);
 
-  const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
-    useTableColumn(students.data, columns, setColumns);
+  // const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
+  //   useTableColumn(students.data, columns, setColumns);
 
-  const { filteredData: filteredStudents } = useSearchTableData(
-    sortedStudents,
-    searchTerm
-  );
+  // const { filteredData: filteredStudents } = useSearchTableData(
+  //   sortedStudents,
+  //   searchTerm
+  // );
 
-  const renderStudentCell = (student: Student, columnKey: keyof Student) => {
-    if (columnKey === "status") {
-      return (
-        <Badge variant={getStatusVariant(student.status)}>
-          {capitalizeFirstLetter(student.status as string)}
-        </Badge>
-      );
-    }
-    return student[columnKey] as React.ReactNode;
-  };
+  // const renderStudentCell = (student: Student, columnKey: keyof Student) => {
+  //   if (columnKey === "status") {
+  //     return (
+  //       <Badge variant={getStatusVariant(student.status)}>
+  //         {capitalizeFirstLetter(student.status as string)}
+  //       </Badge>
+  //     );
+  //   }
+  //   return student[columnKey] as React.ReactNode;
+  // };
 
   const viewStudent = (student: Student) => {
     // setStudent(student);
@@ -112,9 +113,9 @@ export default function StudentList() {
     <div>
       <div className="flex flex-1 flex-row justify-between items-center pb-4">
         <h1 className="text-xl font-bold">Student List</h1>
-        <div className="flex flex-row items-center space-x-4"/>
+        <div className="flex flex-row items-center space-x-4" />
       </div>
-      <DataTable columns={columns} data={studentData} />
+      <DataTable columns={columns} data={students.data} />
     </div>
   );
 }
