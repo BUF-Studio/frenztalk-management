@@ -15,13 +15,126 @@ import {
   Firestore,
   type DocumentData,
   type CollectionReference,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  type QueryDocumentSnapshot,
+  type QueryConstraint,
+  where,
+  getCountFromServer,
 } from "firebase/firestore";
 
 import { db } from "./clientApp";
 
+export interface PaginationOptions {
+  pageSize?: number;
+  lastDocumentId?: string;
+  sortField?: string;
+  sortDirection?: "asc" | "desc";
+  filterField?: string;
+  filterValue?: any;
+}
+
+export interface PaginationResult<T> {
+  items: T[];
+  lastDocumentId: string | undefined;
+  hasMore: boolean;
+  totalCount: number;
+}
+
+export async function paginateCollection<T>(
+  path: string,
+  builder: (data: Record<string, any>, documentID: string) => T,
+  options: PaginationOptions = {}
+): Promise<PaginationResult<T>> {
+  try {
+    console.log("Entering paginateCollection function");
+    console.log("Path:", path);
+    console.log("Options:", options);
+
+    const {
+      pageSize = 10,
+      lastDocumentId,
+      sortField = "",
+      sortDirection = "asc",
+      filterField,
+      filterValue,
+    } = options;
+
+    const collectionRef = collection(db, path);
+    console.log("Collection reference:", collectionRef);
+
+    const queryConstraints: QueryConstraint[] = [];
+
+    // Apply filtering
+    if (filterField && filterValue !== undefined) {
+      queryConstraints.push(where(filterField, "==", filterValue));
+    }
+
+    if (sortField) {
+      // Apply sorting
+      queryConstraints.push(orderBy(sortField, sortDirection));
+    }
+
+    // Get total count (before pagination)
+    const countSnapshot = await getCountFromServer(
+      query(collectionRef, ...queryConstraints)
+    );
+    const totalCount = countSnapshot.data().count;
+
+    // Apply pagination
+    if (lastDocumentId) {
+      const lastDocRef = doc(db, path, lastDocumentId);
+      const lastDocSnapshot = await getDoc(lastDocRef);
+      if (lastDocSnapshot.exists()) {
+        queryConstraints.push(startAfter(lastDocSnapshot));
+      }
+    }
+
+    queryConstraints.push(limit(pageSize + 1));
+
+    const q = query(collectionRef, ...queryConstraints);
+    console.log("Query object:", q);
+
+    const querySnapshot = await getDocs(q);
+    console.log("Query snapshot:", querySnapshot);
+
+    const docs = querySnapshot.docs;
+    console.log("Number of documents:", docs.length);
+
+    const hasMore = docs.length > pageSize;
+    const items = docs
+      .slice(0, pageSize)
+      .map((doc) => builder(doc.data(), doc.id));
+    const lastDoc = docs[pageSize - 1];
+    const newLastDocumentId = lastDoc ? lastDoc.id : undefined;
+
+    console.log("Mapped results:", items);
+    console.log("Has more:", hasMore);
+    console.log("Last document ID:", newLastDocumentId);
+    console.log("Total count:", totalCount);
+
+    return {
+      items,
+      lastDocumentId: newLastDocumentId,
+      hasMore,
+      totalCount,
+    };
+  } catch (error) {
+    console.error("Detailed error in paginateCollection:", error);
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+    throw error;
+  }
+}
+
 export const setData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<void> => {
   try {
     const reference = doc(db, path);
@@ -35,7 +148,7 @@ export const setData = async (
 
 export const updateData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<void> => {
   try {
     const reference = doc(db, path);
@@ -49,7 +162,7 @@ export const updateData = async (
 
 export const addData = async (
   path: string,
-  data: Record<string, any>,
+  data: Record<string, any>
 ): Promise<string> => {
   try {
     const reference = collection(db, path);
@@ -77,7 +190,7 @@ export const deleteData = async (path: string): Promise<void> => {
 export function documentStream<T>(
   path: string,
   builder: (data: Record<string, any>, documentID: string) => T,
-  onUpdate: (updatedData: T) => void,
+  onUpdate: (updatedData: T) => void
 ): () => void {
   const reference = doc(db, path);
   let previousData: T | undefined;
@@ -98,11 +211,11 @@ export function collectionStream<T>(
   builder: (data: Record<string, any>, documentID: string) => T,
   onUpdate: (updatedData: T[]) => void,
   queryBuilder?: (query: Query<DocumentData>) => Query<DocumentData>,
-  sort?: (lhs: T, rhs: T) => number,
+  sort?: (lhs: T, rhs: T) => number
 ): () => void {
   let q: CollectionReference<DocumentData> | Query<DocumentData> = collection(
     db,
-    path,
+    path
   );
 
   if (queryBuilder) {

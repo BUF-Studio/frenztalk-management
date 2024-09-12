@@ -4,12 +4,13 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { Student } from "../models/student";
+import { type Student, studentFromMap } from "../models/student";
 import {
   addData,
   collectionStream,
   setData,
   deleteData,
+  paginateCollection,
 } from "./service/firestoreService";
 
 const PATH = "students";
@@ -17,7 +18,7 @@ const PATH = "students";
 export const addStudent = async (student: Student): Promise<string> => {
   try {
     const path = PATH;
-    const data = student.toMap();
+    const data = studentFromMap;
     const id = await addData(path, data);
     console.log("Student added to Firestore");
     return id;
@@ -33,7 +34,7 @@ export const updateStudent = async (
 ): Promise<void> => {
   try {
     const path = `${PATH}/${student.id}`;
-    const data = student.toMap();
+    const data = studentFromMap;
     await setData(path, data);
     console.log(`Student ${student.id} updated in Firestore`);
   } catch (error) {
@@ -56,7 +57,7 @@ export const studentsStream = (
   tutorId?: string | null
 ) => {
   const builder = (data: Record<string, any>, id: string) =>
-    Student.fromMap(data, id);
+    studentFromMap;
 
   let queryBuilder:
     | ((query: Query<DocumentData>) => Query<DocumentData>)
