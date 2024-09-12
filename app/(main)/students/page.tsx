@@ -1,13 +1,13 @@
 "use client";
 
 import { DataTable } from "@/app/components/dashboard/DataTable";
-import { useStudents } from "@/lib/context/collection/studentsContext";
+// import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
-import { addStudent, updateStudent } from "@/lib/firebase/student";
+// import { addStudent, updateStudent } from "@/lib/firebase/student";
 import { Student } from "@/lib/models/student";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import StudentDialog from "./components/studentForm";
@@ -16,15 +16,28 @@ import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
 import { SearchBar } from "@/app/components/general/input/searchBar";
+import PaginatedResult from "@/lib/models/paginationResult";
 
 export default function StudentList() {
-  const { students } = useStudents();
+  // const { students } = useStudents();
+  const [students, setStudents] = useState<PaginatedResult<Student>>({ data: [], total: 0, page: 1, pageSize: 10 })
   const router = useRouter();
-  const { setStudent } = useStudentPage();
+  // const { setStudent } = useStudentPage();
   const { showSnackbar } = useSnackbar();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  useEffect(() => {
+    fetchStudents()
+    
+  }, [])
+
+  async function fetchStudents(page = 1) {
+    const response = await fetch(`/api/students?page=${page}&pageSize=10`)
+    const data = await response.json()
+    setStudents(data)
+  }
 
   function getStatusVariant(status: string): BadgeProps["variant"] {
     switch (status.toLowerCase()) {
@@ -49,7 +62,8 @@ export default function StudentList() {
         studentData.age ?? 0,
         studentData.status ?? "active"
       );
-      await addStudent(newStudent);
+
+      // await addStudent(newStudent);
       showSnackbar("Successfully added student", "success");
       toggleDialog();
     } catch (error) {
@@ -68,7 +82,7 @@ export default function StudentList() {
   const [columns, setColumns] = useState(initialColumns);
 
   const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
-    useTableColumn(students, columns, setColumns);
+    useTableColumn(students.data, columns, setColumns);
 
   const { filteredData: filteredStudents } = useSearchTableData(
     sortedStudents,
@@ -87,7 +101,7 @@ export default function StudentList() {
   };
 
   const viewStudent = (student: Student) => {
-    setStudent(student);
+    // setStudent(student);
     router.push(`/students/${student.id}`);
   };
 
