@@ -24,21 +24,25 @@ import React from "react";
 import { Input } from "./input";
 import { DataTablePagination } from "./data-table/pagination";
 import { DataTableViewOptions } from "./data-table/view-option";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  getRowHref?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  getRowHref,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [rowSelection, setRowSelection] = React.useState({});
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -56,6 +60,14 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
+  const handleRowClick = (row: TData) => {
+    if (getRowHref) {
+      const href = getRowHref(row);
+      router.push(href);
+    }
+    return;
+  };
 
   return (
     <div>
@@ -96,7 +108,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  
+                  onClick={() => handleRowClick(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
