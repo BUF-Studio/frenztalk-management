@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTutorPage } from '@/lib/context/page/tutorPageContext';
 import Link from 'next/link';
 import { useTutors } from '@/lib/context/collection/tutorContext';
-import TutorForm from '../../tutorForm';
+import TutorForm from '../../components/tutorForm';
 
 export default function EditTutor({ params }: { params: { id: string } }) {
   const router = useRouter();

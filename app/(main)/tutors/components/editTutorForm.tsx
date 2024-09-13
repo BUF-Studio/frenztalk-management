@@ -1,13 +1,13 @@
 import type React from "react";
 import { useState } from "react";
-import type { Student } from "@/lib/models/student";
+// import type { Student } from "@/lib/models/student";
 import TextFieldComponent from "@/app/components/general/input/textField";
 import { Plus, Trash2, X } from "lucide-react";
 import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
 import { useRouter } from "next/navigation";
-import { useSubjects } from "@/lib/context/collection/subjectContext";
-import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import { updateTutor } from "@/lib/firebase/tutor";
+// import { useSubjects } from "@/lib/context/collection/subjectContext";
+// import { useTutorPage } from "@/lib/context/page/tutorPageContext";
+// import { updateTutor } from "@/lib/firebase/tutor";
 import { Tutor } from "@/lib/models/tutor";
 
 interface EditTutorFormProps {
@@ -17,43 +17,43 @@ interface EditTutorFormProps {
 
 const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
-  const { subjects } = useSubjects();
-  const { tutor, setTutor } = useTutorPage();
-  const [name, setName] = useState(tutor?.name || "");
+  // const { subjects } = useSubjects();
+  // const { tutor, setTutor } = useTutorPage();
+  // const [name, setName] = useState(tutor?.name || "");
   const [prefer, setPrefer] = useState("");
-  const [preferSubject, setPreferSubject] = useState(tutor?.subjects || []);
-  const [des, setDes] = useState(tutor?.des || "");
-  const [status, setStatus] = useState(tutor?.status || "active");
+  // const [preferSubject, setPreferSubject] = useState(tutor?.subjects || []);
+  // const [des, setDes] = useState(tutor?.des || "");
+  // const [status, setStatus] = useState(tutor?.status || "active");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const updatedTutor = new Tutor(
-        tutor?.id ?? "",
-        name,
-        preferSubject,
-        des,
-        status,
-        ""
-      );
-      await updateTutor(updatedTutor);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const updatedTutor = new Tutor(
+  //       tutor?.id ?? "",
+  //       name,
+  //       preferSubject,
+  //       des,
+  //       status,
+  //       ""
+  //     );
+  //     await updateTutor(updatedTutor);
 
-      setTutor(updatedTutor);
+  //     setTutor(updatedTutor);
 
-      router.back();
-    } catch (error) {
-      console.error("Failed to submit the form", error);
-    }
-  };
+  //     router.back();
+  //   } catch (error) {
+  //     console.error("Failed to submit the form", error);
+  //   }
+  // };
 
-  const addPreferSubject = () => {
-    if (prefer !== "") {
-      const preSub = preferSubject;
-      preSub.push(prefer);
-      setPrefer("");
-      setPreferSubject(preSub);
-    }
-  };
+  // const addPreferSubject = () => {
+  //   if (prefer !== "") {
+  //     const preSub = preferSubject;
+  //     preSub.push(prefer);
+  //     setPrefer("");
+  //     setPreferSubject(preSub);
+  //   }
+  // };
 
   if (!isOpen) return null;
 
@@ -64,13 +64,13 @@ const EditTutorForm: React.FC<EditTutorFormProps> = ({ isOpen, onClose }) => {
     ],
   };
 
-  const removePreferSubject = (subjectId: string) => {
-    setPreferSubject(preferSubject.filter((id) => id !== subjectId));
-  };
+  // const removePreferSubject = (subjectId: string) => {
+  //   setPreferSubject(preferSubject.filter((id) => id !== subjectId));
+  // };
 
-  const preferSubjectOptions = subjects
-    .filter((sub) => !preferSubject.includes(sub.id ?? ""))
-    .map((sub) => ({ value: sub.id ?? "", label: sub.name }));
+  // const preferSubjectOptions = subjects
+  //   .filter((sub) => !preferSubject.includes(sub.id ?? ""))
+  //   .map((sub) => ({ value: sub.id ?? "", label: sub.name }));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

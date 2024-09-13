@@ -1,8 +1,8 @@
 "use client";
 
-import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
-import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
+// import { useTutorPage } from "@/lib/context/page/tutorPageContext";
+// import { useTutors } from "@/lib/context/collection/tutorContext";
+// import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
@@ -13,13 +13,13 @@ import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
-import EditTutorForm from "../editTutorForm";
+import EditTutorForm from "../components/editTutorForm";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
-  const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
-  const { tutors } = useTutors();
+  // const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
+  // const { tutors } = useTutors();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { setTuitionTutor } = useTuitionPage();
+  // const { setTuitionTutor } = useTuitionPage();
   const router = useRouter();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -28,19 +28,19 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
     setIsDialogOpen(!isDialogOpen);
   };
 
-  useEffect(() => {
-    if (tutor === null || tutor.id !== params.id) {
-      console.log('find tutor')
-      const foundTutor = tutors.find((s) => s.id === params.id);
-      console.log('tutor')
-      if (foundTutor) setTutor(foundTutor);
-    }
-  }, [params,tutors,tutor, setTutor]);
+  // useEffect(() => {
+  //   if (tutor === null || tutor.id !== params.id) {
+  //     console.log('find tutor')
+  //     const foundTutor = tutors.find((s) => s.id === params.id);
+  //     console.log('tutor')
+  //     if (foundTutor) setTutor(foundTutor);
+  //   }
+  // }, [params,tutors,tutor, setTutor]);
 
-  const addTuition = () => {
-    setTuitionTutor(tutor);
-    router.push("/tuitions/add");
-  };
+  // const addTuition = () => {
+  //   setTuitionTutor(tutor);
+  //   router.push("/tuitions/add");
+  // };
 
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
     if (!status) {
@@ -81,7 +81,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 <div className="w-20 h-20 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
                   {/* Avatar placeholder */}
                 </div>
-                <div className="grid grid-row-2 gap-2">
+                {/* <div className="grid grid-row-2 gap-2">
                   <div className="flex flex-row gap-2">
                     <p className="text-lg font-semibold dark:text-neutral-100">
                       {tutor?.name}
@@ -93,7 +93,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                   <p className="text-xs text-gray-600 dark:text-neutral-400 font-semibolds">
                     {tutor?.des}
                   </p>
-                </div>
+                </div> */}
               </div>
               <button
                 onClick={toggleDialog}
@@ -127,9 +127,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
               )}
             </div>
           </div>
-          <TuitionList tuitions={tutorTuition} filter={selectedDate} />
+          {/* <TuitionList tuitions={tutorTuition} filter={selectedDate} /> */}
         </div>
-        <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+        {/* <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
             <MonthCalendar
               events={tutorTuition}
@@ -138,7 +138,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
           </div>
           <StudentList students={tutorStudent} />
           <div className="flex flex-1 h-full" />
-        </div>
+        </div> */}
       </div>
       <EditTutorForm
         isOpen={isDialogOpen}
