@@ -12,6 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu"
+import { useEffect } from "react"
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -20,6 +21,14 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  useEffect(() => {
+    // Hide the 'id' column by default
+    const idColumn = table.getColumn('id')
+    if (idColumn) {
+      idColumn.toggleVisibility(false)
+    }
+  }, [table])
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

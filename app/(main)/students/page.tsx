@@ -1,11 +1,9 @@
-'use client'
-import { type BadgeProps } from "@/app/components/general/badge";
+"use client";
+
 import { DataTable } from "@/app/components/ui/data-table";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
-import PaginatedResult from "@/lib/models/paginationResult";
-import Student from "@/lib/models/student";
-import { useRouter } from "next/navigation";
+import type PaginatedResult from "@/lib/models/paginationResult";
+import type Student from "@/lib/models/student";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
 
@@ -22,22 +20,23 @@ interface FetchStudentsParams {
 
 
 export default function StudentList() {
-  // const { students } = useStudents();
-  const [students, setStudents] = useState<PaginatedResult<Student>>({ data: [], total: 0, page: 1, pageSize: 10 })
-  const router = useRouter();
-  // const { setStudent } = useStudentPage();
+  const [students, setStudents] = useState<PaginatedResult<Student>>({
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const { showSnackbar } = useSnackbar();
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     // Initial fetch
-    fetchStudents({ page: 1, pageSize: 10 })
-  }, [])
+    fetchStudents({ page: pageIndex + 1, pageSize: pageSize })
+  }, [pageIndex, pageSize])
 
   const handlePageChange = (newPage: number) => {
-    fetchStudents({ ...students, page: newPage })
+    fetchStudents({ page: newPage, pageSize: pageSize, })
   }
 
   const handleFilterChange = (filters: Partial<FetchStudentsParams>) => {
@@ -124,40 +123,15 @@ export default function StudentList() {
     } catch (error) {
       showSnackbar("Error processing student", "error");
     }
-  };
+    fetchStudents(pageIndex + 1, pageSize);
+  }, [pageIndex, pageSize, showSnackbar]);
 
-  const initialColumns: { key: keyof Student; label: string; order: string }[] =
-    [
-      { key: "id", label: "ID", order: TableOrderEnum.NONE },
-      { key: "name", label: "Name", order: TableOrderEnum.NONE },
-      { key: "age", label: "Age", order: TableOrderEnum.NONE },
-      { key: "status", label: "Status", order: TableOrderEnum.NONE },
-    ];
-
-  // const [columns, setColumns] = useState(initialColumns);
-
-  // const { sortedData: sortedStudents, sortColumn: sortStudentByColumns } =
-  //   useTableColumn(students.data, columns, setColumns);
-
-  // const { filteredData: filteredStudents } = useSearchTableData(
-  //   sortedStudents,
-  //   searchTerm
-  // );
-
-  // const renderStudentCell = (student: Student, columnKey: keyof Student) => {
-  //   if (columnKey === "status") {
-  //     return (
-  //       <Badge variant={getStatusVariant(student.status)}>
-  //         {capitalizeFirstLetter(student.status as string)}
-  //       </Badge>
-  //     );
-  //   }
-  //   return student[columnKey] as React.ReactNode;
-  // };
-
-  const viewStudent = (student: Student) => {
-    // setStudent(student);
-    router.push(`/students/${student.id}`);
+  const handlePaginationChange = (
+    newPageIndex: number,
+    newPageSize: number
+  ) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
   };
 
   return (
@@ -166,7 +140,15 @@ export default function StudentList() {
         <h1 className="text-xl font-bold">Student List</h1>
         <div className="flex flex-row items-center space-x-4" />
       </div>
-      <DataTable columns={columns} data={students.data} />
+      <DataTable
+        columns={columns}
+        data={students.data}
+        getRowHref={(student) => `/students/${student.id}`}
+        onPaginationChange={handlePaginationChange}
+        pageCount={Math.ceil(students.total / pageSize)}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+      />
     </div>
   );
 }

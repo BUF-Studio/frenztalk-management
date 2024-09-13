@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   type ColumnDef,
@@ -10,8 +10,7 @@ import {
   getSortedRowModel,
   type SortingState,
   useReactTable,
-} from "@tanstack/react-table";
-
+} from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -19,30 +18,59 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
-import React from "react";
-import { Input } from "./input";
-import { DataTablePagination } from "./data-table/pagination";
-import { DataTableViewOptions } from "./data-table/view-option";
+} from "@/app/components/ui/table"
+import React from "react"
+import { Input } from "./input"
+import { DataTablePagination } from "./data-table/pagination"
+import { DataTableViewOptions } from "./data-table/view-option"
+import { useRouter } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  getRowHref?: (row: TData) => string
+  onPaginationChange: (pageIndex: number, pageSize: number) => void
+  pageCount: number
+  pageIndex: number
+  pageSize: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  getRowHref,
+  onPaginationChange,
+  pageCount,
+  pageIndex,
+  pageSize,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [rowSelection, setRowSelection] = React.useState({})
+  const router = useRouter()
 
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount,
+    state: {
+      sorting,
+      columnFilters,
+      rowSelection,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
+    },
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newPagination = updater({
+          pageIndex,
+          pageSize,
+        })
+        onPaginationChange(newPagination.pageIndex, newPagination.pageSize)
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -50,12 +78,15 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      rowSelection,
-    },
-  });
+    manualPagination: true,
+  })
+
+  const handleRowClick = (row: TData) => {
+    if (getRowHref) {
+      const href = getRowHref(row)
+      router.push(href)
+    }
+  }
 
   return (
     <div>
@@ -75,18 +106,16 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -96,7 +125,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  
+                  onClick={() => handleRowClick(row.original)}
+                  className="cursor-pointer hover:bg-muted/50 hover:cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -123,5 +153,5 @@ export function DataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
-  );
+  )
 }
