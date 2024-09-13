@@ -63,6 +63,7 @@ export default function StudentList() {
   const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
     setSortField(field);
     setSortDirection(direction);
+    setPageIndex(0); // Reset to first page when filters change
   };
 
   const handleFilterChange = (columnId: string, value: string) => {
