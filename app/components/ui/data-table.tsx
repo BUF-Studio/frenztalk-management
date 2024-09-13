@@ -30,9 +30,14 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   getRowHref?: (row: TData) => string
   onPaginationChange: (pageIndex: number, pageSize: number) => void
+  onSortChange: (field: string, direction: 'asc' | 'desc') => void
+  onFilterChange: (columnId: string, value: string) => void
   pageCount: number
   pageIndex: number
   pageSize: number
+  sortField?: string
+  sortDirection?: 'asc' | 'desc'
+  filters: Record<string, string>
 }
 
 export function DataTable<TData, TValue>({
@@ -40,14 +45,33 @@ export function DataTable<TData, TValue>({
   data,
   getRowHref,
   onPaginationChange,
+  onSortChange,
+  onFilterChange,
   pageCount,
   pageIndex,
   pageSize,
+  sortField,
+  sortDirection,
+  filters,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const router = useRouter()
+
+  React.useEffect(() => {
+    if (sortField && sortDirection) {
+      setSorting([{ id: sortField, desc: sortDirection === 'desc' }])
+    }
+  }, [sortField, sortDirection])
+
+  React.useEffect(() => {
+    const newColumnFilters = Object.entries(filters).map(([key, value]) => ({
+      id: key,
+      value: value,
+    }))
+    setColumnFilters(newColumnFilters)
+  }, [filters])
 
   const table = useReactTable({
     data,
@@ -69,16 +93,36 @@ export function DataTable<TData, TValue>({
           pageSize,
         })
         onPaginationChange(newPagination.pageIndex, newPagination.pageSize)
+      } else {
+        onPaginationChange(updater.pageIndex, updater.pageSize)
       }
+    },
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === 'function' ? updater(sorting) : updater
+      setSorting(newSorting)
+      if (newSorting.length > 0) {
+        const { id, desc } = newSorting[0]
+        onSortChange(id, desc ? 'desc' : 'asc')
+      } else {
+        onSortChange('', 'asc')
+      }
+    },
+    onColumnFiltersChange: (updater) => {
+      const newFilters = typeof updater === 'function' ? updater(columnFilters) : updater
+      setColumnFilters(newFilters)
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      newFilters.forEach((filter) => {
+        onFilterChange(filter.id, filter.value as string)
+      })
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
   })
 
   const handleRowClick = (row: TData) => {

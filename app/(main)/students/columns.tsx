@@ -57,18 +57,18 @@ export const columns: ColumnDef<Student>[] = [
       const status: string = row.getValue("status");
       function getStatusVariant(
         status: string | undefined
-      ): "success" | "info" | "warning" | "error" | undefined {
+      ): "default" | "secondary" | "destructive" | "outline" | undefined {
         if (!status) {
-          return "error";
+          return "destructive";
         }
 
         switch (status.toLowerCase()) {
           case "active":
-            return "success";
+            return "default";
           case "frozen":
-            return "error";
+            return "destructive";
           default:
-            return "error";
+            return "outline";
         }
       }
 
