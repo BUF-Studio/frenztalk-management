@@ -2,28 +2,16 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
-import { addTuition, updateTuition } from "@/lib/firebase/tuition";
 import { Tuition } from "@/lib/models/tuition";
-import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
-import { useSubjects } from "@/lib/context/collection/subjectContext";
-import { useLevels } from "@/lib/context/collection/levelContext";
-import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { X } from "lucide-react";
 import TextFieldComponent from "@/app/components/general/input/textField";
 import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
 import DatepickerInput from "@/app/components/general/input/datePicker";
 import { Meeting, ZoomAccount } from "@/lib/models/zoom";
-import { Invoice } from "@/lib/models/invoice";
-import { addInvoice } from "@/lib/firebase/invoice";
-import { addPayment } from "@/lib/firebase/payment";
-import { updateZoomAccount } from "@/lib/firebase/zoomAccount";
 import Currency from "@/lib/models/currency";
 import TuitionStatus from "@/lib/models/tuitionStatus";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import axios from "axios";
-import { Payment } from "@/lib/models/payment";
 import CheckboxFieldComponent from "@/app/components/general/input/checkBox";
 
 interface AddTuitionModalDialogProps {

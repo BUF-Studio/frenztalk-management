@@ -1,23 +1,35 @@
 "use client";
 
 import { DataTable } from "@/app/components/dashboard/DataTable";
-import { useTutors } from "@/lib/context/collection/tutorContext";
-import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 import type { Tutor } from "@/lib/models/tutor";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
 import { SearchBar } from "@/app/components/general/input/searchBar";
+import PaginatedResult from "@/lib/models/paginationResult";
 
 export default function TutorList() {
-  const { tutors } = useTutors();
-  const { setTutor } = useTutorPage();
+  // const { tutors } = useTutors();
+  // const { setTutor } = useTutorPage();
+  const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({ data: [], total: 0, page: 1, pageSize: 10 })
+
+  useEffect(() => {
+    fetchTutors()
+  }, [])
+
+  async function fetchTutors(page = 1, pageSize = 10) {
+    const response = await fetch(`/api/tutors?page=${page}&pageSize=${pageSize}`)
+    const data = await response.json()
+    console.log(data)
+    setTutors(data)
+  }
+
 
   const [searchTerm, setSearchTerm] = React.useState<string>("");
 
@@ -50,7 +62,7 @@ export default function TutorList() {
   const [columns, setColumns] = React.useState(initialColumns);
 
   const { sortedData: sortedTutors, sortColumn: sortTutorByColumn } =
-    useTableColumn(tutors, columns, setColumns);
+    useTableColumn(tutors.data, columns, setColumns);
 
   const { filteredData: filteredTutors } = useSearchTableData(
     sortedTutors,
@@ -58,7 +70,7 @@ export default function TutorList() {
   );
 
   const viewTutor = (tutor: Tutor) => {
-    setTutor(tutor);
+    // setTutor(tutor);
     router.push(`/tutors/${tutor.id}`);
   };
 

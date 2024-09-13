@@ -1,21 +1,30 @@
+import PaginatedResult from "@/lib/models/paginationResult";
 import { db } from "./serverApp";
 
-interface PaginatedResult<T> {
-    data: T[];
-    total: number;
-    page: number;
-    pageSize: number;
+
+export interface QueryFilter {
+    field: string;
+    operator: FirebaseFirestore.WhereFilterOp;
+    value: any;
 }
 
 async function getPaginatedData<T>(
     collection: string,
     page: number,
-    pageSize: number
+    pageSize: number,
+    query?: QueryFilter | null | undefined
 ): Promise<PaginatedResult<T>> {
-    const totalSnapshot = await db.collection(collection).count().get();
+    let ref = db.collection(collection);
+    let queryRef: FirebaseFirestore.Query = ref;
+
+    if (query) {
+        queryRef = ref.where(query.field, query.operator, query.value);
+    }
+
+    const totalSnapshot = await queryRef.count().get();
     const total = totalSnapshot.data().count;
 
-    const snapshot = await db.collection(collection)
+    const snapshot = await queryRef
         // .orderBy('createdAt', 'desc')
         .offset((page - 1) * pageSize)
         .limit(pageSize)

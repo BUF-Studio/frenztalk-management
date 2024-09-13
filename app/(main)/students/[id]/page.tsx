@@ -1,25 +1,15 @@
 "use client";
 
-// import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useStudentPage } from "@/lib/context/page/studentPageContext";
-import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
-import { useRouter } from "next/navigation";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
-import { useEffect, useState } from "react";
 import { Edit } from "lucide-react";
-import StudentDialog from "../components/studentForm";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import StudentDialog from "../components/studentDialog";
 // import { updateStudent } from "@/lib/firebase/student";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import { capitalizeFirstLetter } from "@/utils/util";
-import TuitionList from "../../../components/main/tuitionList";
-import { TutorList } from "@/app/components/main/tutorList";
-import { InvoiceList } from "@/app/components/main/invoiceList";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Student from "@/lib/models/student";
-import { Invoice } from "@/lib/models/invoice";
-import { Tutor } from "@/lib/models/tutor";
-import { Tuition } from "@/lib/models/tuition";
+import { capitalizeFirstLetter } from "@/utils/util";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   // const { student, setStudent } = useStudentPage();
@@ -46,11 +36,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   }, [])
 
   async function fetchStudent() {
-    console.log('id')
-    console.log(params.id)
+    
     const response = await fetch(`/api/students?id=${params.id}`)
     const data = await response.json()
-    console.log(data)
     setStudent(data)
   }
 

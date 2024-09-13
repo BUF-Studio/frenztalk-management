@@ -1,26 +1,36 @@
 "use client";
 
-import { useTuitions } from "@/lib/context/collection/tuitionContext";
-import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
-import type { Tuition } from "@/lib/models/tuition";
-import axios from "axios";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { useState } from "react";
-import TuitionList from "../../components/main/tuitionList";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import TuitionList from "../../components/main/tuitionList";
 import { AddTuitionModalDialog } from "./tuitionModalDialog";
+import { Tuition } from "@/lib/models/tuition";
+import PaginatedResult from "@/lib/models/paginationResult";
 
 export default function TuitionPage() {
-  const { tuitions } = useTuitions();
+  // const { tuitions } = useTuitions();
+  const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({ data: [], total: 0, page: 1, pageSize: 10 })
   const router = useRouter();
-  const { tuition, setTuition } = useTuitionPage();
+  // const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  useEffect(() => {
+    fetchTuitions()
+  }, [])
+
+  async function fetchTuitions(page = 1, pageSize = 10) {
+    const response = await fetch(`/api/tuitions?page=${page}&pageSize=${pageSize}`)
+    const data = await response.json()
+    console.log(data)
+    setTuitions(data)
+  }
+
 
   const addTuition = () => {
-    setTuition(null);
+    // setTuition(null);
     setIsModalOpen(true);
   };
 
@@ -28,7 +38,7 @@ export default function TuitionPage() {
     <div className="flex flex-1 h-full w-full flex-row gap-4 justify-start items-start overflow-hidden">
       <div className="flex flex-col flex-1">
         <MonthCalendar
-          events={tuitions}
+          events={tuitions.data}
           onDateSelect={(date) => setSelectedDate(date)}
         />
         <div className="flex flex-1 flex-grow" />
@@ -45,7 +55,7 @@ export default function TuitionPage() {
             Add Class
           </button>
         </div>
-        <TuitionList tuitions={tuitions} />
+        <TuitionList tuitions={tuitions.data} />
       </div>
       <AddTuitionModalDialog
         isOpen={isModalOpen}
@@ -53,7 +63,7 @@ export default function TuitionPage() {
           setIsModalOpen(false);
         }}
         tuition={null}
-        setTuition={setTuition}
+        setTuition={()=>{}}
       />
     </div>
   );

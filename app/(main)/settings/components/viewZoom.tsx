@@ -1,5 +1,4 @@
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
-import { ZoomAccount } from "@/lib/models/zoom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

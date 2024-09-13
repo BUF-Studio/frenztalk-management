@@ -1,16 +1,13 @@
 'use client'
+import { type BadgeProps } from "@/app/components/general/badge";
+import { DataTable } from "@/app/components/ui/data-table";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
+import PaginatedResult from "@/lib/models/paginationResult";
+import Student from "@/lib/models/student";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import { capitalizeFirstLetter } from "@/utils/util";
-import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
-import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
-import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
-import PaginatedResult from "@/lib/models/paginationResult";
-import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./columns";
-import Student from "@/lib/models/student";
 
 export default function StudentList() {
   // const { students } = useStudents();

@@ -1,11 +1,9 @@
 "use client";
-import React from "react";
-import { ZoomAccount } from "@/lib/models/zoom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Dialog, DialogContent } from "@/app/components/ui/dialog";
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { useRouter } from "next/navigation";
 import ZoomForm from "../../components/zoomForm";
-import { Dialog, DialogContent } from "@/app/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 
 function EditZoomModal({ params }: { params: { id: string } }) {
   const { zoomAccounts } = useZoomAccounts();

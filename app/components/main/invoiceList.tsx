@@ -5,7 +5,6 @@ import Image from "next/image";
 import type { Invoice } from "@/lib/models/invoice";
 import { Badge, type BadgeProps } from "../general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
-import { useStudents } from "@/lib/context/collection/studentsContext";
 
 interface InvoicesProps {
   invoices?: Invoice[];

@@ -34,12 +34,12 @@ export default function RootLayout({
           <AlertProvider>
             <SnackbarProvider>
               <AuthContextProvider>
-                {/* <AppProvider> */}
+                <AppProvider>
                   <div className="flex">
                     {/* <Sidebar /> */}
                     <main className="flex-1">{children}</main>
                   </div>
-                {/* </AppProvider> */}
+                </AppProvider>
               </AuthContextProvider>
             </SnackbarProvider>
           </AlertProvider>

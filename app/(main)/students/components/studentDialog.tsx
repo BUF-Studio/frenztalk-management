@@ -1,9 +1,9 @@
 import type React from "react";
 import { useState } from "react";
-import type { Student } from "@/lib/models/student";
 import TextFieldComponent from "@/app/components/general/input/textField";
 import { X } from "lucide-react";
 import SelectFieldComponent from "@/app/components/general/input/selectFieldComponent";
+import Student from "@/lib/models/student";
 
 interface StudentDialogProps {
   isOpen: boolean;
