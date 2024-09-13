@@ -13,6 +13,11 @@ import { capitalizeFirstLetter } from "@/utils/util";
 import { Invoice } from "@/lib/models/invoice";
 import { Tutor } from "@/lib/models/tutor";
 import { Tuition } from "@/lib/models/tuition";
+import TuitionList from "@/app/components/main/tuitionList";
+import MonthCalendar from "@/app/components/dashboard/Calendar";
+import { TutorList } from "@/app/components/main/tutorList";
+import { InvoiceList } from "@/app/components/main/invoiceList";
+import PaginatedResult from "@/lib/models/paginationResult";
 
 // interface StudentDetailDataProps{
 //   student:Student,
@@ -31,9 +36,24 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
   // const { setTuitionStudent } = useTuitionPage();
   const [student, setStudent] = useState<Student>()
-  const [tutors, setTutors] = useState<Tutor[]>([])
-  const [tuitions, setTuitions] = useState<Tuition[]>([])
-  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
+  const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
+  const [invoices, setInvoices] = useState<PaginatedResult<Invoice>>({
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
@@ -46,9 +66,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchStudent()
-    // fetchTutors()
-    // fetchTuitions()
-    // fetchInvoices()
+    fetchTutors()
+    fetchTuitions()
+    fetchInvoices()
   }, [])
 
   async function fetchStudent() {
@@ -65,6 +85,8 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   async function fetchTutors() {
     const response = await fetch(`/api/tutors?studentId=${params.id}`)
     const data = await response.json()
+    console.log('tutors')
+    console.log(data)
     setTutors(data)
   }
   async function fetchInvoices() {
@@ -121,16 +143,16 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
     if (!status) {
       // Handle the case where status is undefined or null
-      return "error"; // or any appropriate fallback value
+      return 'destructive'; // or any appropriate fallback value
     }
 
     switch (status.toLowerCase()) {
       case "active":
-        return "success";
+        return "default";
       case "frozen":
-        return "error";
+        return "destructive";
       default:
-        return "error";
+        return "destructive";
     }
   }
 
@@ -203,18 +225,18 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           {/* <StudentTuitionList filter={selectedDate} /> */}
-          {/* <TuitionList tuitions={studentTuition} filter={selectedDate} /> */}
+          <TuitionList tuitions={tuitions.data} filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
-            {/* <MonthCalendar
-              events={studentTuition}
+            <MonthCalendar
+              events={tuitions.data}
               onDateSelect={(date) => setSelectedDate(date)}
               onResetDateSelect={selectedDate === null}
-            /> */}
+            />
           </div>
-          {/* <TutorList tutors={studentTutor} /> */}
-          {/* <InvoiceList invoices={studentInvoice} /> */}
+          <TutorList tutors={tutors.data} />
+          <InvoiceList invoices={invoices.data} studentId={student?.id!} />
           <div className="flex flex-1 h-full" />
         </div>
       </div>

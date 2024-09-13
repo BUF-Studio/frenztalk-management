@@ -1,8 +1,8 @@
 "use client";
 
-import type { Student } from "@/lib/models/student";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Student from "@/lib/models/student";
 
 interface StudentsProps {
   students?: Student[];
