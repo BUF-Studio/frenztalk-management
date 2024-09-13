@@ -4,7 +4,7 @@ import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import StudentDialog from "../components/studentDialog";
+import StudentDialog from "../components/studentForm";
 // import { updateStudent } from "@/lib/firebase/student";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";

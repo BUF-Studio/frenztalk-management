@@ -6,12 +6,14 @@ import type PaginatedResult from "@/lib/models/paginationResult";
 import type Student from "@/lib/models/student";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
+import Link from "next/link";
+import { Button } from "@/app/components/ui/button";
 
 interface FetchStudentsParams {
   page: number;
   pageSize: number;
   sortField?: string;
-  sortDirection?: 'asc' | 'desc';
+  sortDirection?: "asc" | "desc";
   filters?: Record<string, string>;
 }
 
@@ -25,11 +27,12 @@ export default function StudentList() {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<string | undefined>();
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>();
+  const [sortDirection, setSortDirection] = useState<
+    "asc" | "desc" | undefined
+  >();
   const [filters, setFilters] = useState<Record<string, string>>({});
   const { showSnackbar } = useSnackbar();
 
-  
   useEffect(() => {
     const fetchStudents = async (params: FetchStudentsParams) => {
       try {
@@ -40,34 +43,43 @@ export default function StudentList() {
           ...(params.sortDirection && { sortDirection: params.sortDirection }),
           // ...params.filters,
         });
-  
+
         const response = await fetch(`/api/students?${queryParams.toString()}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch students');
+          throw new Error("Failed to fetch students");
         }
         const data = await response.json();
         setStudents(data);
       } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error("Error fetching students:", error);
         showSnackbar("Error fetching students", "error");
       }
     };
-    fetchStudents({ page: pageIndex, pageSize, sortField, sortDirection, filters });
+    fetchStudents({
+      page: pageIndex,
+      pageSize,
+      sortField,
+      sortDirection,
+      filters,
+    });
   }, [pageIndex, pageSize, sortField, sortDirection, filters, showSnackbar]);
 
-  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+  const handlePaginationChange = (
+    newPageIndex: number,
+    newPageSize: number
+  ) => {
     setPageIndex(newPageIndex);
     setPageSize(newPageSize);
   };
 
-  const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
+  const handleSortChange = (field: string, direction: "asc" | "desc") => {
     setSortField(field);
     setSortDirection(direction);
     setPageIndex(0); // Reset to first page when filters change
   };
 
   const handleFilterChange = (columnId: string, value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [columnId]: value,
     }));
@@ -76,9 +88,13 @@ export default function StudentList() {
 
   return (
     <div>
-      <div className="flex flex-1 flex-row justify-between items-center pb-4">
+      <div className="flex flex-1 flex-row w-full justify-between items-center pb-4">
         <h1 className="text-xl font-bold">Student List</h1>
-        <div className="flex flex-row items-center space-x-4" />
+        <div className="flex flex-row items-center space-x-4">
+          <Link href="/students/add" prefetch={true}>
+            <Button variant={"default"}>Add Account</Button>
+          </Link>
+        </div>
       </div>
       <DataTable
         columns={columns}

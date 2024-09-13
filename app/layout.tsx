@@ -9,6 +9,7 @@ import { SnackbarProvider } from "@/lib/context/component/SnackbarContext";
 import { AlertProvider } from "@/lib/context/component/AlertContext";
 import { useEffect } from "react";
 import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
                   <div className="flex">
                     {/* <Sidebar /> */}
                     <main className="flex-1">{children}</main>
+                    <Toaster />
                   </div>
                 </AppProvider>
               </AuthContextProvider>
