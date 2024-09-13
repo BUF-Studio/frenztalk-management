@@ -2,10 +2,8 @@
 
 import { DataTable } from "@/app/components/ui/data-table";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import type PaginatedResult from "@/lib/models/paginationResult";
 import type Student from "@/lib/models/student";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
 
@@ -16,64 +14,31 @@ export default function StudentList() {
     page: 1,
     pageSize: 10,
   });
-  const router = useRouter();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const { showSnackbar } = useSnackbar();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // const [searchTerm, setSearchTerm] = useState<string>("");
-
   useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  async function fetchStudents(page = 1, pageSize = 10) {
-    const response = await fetch(
-      `/api/students?page=${page}&pageSize=${pageSize}`
-    );
-    const data = await response.json();
-    console.log(data);
-    setStudents(data);
-  }
-
-  const toggleDialog = () => {
-    setIsDialogOpen(!isDialogOpen);
-  };
-
-  const handleAddStudent = async (studentData: Partial<Student>) => {
-    try {
-      const newStudent: Student = {
-        id: null,
-        name: studentData.name ?? "",
-        age: studentData.age ?? 0,
-        status: studentData.status ?? "active",
-      };
-
-      const response = await fetch("/api/students", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newStudent),
-      });
-      if (response.ok) {
-        showSnackbar("Successfully added student", "success");
-        toggleDialog();
-        fetchStudents();
+    async function fetchStudents(page: number, pageSize: number) {
+      try {
+        const response = await fetch(
+          `/api/students?page=${page}&pageSize=${pageSize}`
+        );
+        const data = await response.json();
+        setStudents(data);
+      } catch (error) {
+        showSnackbar("Error fetching students", "error");
       }
-    } catch (error) {
-      showSnackbar("Error processing student", "error");
     }
-  };
+    fetchStudents(pageIndex + 1, pageSize);
+  }, [pageIndex, pageSize, showSnackbar]);
 
-  const initialColumns: { key: keyof Student; label: string; order: string }[] =
-    [
-      { key: "id", label: "ID", order: TableOrderEnum.NONE },
-      { key: "name", label: "Name", order: TableOrderEnum.NONE },
-      { key: "age", label: "Age", order: TableOrderEnum.NONE },
-      { key: "status", label: "Status", order: TableOrderEnum.NONE },
-    ];
-
-  const viewStudent = (student: Student) => {
-    // setStudent(student);
-    router.push(`/students/${student.id}`);
+  const handlePaginationChange = (
+    newPageIndex: number,
+    newPageSize: number
+  ) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
   };
 
   return (
@@ -82,7 +47,15 @@ export default function StudentList() {
         <h1 className="text-xl font-bold">Student List</h1>
         <div className="flex flex-row items-center space-x-4" />
       </div>
-      <DataTable columns={columns} data={students.data} getRowHref={(student) => `/students/${student.id}`}/>
+      <DataTable
+        columns={columns}
+        data={students.data}
+        getRowHref={(student) => `/students/${student.id}`}
+        onPaginationChange={handlePaginationChange}
+        pageCount={Math.ceil(students.total / pageSize)}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+      />
     </div>
   );
 }
