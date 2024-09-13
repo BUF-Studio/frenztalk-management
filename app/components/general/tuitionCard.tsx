@@ -1,24 +1,18 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import Link from "next/link";
-import { AccessTime, CalendarToday } from "@mui/icons-material";
 import {
   capitalizeFirstLetter,
   copyMeetingLink,
   formatDate,
   formatTime,
 } from "@/utils/util";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import type { Student } from "@/lib/models/student";
-import type { Level } from "@/lib/models/level";
-import { useInvoices } from "@/lib/context/collection/invoiceContext";
-import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useTuitions } from "@/lib/context/collection/tuitionContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
+import { AccessTime, CalendarToday } from "@mui/icons-material";
+import { Check, Copy } from "lucide-react";
+import Link from "next/link";
+import type React from "react";
+import { useState } from "react";
 
 interface TuitionCardProps {
   subject: string;
@@ -48,10 +42,10 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
-  const { tuitions } = useTuitions();
-  const { invoices } = useInvoices();
-  const { tutors } = useTutors();
-  const { students } = useStudents();
+  // const { tuitions } = useTuitions();
+  // const { invoices } = useInvoices();
+  // const { tutors } = useTutors();
+  // const { students } = useStudents();
 
   const getStatusVariant = (status: string): BadgeProps["variant"] => {
     switch (status.toLowerCase()) {

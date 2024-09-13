@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Tuition } from "@/lib/models/tuition";
 import { cn } from "@/utils/manage-class-name";
-import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { Subject } from "@/lib/models/subject";
 
 interface MonthCalendarProps {
   events: Tuition[];
@@ -21,7 +21,18 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   const [componentSize, setComponentSize] = useState({ width: 0, height: 0 });
   const [resetDateSelect, setResetDateSelect] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
-  const { subjects } = useSubjects();
+  // const { subjects } = useSubjects();
+  const [subjects, setSubjects] = useState<Subject[]>([])
+
+  useEffect(() => {
+    fetchSubjects()
+  }, [])
+
+  async function fetchSubjects() {
+    const response = await fetch(`/api/subjects`)
+    const data = await response.json()
+    setSubjects(data)
+  }
 
   useEffect(() => {
     if (!calendarRef.current) return;

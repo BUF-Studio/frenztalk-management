@@ -18,6 +18,20 @@ export interface SearchQuery {
     term: string;
 }
 
+
+
+async function getCollection<T>(
+    collection: string,
+): Promise<T[]> {
+    let ref = db.collection(collection);
+
+    const snapshot = await ref.get();
+
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as T[];
+    return data;
+}
+
+
 async function getPaginatedData<T>(
     collection: string,
     page: number,
@@ -92,4 +106,4 @@ async function deleteDocument(collection: string, id: string): Promise<void> {
     await db.collection(collection).doc(id).delete();
 }
 
-export { getPaginatedData, getData, createDocument, updateDocument, deleteDocument };
+export { getCollection, getPaginatedData, getData, createDocument, updateDocument, deleteDocument };

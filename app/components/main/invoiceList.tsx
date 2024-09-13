@@ -5,23 +5,38 @@ import Image from "next/image";
 import type { Invoice } from "@/lib/models/invoice";
 import { Badge, type BadgeProps } from "../general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
+import { useEffect, useState } from "react";
+import Student from "@/lib/models/student";
 
 interface InvoicesProps {
   invoices?: Invoice[];
+  studentId: string;
 }
 
-export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
+export const InvoiceList: React.FC<InvoicesProps> = ({ invoices,studentId }) => {
   const router = useRouter();
-  const { students } = useStudents();
+  // const { students } = useStudents();
+  const [student, setStudent] = useState<Student>()
+
+  useEffect(() => {
+    fetchStudent(studentId)
+    
+  }, [])
+
+
+
+  async function fetchStudent(id: string) {
+
+    const response = await fetch(`/api/students?id=${id}`)
+    const data = await response.json()
+    setStudent(data)
+  }
 
   const handleOnClick = (id: string) => {
     router.push(`/invoices/${id}`);
   };
 
-  const findStudent = (id: string) => {
-    const student = students.find((student) => student.id === id);
-    return student;
-  };
+
 
   const renderInvoice = (invoice: Invoice, index: number) => {
     return (
@@ -34,7 +49,7 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices }) => {
               onClick={() => handleOnClick(invoice?.id ?? "")}
               className="text-sm font-medium hover:underline hover:text-red-700 dark:hover:text-red-500 text-left dark:text-neutral-100"
             >
-              {findStudent(invoice.studentId)?.name}
+              {student?.name}
             </button>
             <p className="text-sm text-gray-600 dark:text-neutral-400">
               {new Date(invoice.startDateTime).toDateString()}

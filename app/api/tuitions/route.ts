@@ -7,9 +7,9 @@ const PATH = 'tuitions'
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
-    const tutorId = searchParams.get('tutorId');
-    const page = parseInt(searchParams.get('page') || '1', 1);
-    const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+    const studentId = searchParams.get('studentId');
+    const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10));
+    const pageSize = Math.max(1, Number.parseInt(searchParams.get("pageSize") || "10", 10));
     const sortField = searchParams.get('sortField');
     const sortDirection = searchParams.get('sortDirection');
     // const searchField = searchParams.get('searchField');
@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
         } else {
             let query: QueryFilter[] = []
 
-            if (tutorId) {
-                let q: QueryFilter = { field: 'tutorId', operator: '==', value: tutorId }
+            if (studentId) {
+                let q: QueryFilter = { field: 'studentId', operator: '==', value: studentId }
                 query.push(q)
             }
 
