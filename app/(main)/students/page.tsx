@@ -6,6 +6,7 @@ import type PaginatedResult from "@/lib/models/paginationResult";
 import type Student from "@/lib/models/student";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
+import { BadgeProps } from "@/app/components/general/badge";
 
 interface FetchStudentsParams {
   // id?: string;
@@ -26,21 +27,32 @@ export default function StudentList() {
     page: 1,
     pageSize: 10,
   });
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const { showSnackbar } = useSnackbar();
+
+  const [currentFilters, setCurrentFilters] = useState<FetchStudentsParams>({
+    page: 1,
+    pageSize: 10
+  })
+
 
   useEffect(() => {
     // Initial fetch
-    fetchStudents({ page: pageIndex + 1, pageSize: pageSize })
-  }, [pageIndex, pageSize])
+    fetchStudents(currentFilters)
+  }, [])
 
-  const handlePageChange = (newPage: number) => {
-    fetchStudents({ page: newPage, pageSize: pageSize, })
+  const handlePageChange = (newPage: number, pageSize: number) => {
+    fetchStudents({
+      ...currentFilters,
+      page: newPage,
+      pageSize: pageSize
+    })
   }
 
-  const handleFilterChange = (filters: Partial<FetchStudentsParams>) => {
-    fetchStudents({ page: 1, pageSize: 10, ...filters })
+  const handleFilterChange = (newFilters: Partial<FetchStudentsParams>) => {
+    fetchStudents({
+      ...currentFilters,
+      ...newFilters,
+      page: 1 // Reset to first page when filters change
+    })
   }
   // example filter
   // <button onClick={() => handleFilterChange({ tutorId: 'some-tutor-id' })}>
@@ -56,8 +68,8 @@ export default function StudentList() {
 
   async function fetchStudents(
     params: FetchStudentsParams
-
   ) {
+    setCurrentFilters(params)
     const queryParams = new URLSearchParams()
 
     // Add all provided parameters to the query string
@@ -123,16 +135,9 @@ export default function StudentList() {
     } catch (error) {
       showSnackbar("Error processing student", "error");
     }
-    fetchStudents(pageIndex + 1, pageSize);
-  }, [pageIndex, pageSize, showSnackbar]);
+  }
 
-  const handlePaginationChange = (
-    newPageIndex: number,
-    newPageSize: number
-  ) => {
-    setPageIndex(newPageIndex);
-    setPageSize(newPageSize);
-  };
+
 
   return (
     <div>
@@ -144,10 +149,10 @@ export default function StudentList() {
         columns={columns}
         data={students.data}
         getRowHref={(student) => `/students/${student.id}`}
-        onPaginationChange={handlePaginationChange}
-        pageCount={Math.ceil(students.total / pageSize)}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
+        onPaginationChange={handlePageChange}
+        pageCount={Math.ceil(students.total / (currentFilters.pageSize ?? 10))}
+        pageIndex={(currentFilters.page ?? 1)}
+        pageSize={(currentFilters.pageSize ?? 10)}
       />
     </div>
   );
