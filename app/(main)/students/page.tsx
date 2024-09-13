@@ -6,6 +6,19 @@ import type PaginatedResult from "@/lib/models/paginationResult";
 import type Student from "@/lib/models/student";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
+import { BadgeProps } from "@/app/components/general/badge";
+
+interface FetchStudentsParams {
+  // id?: string;
+  tutorId?: string;
+  page?: number;
+  pageSize?: number;
+  sortField?: string;
+  sortDirection?: 'asc' | 'desc';
+  // searchField?: string;
+  searchTerm?: string;
+}
+
 
 export default function StudentList() {
   const [students, setStudents] = useState<PaginatedResult<Student>>({
@@ -14,32 +27,117 @@ export default function StudentList() {
     page: 1,
     pageSize: 10,
   });
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const { showSnackbar } = useSnackbar();
+
+  const [currentFilters, setCurrentFilters] = useState<FetchStudentsParams>({
+    page: 1,
+    pageSize: 10
+  })
+
 
   useEffect(() => {
-    async function fetchStudents(page: number, pageSize: number) {
-      try {
-        const response = await fetch(
-          `/api/students?page=${page}&pageSize=${pageSize}`
-        );
-        const data = await response.json();
-        setStudents(data);
-      } catch (error) {
-        showSnackbar("Error fetching students", "error");
-      }
-    }
-    fetchStudents(pageIndex + 1, pageSize);
-  }, [pageIndex, pageSize, showSnackbar]);
+    // Initial fetch
+    fetchStudents(currentFilters)
+  }, [])
 
-  const handlePaginationChange = (
-    newPageIndex: number,
-    newPageSize: number
-  ) => {
-    setPageIndex(newPageIndex);
-    setPageSize(newPageSize);
+  const handlePageChange = (newPage: number, pageSize: number) => {
+    fetchStudents({
+      ...currentFilters,
+      page: newPage,
+      pageSize: pageSize
+    })
+  }
+
+  const handleFilterChange = (newFilters: Partial<FetchStudentsParams>) => {
+    fetchStudents({
+      ...currentFilters,
+      ...newFilters,
+      page: 1 // Reset to first page when filters change
+    })
+  }
+  // example filter
+  // <button onClick={() => handleFilterChange({ tutorId: 'some-tutor-id' })}>
+  //         Filter by Tutor
+  //       </button>
+  //       <button onClick={() => handleFilterChange({ grade: '10' })}>
+  //         Filter by Grade 10
+  //       </button>
+  //       <button onClick={() => handleFilterChange({ 
+  //         searchField: 'skills', 
+  //         searchTerm: 'math' 
+  //       })}></button>
+
+  async function fetchStudents(
+    params: FetchStudentsParams
+  ) {
+    setCurrentFilters(params)
+    const queryParams = new URLSearchParams()
+
+    // Add all provided parameters to the query string
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        queryParams.append(key, value.toString())
+      }
+    })
+
+
+    try {
+      const response = await fetch(`/api/students?${queryParams.toString()}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch students')
+      }
+      const data = await response.json()
+      setStudents(data)
+    } catch (err) {
+      // setError('An error occurred while fetching students')
+      console.error(err)
+    } finally {
+      // setIsLoading(false)
+    }
+  }
+
+  function getStatusVariant(status: string): BadgeProps["variant"] {
+    switch (status.toLowerCase()) {
+      case "active":
+        return "success";
+      case "frozen":
+        return "error";
+      default:
+        return "info";
+    }
+  }
+
+  const toggleDialog = () => {
+    setIsDialogOpen(!isDialogOpen);
   };
+
+
+
+  const handleAddStudent = async (studentData: Partial<Student>) => {
+    try {
+      const newStudent: Student = {
+        id: null,
+        name: studentData.name ?? "",
+        age: studentData.age ?? 0,
+        status: studentData.status ?? "active"
+      }
+
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStudent)
+      })
+      if (response.ok) {
+        showSnackbar("Successfully added student", "success");
+        toggleDialog();
+        fetchStudents({ page: 1, pageSize: 10 })
+      }
+
+    } catch (error) {
+      showSnackbar("Error processing student", "error");
+    }
+  }
+
+
 
   return (
     <div>
@@ -51,10 +149,10 @@ export default function StudentList() {
         columns={columns}
         data={students.data}
         getRowHref={(student) => `/students/${student.id}`}
-        onPaginationChange={handlePaginationChange}
-        pageCount={Math.ceil(students.total / pageSize)}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
+        onPaginationChange={handlePageChange}
+        pageCount={Math.ceil(students.total / (currentFilters.pageSize ?? 10))}
+        pageIndex={(currentFilters.page ?? 1)}
+        pageSize={(currentFilters.pageSize ?? 10)}
       />
     </div>
   );

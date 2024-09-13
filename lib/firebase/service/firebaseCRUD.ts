@@ -8,18 +8,40 @@ export interface QueryFilter {
     value: any;
 }
 
+export interface SortOption {
+    field: string;
+    direction: 'asc' | 'desc';
+}
+
+export interface SearchQuery {
+    field: string;
+    term: string;
+}
+
 async function getPaginatedData<T>(
     collection: string,
     page: number,
     pageSize: number,
-    query?: QueryFilter | null | undefined
+    query: QueryFilter[] = [],
+    sortOption?: SortOption | null,
+    searchQuery?: SearchQuery
 ): Promise<PaginatedResult<T>> {
     let ref = db.collection(collection);
     let queryRef: FirebaseFirestore.Query = ref;
 
-    if (query) {
-        queryRef = ref.where(query.field, query.operator, query.value);
+    query.forEach(filter => {
+        queryRef = queryRef.where(filter.field, filter.operator, filter.value);
+    });
+    if (sortOption)
+        queryRef = queryRef.orderBy(sortOption.field, sortOption.direction);
+
+
+    if (searchQuery) {
+        const { field, term } = searchQuery;
+        // Use array-contains for exact match
+        queryRef = queryRef.where(field, 'array-contains', term.toLowerCase());
     }
+
 
     const totalSnapshot = await queryRef.count().get();
     const total = totalSnapshot.data().count;

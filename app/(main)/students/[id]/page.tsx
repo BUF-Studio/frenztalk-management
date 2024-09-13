@@ -10,6 +10,16 @@ import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import Student from "@/lib/models/student";
 import { capitalizeFirstLetter } from "@/utils/util";
+import { Invoice } from "@/lib/models/invoice";
+import { Tutor } from "@/lib/models/tutor";
+import { Tuition } from "@/lib/models/tuition";
+
+// interface StudentDetailDataProps{
+//   student:Student,
+//   invoices :Invoice[],
+//   tutors :Tutor[],
+//   tuition :Tuition[]
+// }
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   // const { student, setStudent } = useStudentPage();
@@ -21,6 +31,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
   // const { setTuitionStudent } = useTuitionPage();
   const [student, setStudent] = useState<Student>()
+  const [tutors, setTutors] = useState<Tutor[]>([])
+  const [tuitions, setTuitions] = useState<Tuition[]>([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
@@ -33,13 +46,31 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchStudent()
+    // fetchTutors()
+    // fetchTuitions()
+    // fetchInvoices()
   }, [])
 
   async function fetchStudent() {
-    
+
     const response = await fetch(`/api/students?id=${params.id}`)
     const data = await response.json()
     setStudent(data)
+  }
+  async function fetchTuitions() {
+    const response = await fetch(`/api/tuitions?studentId=${params.id}`)
+    const data = await response.json()
+    setTuitions(data)
+  }
+  async function fetchTutors() {
+    const response = await fetch(`/api/tutors?studentId=${params.id}`)
+    const data = await response.json()
+    setTutors(data)
+  }
+  async function fetchInvoices() {
+    const response = await fetch(`/api/invoices?studentId=${params.id}`)
+    const data = await response.json()
+    setInvoices(data)
   }
 
 
