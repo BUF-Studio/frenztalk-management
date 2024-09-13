@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createDocument, deleteDocument, getData, getPaginatedData, QueryFilter, SearchQuery, SortOption, updateDocument } from '@/lib/firebase/service/firebaseCRUD';
-import { Tuition } from '@/lib/models/tuition';
+import { Tutor } from '@/lib/models/tutor';
 
-const PATH = 'tuitions'
+const PATH = 'tutors'
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
-    const tutorId = searchParams.get('tutorId');
+    // const tutorId = searchParams.get('tutorId');
     const page = parseInt(searchParams.get('page') || '1', 1);
     const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
     const sortField = searchParams.get('sortField');
@@ -18,19 +18,15 @@ export async function GET(request: NextRequest) {
     try {
         if (id) {
             // Fetch a single document by ID
-            const result = await getData<Tuition>(PATH, id);
+            const result = await getData<Tutor>(PATH, id);
             if (!result) {
-                return NextResponse.json({ error: 'Tuition not found' }, { status: 404 });
+                return NextResponse.json({ error: 'Tutor not found' }, { status: 404 });
             }
             return NextResponse.json(result);
         } else {
             let query: QueryFilter[] = []
 
-            if (tutorId) {
-                let q: QueryFilter = { field: 'tutorId', operator: '==', value: tutorId }
-                query.push(q)
-            }
-
+            
             let sortOption: SortOption | undefined;
 
             if (sortField && sortDirection) {
@@ -50,11 +46,11 @@ export async function GET(request: NextRequest) {
                     term: searchTerm
                 };
             }
-            const result = await getPaginatedData<Tuition>(PATH, page, pageSize, query, sortOption, searchQuery);
+            const result = await getPaginatedData<Tutor>(PATH, page, pageSize, query, sortOption, searchQuery);
             return NextResponse.json(result);
         }
     } catch (error) {
-        console.error('Error fetching tuitions:', error);
+        console.error('Error fetching tutors:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
@@ -64,7 +60,7 @@ export async function POST(request: NextRequest) {
         const id = await createDocument(PATH, body);
         return NextResponse.json({ id }, { status: 201 });
     } catch (error) {
-        console.error('Error creating tuition:', error);
+        console.error('Error creating tutor:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
@@ -76,7 +72,7 @@ export async function PUT(request: NextRequest) {
         await updateDocument(PATH, id, data);
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error updating tuition:', error);
+        console.error('Error updating tutor:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
@@ -87,7 +83,7 @@ export async function DELETE(request: NextRequest) {
         await deleteDocument(PATH, id);
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error deleting tuition:', error);
+        console.error('Error deleting tutor:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
