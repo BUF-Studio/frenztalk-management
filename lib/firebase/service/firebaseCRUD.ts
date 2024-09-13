@@ -39,7 +39,7 @@ async function getPaginatedData<T>(
     if (searchQuery) {
         const { field, term } = searchQuery;
         // Use array-contains for exact match
-        queryRef = queryRef.where(field, 'array-contains', term.toLowerCase());
+        queryRef = queryRef.orderBy('name').startAt(term).endAt(term + '\uf8ff');
     }
 
 
