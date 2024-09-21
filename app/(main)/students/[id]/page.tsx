@@ -240,12 +240,6 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
           <div className="flex flex-1 h-full" />
         </div>
       </div>
-      <StudentDialog
-        isOpen={isDialogOpen}
-        onClose={toggleDialog}
-        onSubmit={handleUpdateStudent}
-        initialStudent={student}
-      />
     </div>
   );
 }
