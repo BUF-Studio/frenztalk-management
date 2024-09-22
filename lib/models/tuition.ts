@@ -9,7 +9,7 @@ export class Tuition {
     public subjectId: string,
     public levelId: string,
     public status: string,
-    public startTime: string | null,
+    public startTime: string,
     public duration: number,
     public url: string,
     public studentPrice: number,

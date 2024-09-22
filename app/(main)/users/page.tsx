@@ -1,26 +1,12 @@
 "use client";
 
-import { DataTable } from "@/app/components/dashboard/DataTable";
-import { SearchBar } from "@/app/components/general/input/searchBar";
-import { Tabs } from "@/app/components/general/tabs";
 import { useUsers } from "@/lib/context/collection/usersContext";
 import { useUserPage } from "@/lib/context/page/userPageContext";
-import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
-import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
-import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { type User, UserRole } from "@/lib/models/user";
 import { cn } from "@/utils/manage-class-name";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-const initialColumns: { key: keyof User; label: string; order: string }[] = [
-  { key: "name", label: "Name", order: TableOrderEnum.NONE },
-  { key: "email", label: "Email", order: TableOrderEnum.NONE },
-  { key: "role", label: "Role", order: TableOrderEnum.NONE },
-];
 
 type Tab = {
   title: string;
@@ -28,7 +14,10 @@ type Tab = {
   content?: string | React.ReactNode;
   notify?: number;
 };
+
 import UserModalDialog from "./userModalDialog";
+import { columns } from "./columns";
+import { DataTable } from "@/app/components/ui/data-table";
 
 export default function UserList() {
   const { verifiedUsers, unverifiedUsers } = useUsers();
@@ -36,38 +25,18 @@ export default function UserList() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-
-  // prettier-ignore
-  const [verifiedUsersColumns, setVerifiedUsersColumns] = useState(initialColumns);
-  // prettier-ignore
-  const [unverifiedUsersColumns, setUnverifiedUsersColumns] = useState(initialColumns);
-
-  // prettier-ignore
-  const { sortedData: sortedVerifiedUser, sortColumn: sortVerifiedUsers } = useTableColumn(verifiedUsers, verifiedUsersColumns, setVerifiedUsersColumns);
-
-  // prettier-ignore
-  const { sortedData: sortedUnverifiedUsers, sortColumn: sortUnverifiedUsers } = useTableColumn(unverifiedUsers, unverifiedUsersColumns, setUnverifiedUsersColumns);
-
-  // prettier-ignore
-  const { filteredData : filteredVerifiedUser } = useSearchTableData(sortedVerifiedUser, searchTerm);
-  // prettier-ignore
-  const { filteredData: filteredUnverifiedUser } = useSearchTableData(sortedUnverifiedUsers, searchTerm);
-
   const initialTabs = [
     {
       title: "Users",
       value: "users",
       content: (
         <DataTable
-          data={filteredVerifiedUser}
-          columns={verifiedUsersColumns}
-          actions={[]}
-          onRowClick={(user) => editUser(user)}
-          onColumnClick={(column) =>
-            sortVerifiedUsers(column, verifiedUsersColumns)
-          }
+          data={verifiedUsers}
+          columns={columns}
+          getRowHref={(user) => {
+            router.push(`/users/${user?.id}`);
+            setUser(user);
+          }}
         />
       ),
     },
@@ -76,13 +45,12 @@ export default function UserList() {
       value: "request",
       content: (
         <DataTable
-          data={filteredUnverifiedUser}
-          columns={unverifiedUsersColumns}
-          actions={[]}
-          onRowClick={(user) => editUser(user)}
-          onColumnClick={(column) =>
-            sortUnverifiedUsers(column, unverifiedUsersColumns)
-          }
+          data={unverifiedUsers}
+          columns={columns}
+          getRowHref={(user) => {
+            router.push(`/users/${user?.id}`);
+            setUser(user);
+          }}
         />
       ),
       notify: unverifiedUsers.length,
@@ -105,8 +73,7 @@ export default function UserList() {
   const [hovering, setHovering] = useState(false);
 
   const editUser = (user: User) => {
-    setUser(user);
-    setIsModalOpen(true);;
+    router.push(`/users/${user.id}`);
   };
 
   return (
@@ -114,7 +81,7 @@ export default function UserList() {
       <div className="flex flex-1 flex-row justify-between items-center pb-4">
         <div className="flex flex-row items-center">
           <h1 className="text-xl font-bold">User List</h1>
-          <div className="flex flex-row items-center ml-5 space-x-4">
+          <div className="flex flex-row items-center ml-5 space-x-2">
             {initialTabs.map((tab, idx) => (
               <button
                 type="button"
@@ -160,13 +127,6 @@ export default function UserList() {
             ))}
           </div>
         </div>
-        <div className="flex flex-row items-center space-x-4">
-          <SearchBar
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            label="search user"
-          />
-        </div>
       </div>
       {initialTabs.map((tab) => {
         if (tab.value === active) {
@@ -174,18 +134,6 @@ export default function UserList() {
         }
         return null;
       })}
-      {/* <DataTable
-        data={filteredVerifiedUser}
-        columns={verifiedUsersColumns}
-        actions={[]}
-        onRowClick={(user) => editUser(user)}
-        onColumnClick={(column) =>
-          sortVerifiedUsers(column, verifiedUsersColumns)
-        }
-        // renderCell={renderInvoiceCell}
-        showId
-      /> */}
-      {/* <Tabs tabs={tabs} searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
       <UserModalDialog
         isOpen={isModalOpen}
         onClose={() => {
