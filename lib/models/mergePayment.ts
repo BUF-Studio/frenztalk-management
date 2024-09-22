@@ -1,3 +1,4 @@
+import Currency from "./currency";
 import { InvoiceStatus } from "./invoiceStatus";
 
 export class MergePayment {
@@ -7,6 +8,7 @@ export class MergePayment {
     public month: string,
     public rate: number,
     public status: InvoiceStatus,
+    public currency: Currency,
     public tutorId: string,
 
 
@@ -19,6 +21,7 @@ export class MergePayment {
       data.month,
       data.rate,
       data.status,
+      data.currency,
       data.tutorId,
 
     );
@@ -30,6 +33,7 @@ export class MergePayment {
       month: this.month,
       rate: this.rate,
       status: this.status,
+      currency: this.currency,
       tutorId: this.tutorId,
     };
   }
