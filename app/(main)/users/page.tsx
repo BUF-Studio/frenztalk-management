@@ -15,15 +15,13 @@ type Tab = {
   notify?: number;
 };
 
-import UserModalDialog from "./userModalDialog";
 import { columns } from "./columns";
 import { DataTable } from "@/app/components/ui/data-table";
 
 export default function UserList() {
   const { verifiedUsers, unverifiedUsers } = useUsers();
-  const { user, setUser } = useUserPage();
+  const { setUser } = useUserPage();
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const initialTabs = [
     {
@@ -109,7 +107,7 @@ export default function UserList() {
                 <span className="relative block text-black dark:text-white">
                   {tab.title}
                 </span>
-                {tab.notify && tab.notify > 0 && (
+                {typeof tab.notify === "number" && tab.notify > 0 && (
                   <span
                     className={cn(
                       "z-10 bg-red-500 text-xs font-medium text-white",
@@ -134,14 +132,6 @@ export default function UserList() {
         }
         return null;
       })}
-      <UserModalDialog
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
-        user={user}
-        setUser={setUser}
-      />
     </div>
   );
 }
