@@ -28,6 +28,8 @@ import { updateMergeInvoice } from '@/lib/firebase/mergeInvoice';
 import { useMergePayments } from '@/lib/context/collection/mergePaymentContext';
 import { MergePayment } from '@/lib/models/mergePayment';
 import { updateMergePayment } from '@/lib/firebase/mergePayment';
+import { useInvoices } from '@/lib/context/collection/invoiceContext';
+import { usePayments } from '@/lib/context/collection/paymentContext';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -404,10 +406,20 @@ export default function TuitionForm() {
 
                     updatedMergeInvoice?.invoicesId.filter(invoiceId => invoiceId !== siid);
                     updatedMergePayment?.paymentsId.filter(paymentId => paymentId !== tiid);
-                    if (updatedMergeInvoice)
+                    if (updatedMergeInvoice) {
+                        const { invoices } = useInvoices()
+                        const inv = invoices.find(inv => inv.id === siid)
+                        updatedMergeInvoice.rate = updatedMergeInvoice.rate - (inv?.rate ?? 0)
                         await updateMergeInvoice(updatedMergeInvoice)
-                    if (updatedMergePayment)
+
+                    }
+                    if (updatedMergePayment) {
+                        const { payments } = usePayments()
+                        const pay = payments.find(inv => inv.id === tiid)
+                        updatedMergePayment.rate = updatedMergePayment.rate - (pay?.rate ?? 0)
                         await updateMergePayment(updatedMergePayment)
+
+                    }
 
                     await deleteInvoice(siid)
                     await deletePayment(tiid)
