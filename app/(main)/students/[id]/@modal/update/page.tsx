@@ -13,7 +13,7 @@ import {
   DialogContent,
   DialogHeader,
 } from "@/app/components/ui/dialog";
-import StudentForm from "../../components/studentForm";
+import StudentForm from "../../../components/studentForm";
 import { Suspense } from "react";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 

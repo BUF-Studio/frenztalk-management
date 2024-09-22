@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState, useEffect } from "react";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import {
   Select,
@@ -9,11 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "@/app/components/hooks/use-toast";
 import { Student } from "@/lib/models/student";
 import { addStudent, updateStudent } from "@/lib/firebase/student";
+import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
 
 interface StudentFormProps {
   initialStudent?: Student | null;
@@ -25,16 +26,20 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
     age: "",
     status: "active",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (initialStudent) {
+      console.log("initial student:", initialStudent);
       setFormData({
         name: initialStudent.name || "",
         age: initialStudent.age?.toString() || "",
         status: initialStudent.status || "active",
       });
     }
+    setIsLoading(false);
   }, [initialStudent]);
 
   const handleChange = (
@@ -48,69 +53,47 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    if (initialStudent) {
-      const studentData = new Student(
-        initialStudent.id,
-        formData.name,
-        Number.parseInt(formData.age),
-        formData.status
-      )
-
-      updateStudent(studentData)
-    } else {
-      const studentData = new Student(
-        null,
-        formData.name,
-        Number.parseInt(formData.age),
-        formData.status
-      )
-
-      addStudent(studentData)
+    try {
+      if (initialStudent) {
+        const studentData = new Student(
+          initialStudent.id,
+          formData.name,
+          Number.parseInt(formData.age),
+          formData.status
+        );
+        await updateStudent(studentData);
+      } else {
+        const studentData = new Student(
+          null,
+          formData.name,
+          Number.parseInt(formData.age),
+          formData.status
+        );
+        await addStudent(studentData);
+      }
+      toast({
+        title: initialStudent ? "Student Updated" : "Student Created",
+        description: `Successfully ${
+          initialStudent ? "updated" : "added"
+        } student: ${formData.name}`,
+        variant: "default",
+      });
+      revalidatePath("/students/[id]");
+      router.back();
+    } catch (error) {
+      console.error("Error saving student:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save student. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-
-
-
-    //   const studentData = {
-    //     ...formData,
-    //     age: parseInt(formData.age, 10),
-    //   }
-
-    //   try {
-    //     const response = await fetch('/api/students', {
-    //       method: initialStudent ? 'PUT' : 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify(initialStudent ? { ...studentData, id: initialStudent.id } : studentData),
-    //     })
-
-    //     if (!response.ok) {
-    //       throw new Error('Failed to save student')
-    //     }
-
-    //     const result = await response.json()
-    //     console.log("Result:", result)
-    //     toast({
-    //         title: initialStudent ? "Student Updated" : "Student Created",
-    //         description: `Successfully ${initialStudent ? 'updated' : 'added'} student: ${studentData.name}`,
-    //         variant: "default",
-    //       })
-    //     } catch (error) {
-    //       console.error("Error saving student:", error)
-    //     toast({
-    //       title: "Error",
-    //       description: "Failed to save student. Please try again.",
-    //       variant: "destructive",
-    //     })
-    //   } finally {
-    //     setIsSubmitting(false)
-    //   }
-  }
+  };
 
   const optionsMap = {
     status: [
@@ -118,6 +101,10 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       { value: "frozen", label: "Frozen" },
     ],
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -138,9 +125,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         required
       />
       <Select
-        defaultValue={"active"}
         value={formData.status}
-        onValueChange={(value) => setFormData({ ...formData, status: value })}
+        onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Status" />
@@ -154,12 +140,13 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         </SelectContent>
       </Select>
       <div className="flex justify-end space-x-2 mt-6">
-        <Button
-          type="submit"
-          variant="default"
-        >
+        <Button type="submit" variant="default" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Loading...' : (initialStudent ? 'Update Student' : 'Add Student')}
+          {isSubmitting
+            ? "Loading..."
+            : initialStudent
+            ? "Update Student"
+            : "Add Student"}
         </Button>
       </div>
     </form>
