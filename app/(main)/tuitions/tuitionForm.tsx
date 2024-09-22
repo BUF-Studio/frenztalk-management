@@ -1,30 +1,35 @@
 
 
 "use client";
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
-import { addTuition, updateTuition } from '@/lib/firebase/tuition';
-import { Tuition } from '@/lib/models/tuition';
 import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
+import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
+import { addInvoice, deleteInvoice } from '@/lib/firebase/invoice';
+import { addTuition, updateTuition } from '@/lib/firebase/tuition';
 import Currency from '@/lib/models/currency';
-import TuitionStatus from '@/lib/models/tuitionStatus';
-import { Timestamp } from 'firebase/firestore';
 import { Invoice } from '@/lib/models/invoice';
-import { addInvoice } from '@/lib/firebase/invoice';
-import { Student } from '@/lib/models/student';
-import { Tutor } from '@/lib/models/tutor';
+import { Tuition } from '@/lib/models/tuition';
+import TuitionStatus from '@/lib/models/tuitionStatus';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 // import InvoiceType from '@/lib/models/invoiceType';
-import axios from 'axios';
-import { InvoiceStatus } from '@/lib/models/invoiceStatus';
-import { Payment } from '@/lib/models/payment';
-import { addPayment } from '@/lib/firebase/payment';
-import { Meeting, ZoomAccount } from '@/lib/models/zoom';
-import { updateZoomAccount } from '@/lib/firebase/zoomAccount';
 import { useLevels } from '@/lib/context/collection/levelContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useZoomAccounts } from '@/lib/context/collection/zoomContext';
+import { addPayment, deletePayment } from '@/lib/firebase/payment';
+import { updateZoomAccount } from '@/lib/firebase/zoomAccount';
+import { InvoiceStatus } from '@/lib/models/invoiceStatus';
+import { Payment } from '@/lib/models/payment';
+import { Meeting, ZoomAccount } from '@/lib/models/zoom';
+import axios from 'axios';
+import { MergeInvoice } from '@/lib/models/mergeInvoice';
+import { useMergeInvoices } from '@/lib/context/collection/mergeInvoiceContext';
+import { updateMergeInvoice } from '@/lib/firebase/mergeInvoice';
+import { useMergePayments } from '@/lib/context/collection/mergePaymentContext';
+import { MergePayment } from '@/lib/models/mergePayment';
+import { updateMergePayment } from '@/lib/firebase/mergePayment';
+import { useInvoices } from '@/lib/context/collection/invoiceContext';
+import { usePayments } from '@/lib/context/collection/paymentContext';
 
 export default function TuitionForm() {
     const router = useRouter();
@@ -286,6 +291,7 @@ export default function TuitionForm() {
                 let tiid = tuition.tutorInvoiceId;
                 let siid = tuition.studentInvoiceId;
                 if (tuition.status !== TuitionStatus.END && status === TuitionStatus.END && (tiid === null || siid === null)) {
+                    const month = zoomStartTime.slice(0, 7);
                     if (siid === null) {
                         const studentRate = studentPrice * duration / 60
                         const studentInvoice = new Invoice(
@@ -304,6 +310,38 @@ export default function TuitionForm() {
                         )
 
                         siid = await addInvoice(studentInvoice)
+
+                        const { mergeInvoices } = useMergeInvoices()
+
+                        const mergeInvoiceId = month + studentId
+                        const existMergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
+
+                        if (existMergeInvoice) {
+                            const mergeInvoice = new MergeInvoice(
+                                mergeInvoiceId,
+                                [...existMergeInvoice.invoicesId, siid!],
+                                month,
+                                existMergeInvoice.rate + studentRate,
+                                InvoiceStatus.PENDING,
+                                existMergeInvoice.currency,
+                                studentId
+                            )
+
+                            await updateMergeInvoice(mergeInvoice)
+                        } else {
+                            const mergeInvoice = new MergeInvoice(
+                                mergeInvoiceId,
+                                [siid!],
+                                month,
+                                studentRate,
+                                InvoiceStatus.PENDING,
+                                currency,
+                                studentId
+                            )
+
+                            await updateMergeInvoice(mergeInvoice)
+                        }
+
                     }
                     if (tiid === null) {
                         const tutorRate = tutorPrice * duration / 60
@@ -323,7 +361,75 @@ export default function TuitionForm() {
                         )
 
                         tiid = await addPayment(tutorPayment)
+
+                        const { mergePayments } = useMergePayments()
+
+                        const mergePaymentId = month + tutorId
+                        const existMergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
+
+                        if (existMergePayment) {
+                            const mergePayment = new MergePayment(
+                                mergePaymentId,
+                                [...existMergePayment.paymentsId, tiid!],
+                                month,
+                                existMergePayment.rate + tutorRate,
+                                InvoiceStatus.PENDING,
+                                currency, 
+                                tutorId
+                            )
+
+                            await updateMergePayment(mergePayment)
+                        } else {
+                            const mergePayment = new MergePayment(
+                                mergePaymentId,
+                                [siid!],
+                                month,
+                                tutorRate,
+                                InvoiceStatus.PENDING,
+                                tuition.currency,
+                                tutorId
+                            )
+
+                            await updateMergePayment(mergePayment)
+                        }
                     }
+                }
+
+                if (tuition.status === TuitionStatus.END && status !== TuitionStatus.END && tiid && siid) {
+
+                    const month = tuition.startTime.slice(0, 7)
+                    const mergeInvoiceId = month + studentId
+                    const mergePaymentId = month + tutorId
+
+                    const { mergeInvoices } = useMergeInvoices()
+                    const { mergePayments } = useMergePayments()
+
+                    const mergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
+                    const mergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
+
+                    let updatedMergeInvoice = mergeInvoice
+                    let updatedMergePayment = mergePayment
+
+                    updatedMergeInvoice?.invoicesId.filter(invoiceId => invoiceId !== siid);
+                    updatedMergePayment?.paymentsId.filter(paymentId => paymentId !== tiid);
+                    if (updatedMergeInvoice) {
+                        const { invoices } = useInvoices()
+                        const inv = invoices.find(inv => inv.id === siid)
+                        updatedMergeInvoice.rate = updatedMergeInvoice.rate - (inv?.rate ?? 0)
+                        await updateMergeInvoice(updatedMergeInvoice)
+
+                    }
+                    if (updatedMergePayment) {
+                        const { payments } = usePayments()
+                        const pay = payments.find(inv => inv.id === tiid)
+                        updatedMergePayment.rate = updatedMergePayment.rate - (pay?.rate ?? 0)
+                        await updateMergePayment(updatedMergePayment)
+
+                    }
+
+                    await deleteInvoice(siid)
+                    await deletePayment(tiid)
+
                 }
 
 

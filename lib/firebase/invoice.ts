@@ -1,6 +1,6 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
 import { Invoice } from "../models/invoice";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import { addData, collectionStream, deleteData, setData } from "./service/firestoreService";
 
 const PATH = "invoices";
 
@@ -59,3 +59,14 @@ export const invoicesStream = (
   // Cleanup function
   return () => unsubscribe();
 };
+
+
+export const deleteInvoice = async (invoiceId: string) => {
+    try {
+      const path = `${PATH}/${invoiceId}`;
+      await deleteData(path);
+      console.log(`Invoice ${invoiceId} deleted in Firestore`);
+    } catch (error) {
+      console.error(`Error deleting invoice ${invoiceId} in Firestore:`, error);
+    }
+  };
