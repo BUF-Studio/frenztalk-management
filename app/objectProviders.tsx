@@ -14,53 +14,61 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { User, UserRole } from "@/lib/models/user";
 import PaymentsProvider from "@/lib/context/collection/paymentContext";
 import ZoomAccountsProvider from "@/lib/context/collection/zoomContext";
+import MergePaymentsProvider from "@/lib/context/collection/mergePaymentContext";
+import MergeInvoicesProvider from "@/lib/context/collection/mergeInvoiceContext";
 
 function ObjectProvider({ children }: ScriptProps) {
-  const { user } = useUser();
+    const { user } = useUser();
 
 
-  if (user?.role === UserRole.TUTOR) {
+    if (user?.role === UserRole.TUTOR) {
+        return (
+            <TuitionsProvider tutorId={user?.id}>
+                <ZoomAccountsProvider>
+
+                    <StudentsProvider tutorId={user?.id}>
+                        <SubjectsProvider>
+                            <MergePaymentsProvider tutorId={user?.id}>
+                                <PaymentsProvider tutorId={user?.id}>
+                                    <LevelsProvider>
+                                        <PageProvider>{children}</PageProvider>
+                                    </LevelsProvider>
+                                </PaymentsProvider>
+                            </MergePaymentsProvider>
+                        </SubjectsProvider>
+                    </StudentsProvider>
+                </ZoomAccountsProvider>
+            </TuitionsProvider>
+        )
+    }
+
+
     return (
-      <TuitionsProvider tutorId={user?.id}>
-        <ZoomAccountsProvider>
+        <TuitionsProvider>
+            <ZoomAccountsProvider>
 
-          <StudentsProvider tutorId={user?.id}>
-            <SubjectsProvider>
-              <PaymentsProvider tutorId={user?.id}>
-                <LevelsProvider>
-                  <PageProvider>{children}</PageProvider>
-                </LevelsProvider>
-              </PaymentsProvider>
-            </SubjectsProvider>
-          </StudentsProvider>
-        </ZoomAccountsProvider>
-      </TuitionsProvider>
-    )
-  }
-
-
-  return (
-    <TuitionsProvider>
-      <ZoomAccountsProvider>
-
-        <StudentsProvider>
-          <TutorsProvider>
-            <SubjectsProvider>
-              <InvoicesProvider>
-                <PaymentsProvider>
-                  <UsersProvider>
-                    <LevelsProvider>
-                      <PageProvider>{children}</PageProvider>
-                    </LevelsProvider>
-                  </UsersProvider>
-                </PaymentsProvider>
-              </InvoicesProvider>
-            </SubjectsProvider>
-          </TutorsProvider>
-        </StudentsProvider >
-      </ZoomAccountsProvider>
-    </TuitionsProvider>
-  );
+                <StudentsProvider>
+                    <TutorsProvider>
+                        <SubjectsProvider>
+                            <MergeInvoicesProvider>
+                                <InvoicesProvider>
+                                    <MergePaymentsProvider>
+                                        <PaymentsProvider>
+                                            <UsersProvider>
+                                                <LevelsProvider>
+                                                    <PageProvider>{children}</PageProvider>
+                                                </LevelsProvider>
+                                            </UsersProvider>
+                                        </PaymentsProvider>
+                                    </MergePaymentsProvider>
+                                </InvoicesProvider>
+                            </MergeInvoicesProvider>
+                        </SubjectsProvider>
+                    </TutorsProvider>
+                </StudentsProvider >
+            </ZoomAccountsProvider>
+        </TuitionsProvider>
+    );
 }
 
 export default ObjectProvider;
