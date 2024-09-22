@@ -81,7 +81,6 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         } student: ${formData.name}`,
         variant: "default",
       });
-      revalidatePath("/students/[id]");
       router.back();
     } catch (error) {
       console.error("Error saving student:", error);
