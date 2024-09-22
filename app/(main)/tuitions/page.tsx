@@ -3,10 +3,12 @@
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { AddTuitionModalDialog } from "./tuitionModalDialog";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
+import UnpaidWarningList from "@/app/components/main/unpaidWarningList";
+import { useInvoices } from "@/lib/context/collection/invoiceContext";
 
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
@@ -14,7 +16,8 @@ export default function TuitionPage() {
   // const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const { unpaidInvoices } = useInvoices();
+
   // useEffect(() => {
   //   fetchTuitions()
   // }, [])
@@ -26,7 +29,6 @@ export default function TuitionPage() {
   //   setTuitions(data)
   // }
 
-
   const addTuition = () => {
     // setTuition(null);
     setIsModalOpen(true);
@@ -34,12 +36,22 @@ export default function TuitionPage() {
 
   return (
     <div className="flex flex-1 h-full w-full flex-row gap-4 justify-start items-start overflow-hidden">
-      <div className="flex flex-col flex-1">
-        <MonthCalendar
-          events={tuitions}
-          onDateSelect={(date) => setSelectedDate(date)}
-        />
-        <div className="flex flex-1 flex-grow" />
+      <div className="flex flex-col flex-1 overflow-y-auto h-full">
+        {/* Calendar section */}
+        <div className="flex flex-col flex-1 h-full">
+          <MonthCalendar
+            events={tuitions}
+            onDateSelect={(date) => setSelectedDate(date)}
+          />
+          <div className="flex flex-1 flex-grow" />
+        </div>
+        {/* Unpaid classes section */}
+        <div className="flex flex-col flex-1 h-full">
+          <h1 className="text-lg font-normal my-2">Unpaid Invoices</h1>
+          <div className="flex-1">
+            <UnpaidWarningList unpaidInvoiceList={unpaidInvoices} />
+          </div>
+        </div>
       </div>
       <div className="w-[460px] h-full flex-shrink-0 flex flex-col overflow-y-auto">
         <div className="flex flex-row justify-between items-center mb-2">
@@ -53,6 +65,7 @@ export default function TuitionPage() {
             Add Class
           </button>
         </div>
+
         <TuitionList tuitions={tuitions} />
       </div>
       <AddTuitionModalDialog
@@ -61,7 +74,7 @@ export default function TuitionPage() {
           setIsModalOpen(false);
         }}
         tuition={null}
-        setTuition={()=>{}}
+        setTuition={() => {}}
       />
     </div>
   );
