@@ -1,4 +1,4 @@
-import { InvoiceStatus } from "./invoiceStatus";
+import type { InvoiceStatus } from "./invoiceStatus";
 
 export class MergeInvoice {
   constructor(
@@ -7,6 +7,7 @@ export class MergeInvoice {
     public month: string,
     public rate: number,
     public status: InvoiceStatus,
+    // TODO: add one more currency to the MergeInvoice model
 
 
   ) { }

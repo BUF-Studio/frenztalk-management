@@ -18,12 +18,14 @@ import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./columns";
+import { useMergeInvoices } from "@/lib/context/collection/mergeInvoiceContext";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();
   const { payments } = usePayments();
   const router = useRouter();
-  const { invoice, setInvoice } = useInvoicePage();
+  // const { invoice, setInvoice } = useInvoicePage();
+  const { mergeInvoices } = useMergeInvoices();
   const { students } = useStudents();
   const { tutors } = useTutors();
 
@@ -43,12 +45,12 @@ export default function InvoiceList() {
         <h1 className="text-xl font-bold">Payment List</h1>
       </div>
       <DataTable
-        data={invoices}
+        data={mergeInvoices}
         columns={columns}
-        getRowHref={(invoice) => {
-          router.push(`/invoices/${invoice.id}`);
-          setInvoice(invoice);
-        }}
+        // getRowHref={(invoice) => {
+        //   router.push(`/invoices/${invoice.id}`);
+        //   setInvoice(invoice);
+        // }}
       />
     </div>
   );

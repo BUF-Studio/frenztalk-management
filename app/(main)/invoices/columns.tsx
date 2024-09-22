@@ -3,11 +3,11 @@
 import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
-import type { Invoice } from "@/lib/models/invoice";
+import type { MergeInvoice } from "@/lib/models/mergeInvoice";
 import { capitalizeFirstLetter } from "@/utils/util";
 import type { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Invoice>[] = [
+export const columns: ColumnDef<MergeInvoice>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -37,27 +37,15 @@ export const columns: ColumnDef<Invoice>[] = [
       ),
   },
   {
-    accessorKey: "studentId",
+    accessorKey: "month",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Student" />
-    ),
-  },
-  {
-    accessorKey: "subjectId",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Subject" />
-    ),
-  },
-  {
-    accessorKey: "subjectId",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Subject" />
+      <DataTableColumnHeader column={column} title="Month" />
     ),
   },
   {
     accessorKey: "rate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total Amount" />
+      <DataTableColumnHeader column={column} title="Rate" />
     ),
   },
   {
