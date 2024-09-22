@@ -4,7 +4,6 @@ import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import { updateStudent } from "@/lib/firebase/student";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { InvoiceList } from "@/app/components/main/invoiceList";
@@ -13,30 +12,23 @@ import { TutorList } from "@/app/components/main/tutorList";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
-
+import { useStudents } from "@/lib/context/collection/studentsContext";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
-  const { student, studentInvoice, studentTuition, studentTutor, setStudent } = useStudentPage();
-
+  const { student, studentInvoice, studentTuition, studentTutor, setStudent } =
+    useStudentPage();
+  const { students } = useStudents();
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { showSnackbar } = useSnackbar();
 
-  const toggleDialog = () => {
-    setIsDialogOpen(!isDialogOpen);
-  };
-
-
-
-
-  // useEffect(() => {
-  //   if (student === null || student.id !== params.id) {
-  //     const foundStudent = students.find((s) => s.id === params.id);
-  //     if (foundStudent) setStudent(foundStudent);
-  //   }
-  // }, [student, params, students, setStudent]);
+  useEffect(() => {
+    if (student === null || student.id !== params.id) {
+      const foundStudent = students.find((s) => s.id === params.id);
+      if (foundStudent) setStudent(foundStudent);
+    }
+  }, [student, params, setStudent, students]);
 
   useEffect(() => {
     console.log(selectedDate?.toISOString());
@@ -77,7 +69,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
     if (!status) {
       // Handle the case where status is undefined or null
-      return 'destructive'; // or any appropriate fallback value
+      return "destructive"; // or any appropriate fallback value
     }
 
     switch (status.toLowerCase()) {
@@ -89,6 +81,11 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
         return "destructive";
     }
   }
+
+  const handleEditStudent = () => {
+    // setStudent(student);
+    router.push(`/students/${student?.id}/update`);
+  };
 
   return (
     <div className="dark:transparent dark:text-neutral-100">
@@ -129,7 +126,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               <button
                 className="flex flex-row items-center px-4 py-2 bg-neutral-800 dark:bg-neutral-700 text-white text-sm rounded-md font-semibold hover:bg-neutral-700 dark:hover:bg-neutral-600 hover:shadow-lg transition-colors"
                 type="button"
-                onClick={toggleDialog}
+                onClick={handleEditStudent}
               >
                 <Edit size={16} strokeWidth={3} className="mr-1" />
                 Edit
@@ -170,7 +167,9 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             />
           </div>
           <TutorList tutors={studentTutor} />
-          <InvoiceList invoices={studentInvoice} studentId={student?.id!} />
+          {student?.id && (
+            <InvoiceList invoices={studentInvoice} studentId={student?.id} />
+          )}
           <div className="flex flex-1 h-full" />
         </div>
       </div>

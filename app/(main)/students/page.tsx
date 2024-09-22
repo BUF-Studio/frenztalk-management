@@ -10,8 +10,6 @@ import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { useRouter } from "next/navigation";
 
-
-
 export default function StudentList() {
   const router = useRouter();
   const { setStudent } = useStudentPage();
@@ -24,7 +22,6 @@ export default function StudentList() {
   >();
   const [filters, setFilters] = useState<Record<string, string>>({});
   const { showSnackbar } = useSnackbar();
-
 
   const handlePaginationChange = (
     newPageIndex: number,
@@ -62,18 +59,9 @@ export default function StudentList() {
         columns={columns}
         data={students}
         getRowHref={(student) => {
-          router.push(`/students/${student.id}`)
-          setStudent(student)
-          }}
-        // onPaginationChange={handlePaginationChange}
-        // onSortChange={handleSortChange}
-        // onFilterChange={handleFilterChange}
-        // pageCount={Math.ceil(students.length / pageSize)}
-        // pageIndex={pageIndex}
-        // pageSize={pageSize}
-        // sortField={sortField}
-        // sortDirection={sortDirection}
-        // filters={filters}
+          router.push(`/students/${student.id}`);
+          setStudent(student);
+        }}
       />
     </div>
   );
