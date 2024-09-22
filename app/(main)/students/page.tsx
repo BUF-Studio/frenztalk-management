@@ -51,7 +51,7 @@ export default function StudentList() {
         <h1 className="text-xl font-bold">Student List</h1>
         <div className="flex flex-row items-center space-x-4">
           <Link href="/students/add" prefetch={true}>
-            <Button variant={"default"}>Add Account</Button>
+            <Button variant={"default"}>Add Student</Button>
           </Link>
         </div>
       </div>

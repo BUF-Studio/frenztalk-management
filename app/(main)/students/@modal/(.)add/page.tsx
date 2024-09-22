@@ -19,11 +19,11 @@ import { Suspense } from "react";
 function LoadingContent() {
   return (
     <div className="animate-pulse">
-      <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded mb-4" />
+      <div className="h-6 bg-black dark:bg-neutral-800 rounded mb-4" />
       <div className="space-y-2">
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded" />
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded" />
-        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        <div className="h-4 bg-black dark:bg-neutral-800 rounded" />
+        <div className="h-4 bg-black dark:bg-neutral-800 rounded" />
+        <div className="h-4 bg-black dark:bg-neutral-800 rounded" />
       </div>
     </div>
   );

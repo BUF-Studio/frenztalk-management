@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/app/components/general/badge";
+import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
 import type { Student } from "@/lib/models/student";
