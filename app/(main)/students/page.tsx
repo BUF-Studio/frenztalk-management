@@ -57,16 +57,7 @@ export default function StudentList() {
       <DataTable
         columns={columns}
         data={students}
-        getRowHref={(student) => `/students/${student.id}`}
-        onPaginationChange={handlePaginationChange}
-        onSortChange={handleSortChange}
-        onFilterChange={handleFilterChange}
-        pageCount={Math.ceil(students.length / pageSize)}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        sortField={sortField}
-        sortDirection={sortDirection}
-        filters={filters}
+        getRowHref={(row) => `/students/${row.id}`}
       />
     </div>
   );
