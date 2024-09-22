@@ -2,28 +2,16 @@
 
 import { DataTable } from "@/app/components/ui/data-table";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import type PaginatedResult from "@/lib/models/paginationResult";
-import type Student from "@/lib/models/student";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
+import { useStudents } from "@/lib/context/collection/studentsContext";
 
-interface FetchStudentsParams {
-  page: number;
-  pageSize: number;
-  sortField?: string;
-  sortDirection?: "asc" | "desc";
-  filters?: Record<string, string>;
-}
+
 
 export default function StudentList() {
-  const [students, setStudents] = useState<PaginatedResult<Student>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
+  const { students } = useStudents();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<string | undefined>();
@@ -33,36 +21,6 @@ export default function StudentList() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const { showSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    const fetchStudents = async (params: FetchStudentsParams) => {
-      try {
-        const queryParams = new URLSearchParams({
-          page: (params.page + 1).toString(),
-          pageSize: params.pageSize.toString(),
-          ...(params.sortField && { sortField: params.sortField }),
-          ...(params.sortDirection && { sortDirection: params.sortDirection }),
-          // ...params.filters,
-        });
-
-        const response = await fetch(`/api/students?${queryParams.toString()}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch students");
-        }
-        const data = await response.json();
-        setStudents(data);
-      } catch (error) {
-        console.error("Error fetching students:", error);
-        showSnackbar("Error fetching students", "error");
-      }
-    };
-    fetchStudents({
-      page: pageIndex,
-      pageSize,
-      sortField,
-      sortDirection,
-      filters,
-    });
-  }, [pageIndex, pageSize, sortField, sortDirection, filters, showSnackbar]);
 
   const handlePaginationChange = (
     newPageIndex: number,
@@ -98,12 +56,12 @@ export default function StudentList() {
       </div>
       <DataTable
         columns={columns}
-        data={students.data}
+        data={students}
         getRowHref={(student) => `/students/${student.id}`}
         onPaginationChange={handlePaginationChange}
         onSortChange={handleSortChange}
         onFilterChange={handleFilterChange}
-        pageCount={Math.ceil(students.total / pageSize)}
+        pageCount={Math.ceil(students.length / pageSize)}
         pageIndex={pageIndex}
         pageSize={pageSize}
         sortField={sortField}

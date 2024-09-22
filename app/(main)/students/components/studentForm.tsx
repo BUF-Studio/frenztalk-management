@@ -1,7 +1,6 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Loader2, X } from "lucide-react";
-import type Student from "@/lib/models/student";
 import { Input } from "@/app/components/ui/input";
 import {
   Select,
@@ -13,6 +12,7 @@ import {
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "@/app/components/hooks/use-toast";
+import { Student } from "@/lib/models/student";
 
 interface StudentFormProps {
   initialStudent?: Student | null;

@@ -2,6 +2,7 @@ import UserProvider, { useUser } from "@/lib/context/collection/userContext";
 import type { ScriptProps } from "next/script";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
+import ObjectProvider from "./objectProviders";
 
 function AppProvider({ children }: ScriptProps) {
   const [firebaseUserId, setFirebaseUserId] = useState<string | null>(null);
@@ -32,9 +33,9 @@ function AppProvider({ children }: ScriptProps) {
   
   return (
     <UserProvider userId={firebaseUserId}>
-      {/* <ObjectProvider> */}
+      <ObjectProvider>
         {children}
-      {/* </ObjectProvider> */}
+      </ObjectProvider>
       {/* <StudentsProvider>
         <TutorsProvider>
           <SubjectsProvider>
