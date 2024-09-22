@@ -13,6 +13,7 @@ import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "@/app/components/hooks/use-toast";
 import { Student } from "@/lib/models/student";
+import { addStudent, updateStudent } from "@/lib/firebase/student";
 
 interface StudentFormProps {
   initialStudent?: Student | null;
@@ -47,44 +48,68 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   setIsSubmitting(true)
 
-  //   const studentData = {
-  //     ...formData,
-  //     age: parseInt(formData.age, 10),
-  //   }
+    e.preventDefault()
+    setIsSubmitting(true)
 
-  //   try {
-  //     const response = await fetch('/api/students', {
-  //       method: initialStudent ? 'PUT' : 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(initialStudent ? { ...studentData, id: initialStudent.id } : studentData),
-  //     })
+    if (initialStudent) {
+      const studentData = new Student(
+        initialStudent.id,
+        formData.name,
+        Number.parseInt(formData.age),
+        formData.status
+      )
 
-  //     if (!response.ok) {
-  //       throw new Error('Failed to save student')
-  //     }
+      updateStudent(studentData)
+    } else {
+      const studentData = new Student(
+        null,
+        formData.name,
+        Number.parseInt(formData.age),
+        formData.status
+      )
 
-  //     const result = await response.json()
-  //     console.log("Result:", result)
-  //     toast({
-  //         title: initialStudent ? "Student Updated" : "Student Created",
-  //         description: `Successfully ${initialStudent ? 'updated' : 'added'} student: ${studentData.name}`,
-  //         variant: "default",
-  //       })
-  //     } catch (error) {
-  //       console.error("Error saving student:", error)
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to save student. Please try again.",
-  //       variant: "destructive",
-  //     })
-  //   } finally {
-  //     setIsSubmitting(false)
-  //   }
+      addStudent(studentData)
+    }
+
+
+
+
+    //   const studentData = {
+    //     ...formData,
+    //     age: parseInt(formData.age, 10),
+    //   }
+
+    //   try {
+    //     const response = await fetch('/api/students', {
+    //       method: initialStudent ? 'PUT' : 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify(initialStudent ? { ...studentData, id: initialStudent.id } : studentData),
+    //     })
+
+    //     if (!response.ok) {
+    //       throw new Error('Failed to save student')
+    //     }
+
+    //     const result = await response.json()
+    //     console.log("Result:", result)
+    //     toast({
+    //         title: initialStudent ? "Student Updated" : "Student Created",
+    //         description: `Successfully ${initialStudent ? 'updated' : 'added'} student: ${studentData.name}`,
+    //         variant: "default",
+    //       })
+    //     } catch (error) {
+    //       console.error("Error saving student:", error)
+    //     toast({
+    //       title: "Error",
+    //       description: "Failed to save student. Please try again.",
+    //       variant: "destructive",
+    //     })
+    //   } finally {
+    //     setIsSubmitting(false)
+    //   }
   }
 
   const optionsMap = {
