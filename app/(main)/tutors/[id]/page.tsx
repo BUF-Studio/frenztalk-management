@@ -1,59 +1,60 @@
 "use client";
 
-// import { useTutorPage } from "@/lib/context/page/tutorPageContext";
-// import { useTutors } from "@/lib/context/collection/tutorContext";
-// import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
+import { useTutorPage } from "@/lib/context/page/tutorPageContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
+import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
 import TuitionList from "../../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
-import EditTutorForm from "../components/editTutorForm";
+import { Badge } from "@/app/components/ui/badge";
 
 export default function TutorDetail({ params }: { params: { id: string } }) {
-  // const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
-  // const { tutors } = useTutors();
+  const { tutorStudent, tutorTuition, tutor, setTutor } = useTutorPage();
+  const { tutors } = useTutors();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  // const { setTuitionTutor } = useTuitionPage();
+  const { setTuitionTutor } = useTuitionPage();
   const router = useRouter();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const toggleDialog = () => {
-    setIsDialogOpen(!isDialogOpen);
+  const handleUpdateTutor = () => {
+    router.push(`/tutors/${tutor?.id}/update`);
   };
 
-  // useEffect(() => {
-  //   if (tutor === null || tutor.id !== params.id) {
-  //     console.log('find tutor')
-  //     const foundTutor = tutors.find((s) => s.id === params.id);
-  //     console.log('tutor')
-  //     if (foundTutor) setTutor(foundTutor);
-  //   }
-  // }, [params,tutors,tutor, setTutor]);
+  useEffect(() => {
+    if (tutor === null || tutor.id !== params.id) {
+      console.log('find tutor')
+      const foundTutor = tutors.find((s) => s.id === params.id);
+      console.log('tutor')
+      if (foundTutor) setTutor(foundTutor);
+    }
+  }, [params,tutors,tutor, setTutor]);
 
   // const addTuition = () => {
   //   setTuitionTutor(tutor);
   //   router.push("/tuitions/add");
   // };
 
-  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
     if (!status) {
-      return "error";
+      return "destructive";
     }
 
     switch (status.toLowerCase()) {
       case "active":
-        return "success";
+        return "default";
       case "frozen":
-        return "warning";
+        return "destructive";
       default:
-        return "error";
+        return "outline";
     }
   }
 
@@ -81,7 +82,7 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                 <div className="w-20 h-20 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
                   {/* Avatar placeholder */}
                 </div>
-                {/* <div className="grid grid-row-2 gap-2">
+                <div className="grid grid-row-2 gap-2">
                   <div className="flex flex-row gap-2">
                     <p className="text-lg font-semibold dark:text-neutral-100">
                       {tutor?.name}
@@ -93,10 +94,10 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
                   <p className="text-xs text-gray-600 dark:text-neutral-400 font-semibolds">
                     {tutor?.des}
                   </p>
-                </div> */}
+                </div>
               </div>
               <button
-                onClick={toggleDialog}
+                onClick={handleUpdateTutor}
                 className="flex flex-row items-center px-4 py-2 bg-red-800 dark:bg-red-700 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] dark:hover:bg-red-600 hover:shadow-lg transition-colors"
                 type="button"
               >
@@ -127,9 +128,9 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
               )}
             </div>
           </div>
-          {/* <TuitionList tuitions={tutorTuition} filter={selectedDate} /> */}
+          <TuitionList tuitions={tutorTuition} filter={selectedDate} />
         </div>
-        {/* <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+        <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
             <MonthCalendar
               events={tutorTuition}
@@ -138,12 +139,8 @@ export default function TutorDetail({ params }: { params: { id: string } }) {
           </div>
           <StudentList students={tutorStudent} />
           <div className="flex flex-1 h-full" />
-        </div> */}
+        </div>
       </div>
-      <EditTutorForm
-        isOpen={isDialogOpen}
-        onClose={toggleDialog}
-      />
     </div>
   );
 }
