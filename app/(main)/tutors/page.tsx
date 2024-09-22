@@ -30,31 +30,31 @@ export default function TutorList() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const { showSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    async function fetchTutors(params: FetchTutorsParams) {
-      try {
-        const queryParams = new URLSearchParams({
-          page: (params.page + 1).toString(),
-          pageSize: params.pageSize.toString(),
-          ...(params.sortField && { sortField: params.sortField }),
-          ...(params.sortDirection && { sortDirection: params.sortDirection }),
-          // ...params.filters,
-        });
+  // useEffect(() => {
+  //   async function fetchTutors(params: FetchTutorsParams) {
+  //     try {
+  //       const queryParams = new URLSearchParams({
+  //         page: (params.page + 1).toString(),
+  //         pageSize: params.pageSize.toString(),
+  //         ...(params.sortField && { sortField: params.sortField }),
+  //         ...(params.sortDirection && { sortDirection: params.sortDirection }),
+  //         // ...params.filters,
+  //       });
 
-        const response = await fetch(
-          `/api/tutors?${queryParams.toString()}`
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch students');
-        }
-        const data = await response.json();
-        setTutors(data);
-      } catch (error) {
-        showSnackbar("Error fetching Tutors", "error");
-      }
-    }
-    fetchTutors({ page: pageIndex, pageSize, sortField, sortDirection, filters });
-  }, [filters, pageIndex, pageSize, showSnackbar, sortDirection, sortField]);
+  //       const response = await fetch(
+  //         `/api/tutors?${queryParams.toString()}`
+  //       );
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch students');
+  //       }
+  //       const data = await response.json();
+  //       setTutors(data);
+  //     } catch (error) {
+  //       showSnackbar("Error fetching Tutors", "error");
+  //     }
+  //   }
+  //   fetchTutors({ page: pageIndex, pageSize, sortField, sortDirection, filters });
+  // }, [filters, pageIndex, pageSize, showSnackbar, sortDirection, sortField]);
 
   const handlePaginationChange = (
     newPageIndex: number,

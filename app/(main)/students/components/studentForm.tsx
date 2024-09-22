@@ -47,44 +47,44 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  //   e.preventDefault()
+  //   setIsSubmitting(true)
 
-    const studentData = {
-      ...formData,
-      age: parseInt(formData.age, 10),
-    }
+  //   const studentData = {
+  //     ...formData,
+  //     age: parseInt(formData.age, 10),
+  //   }
 
-    try {
-      const response = await fetch('/api/students', {
-        method: initialStudent ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(initialStudent ? { ...studentData, id: initialStudent.id } : studentData),
-      })
+  //   try {
+  //     const response = await fetch('/api/students', {
+  //       method: initialStudent ? 'PUT' : 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(initialStudent ? { ...studentData, id: initialStudent.id } : studentData),
+  //     })
 
-      if (!response.ok) {
-        throw new Error('Failed to save student')
-      }
+  //     if (!response.ok) {
+  //       throw new Error('Failed to save student')
+  //     }
 
-      const result = await response.json()
-      console.log("Result:", result)
-      toast({
-          title: initialStudent ? "Student Updated" : "Student Created",
-          description: `Successfully ${initialStudent ? 'updated' : 'added'} student: ${studentData.name}`,
-          variant: "default",
-        })
-      } catch (error) {
-        console.error("Error saving student:", error)
-      toast({
-        title: "Error",
-        description: "Failed to save student. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+  //     const result = await response.json()
+  //     console.log("Result:", result)
+  //     toast({
+  //         title: initialStudent ? "Student Updated" : "Student Created",
+  //         description: `Successfully ${initialStudent ? 'updated' : 'added'} student: ${studentData.name}`,
+  //         variant: "default",
+  //       })
+  //     } catch (error) {
+  //       console.error("Error saving student:", error)
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to save student. Please try again.",
+  //       variant: "destructive",
+  //     })
+  //   } finally {
+  //     setIsSubmitting(false)
+  //   }
   }
 
   const optionsMap = {

@@ -35,25 +35,25 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
   // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
   // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
   // const { setTuitionStudent } = useTuitionPage();
-  const [student, setStudent] = useState<Student>()
-  const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
-  const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
-  const [invoices, setInvoices] = useState<PaginatedResult<Invoice>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
+  // const [student, setStudent] = useState<Student>()
+  // const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
+  // const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
+  // const [invoices, setInvoices] = useState<PaginatedResult<Invoice>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
@@ -64,36 +64,36 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     setIsDialogOpen(!isDialogOpen);
   };
 
-  useEffect(() => {
-    fetchStudent()
-    fetchTutors()
-    fetchTuitions()
-    fetchInvoices()
-  }, [])
+  // useEffect(() => {
+  //   fetchStudent()
+  //   fetchTutors()
+  //   fetchTuitions()
+  //   fetchInvoices()
+  // }, [])
 
-  async function fetchStudent() {
+  // async function fetchStudent() {
 
-    const response = await fetch(`/api/students?id=${params.id}`)
-    const data = await response.json()
-    setStudent(data)
-  }
-  async function fetchTuitions() {
-    const response = await fetch(`/api/tuitions?studentId=${params.id}`)
-    const data = await response.json()
-    setTuitions(data)
-  }
-  async function fetchTutors() {
-    const response = await fetch(`/api/tutors?studentId=${params.id}`)
-    const data = await response.json()
-    console.log('tutors')
-    console.log(data)
-    setTutors(data)
-  }
-  async function fetchInvoices() {
-    const response = await fetch(`/api/invoices?studentId=${params.id}`)
-    const data = await response.json()
-    setInvoices(data)
-  }
+  //   const response = await fetch(`/api/students?id=${params.id}`)
+  //   const data = await response.json()
+  //   setStudent(data)
+  // }
+  // async function fetchTuitions() {
+  //   const response = await fetch(`/api/tuitions?studentId=${params.id}`)
+  //   const data = await response.json()
+  //   setTuitions(data)
+  // }
+  // async function fetchTutors() {
+  //   const response = await fetch(`/api/tutors?studentId=${params.id}`)
+  //   const data = await response.json()
+  //   console.log('tutors')
+  //   console.log(data)
+  //   setTutors(data)
+  // }
+  // async function fetchInvoices() {
+  //   const response = await fetch(`/api/invoices?studentId=${params.id}`)
+  //   const data = await response.json()
+  //   setInvoices(data)
+  // }
 
 
 
@@ -113,32 +113,32 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     router.push("/tuitions/add");
   };
 
-  const handleUpdateStudent = async (studentData: Partial<Student>) => {
-    try {
-      const updatedStudent: Student = {
-        id: student?.id ?? null,
-        age: studentData.age ?? 0,
-        name: studentData.name ?? "",
-        status: studentData.status ?? "active"
-      }
+  // const handleUpdateStudent = async (studentData: Partial<Student>) => {
+  //   try {
+  //     const updatedStudent: Student = {
+  //       id: student?.id ?? null,
+  //       age: studentData.age ?? 0,
+  //       name: studentData.name ?? "",
+  //       status: studentData.status ?? "active"
+  //     }
 
-      console.log(updatedStudent);
+  //     console.log(updatedStudent);
 
-      const response = await fetch('/api/students', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedStudent)
-      })
+  //     const response = await fetch('/api/students', {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(updatedStudent)
+  //     })
 
-      if (response.ok) {
-        showSnackbar("Successfully updated student", "success");
-        toggleDialog();
-      }
-      // await updateStudent(updatedStudent);
-    } catch (error) {
-      showSnackbar("Error processing student", "error");
-    }
-  };
+  //     if (response.ok) {
+  //       showSnackbar("Successfully updated student", "success");
+  //       toggleDialog();
+  //     }
+  //     // await updateStudent(updatedStudent);
+  //   } catch (error) {
+  //     showSnackbar("Error processing student", "error");
+  //   }
+  // };
 
   function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
     if (!status) {

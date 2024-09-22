@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { AddTuitionModalDialog } from "./tuitionModalDialog";
 import { Tuition } from "@/lib/models/tuition";
-import PaginatedResult from "@/lib/models/paginationResult";
+// import PaginatedResult from "@/lib/models/paginationResult";
 
 export default function TuitionPage() {
   // const { tuitions } = useTuitions();
@@ -17,16 +17,16 @@ export default function TuitionPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  useEffect(() => {
-    fetchTuitions()
-  }, [])
+  // useEffect(() => {
+  //   fetchTuitions()
+  // }, [])
 
-  async function fetchTuitions(page = 1, pageSize = 10) {
-    const response = await fetch(`/api/tuitions?page=${page}&pageSize=${pageSize}`)
-    const data = await response.json()
-    console.log(data)
-    setTuitions(data)
-  }
+  // async function fetchTuitions(page = 1, pageSize = 10) {
+  //   const response = await fetch(`/api/tuitions?page=${page}&pageSize=${pageSize}`)
+  //   const data = await response.json()
+  //   console.log(data)
+  //   setTuitions(data)
+  // }
 
 
   const addTuition = () => {

@@ -25,13 +25,13 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   const [subjects, setSubjects] = useState<Subject[]>([])
 
   useEffect(() => {
-    fetchSubjects()
+    // fetchSubjects()
   }, [])
 
   async function fetchSubjects() {
-    const response = await fetch(`/api/subjects`)
-    const data = await response.json()
-    setSubjects(data)
+    // const response = await fetch(`/api/subjects`)
+    // const data = await response.json()
+    // setSubjects(data)
   }
 
   useEffect(() => {

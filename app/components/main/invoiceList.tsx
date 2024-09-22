@@ -6,7 +6,8 @@ import type { Invoice } from "@/lib/models/invoice";
 import { Badge, type BadgeProps } from "../general/badge";
 import { capitalizeFirstLetter } from "@/utils/util";
 import { useEffect, useState } from "react";
-import Student from "@/lib/models/student";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { Student } from "@/lib/models/student";
 
 interface InvoicesProps {
   invoices?: Invoice[];
@@ -15,22 +16,10 @@ interface InvoicesProps {
 
 export const InvoiceList: React.FC<InvoicesProps> = ({ invoices,studentId }) => {
   const router = useRouter();
-  // const { students } = useStudents();
+  const { students } = useStudents();
   const [student, setStudent] = useState<Student>()
 
-  useEffect(() => {
-    fetchStudent(studentId)
-    
-  }, [])
-
-
-
-  async function fetchStudent(id: string) {
-
-    const response = await fetch(`/api/students?id=${id}`)
-    const data = await response.json()
-    setStudent(data)
-  }
+  
 
   const handleOnClick = (id: string) => {
     router.push(`/invoices/${id}`);

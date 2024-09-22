@@ -1,9 +1,11 @@
 "use client";
 
 import TuitionCard from "@/app/components/general/tuitionCard";
+import { useLevels } from "@/lib/context/collection/levelContext";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 import { Level } from "@/lib/models/level";
-import PaginatedResult from "@/lib/models/paginationResult";
-import Student from "@/lib/models/student";
 import { Subject } from "@/lib/models/subject";
 import type { Tuition } from "@/lib/models/tuition";
 import { Tutor } from "@/lib/models/tutor";
@@ -17,54 +19,54 @@ type TuitionListProps = {
 
 const TuitionList: React.FC<TuitionListProps> = ({ tuitions, filter }) => {
   const router = useRouter();
-  // const { tutors } = useTutors();
-  // const { students } = useStudents();
-  // const { subjects } = useSubjects();
-  // const { levels } = useLevels();
+  const { tutors } = useTutors();
+  const { students } = useStudents();
+  const { subjects } = useSubjects();
+  const { levels } = useLevels();
 
-  const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
-  const [students, setStudents] = useState<PaginatedResult<Student>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [levels, setLevels] = useState<Level[]>([]);
+  // const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
+  // const [students, setStudents] = useState<PaginatedResult<Student>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
+  // const [subjects, setSubjects] = useState<Subject[]>([]);
+  // const [levels, setLevels] = useState<Level[]>([]);
 
-  useEffect(() => {
-    fetchTutors()
-    fetchStudents()
-    fetchSubjects()
-    fetchLevels()
-  }, [])
+  // useEffect(() => {
+  //   fetchTutors()
+  //   fetchStudents()
+  //   fetchSubjects()
+  //   fetchLevels()
+  // }, [])
 
-  async function fetchStudents() {
+  // async function fetchStudents() {
 
-    const response = await fetch(`/api/students`)
-    const data = await response.json()
-    setStudents(data)
-  }
-  async function fetchSubjects() {
-    const response = await fetch(`/api/subjects`)
-    const data = await response.json()
-    setSubjects(data)
-  }
-  async function fetchLevels() {
-    const response = await fetch(`/api/levels`)
-    const data = await response.json()
-    setLevels(data)
-  }
-  async function fetchTutors() {
-    const response = await fetch(`/api/tutors`)
-    const data = await response.json()
-    setTutors(data)
-  }
+  //   const response = await fetch(`/api/students`)
+  //   const data = await response.json()
+  //   setStudents(data)
+  // }
+  // async function fetchSubjects() {
+  //   const response = await fetch(`/api/subjects`)
+  //   const data = await response.json()
+  //   setSubjects(data)
+  // }
+  // async function fetchLevels() {
+  //   const response = await fetch(`/api/levels`)
+  //   const data = await response.json()
+  //   setLevels(data)
+  // }
+  // async function fetchTutors() {
+  //   const response = await fetch(`/api/tutors`)
+  //   const data = await response.json()
+  //   setTutors(data)
+  // }
 
   const findSubject = (id: string) => {
     const subject = subjects?.find((subject) => subject.id === id);
@@ -72,12 +74,12 @@ const TuitionList: React.FC<TuitionListProps> = ({ tuitions, filter }) => {
   };
 
   const findTutor = (id: string) => {
-    const tutor = tutors.data.find((tutor) => tutor.id === id);
+    const tutor = tutors.find((tutor) => tutor.id === id);
     return tutor;
   };
 
   const findStudent = (id: string) => {
-    const student = students.data.find((student) => student.id === id);
+    const student = students.find((student) => student.id === id);
     return student;
   };
 
