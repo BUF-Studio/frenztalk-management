@@ -322,7 +322,9 @@ export default function TuitionForm() {
                                 [...existMergeInvoice.invoicesId, siid!],
                                 month,
                                 existMergeInvoice.rate + studentRate,
-                                InvoiceStatus.PENDING
+                                InvoiceStatus.PENDING,
+                                existMergeInvoice.currency,
+                                studentId
                             )
 
                             await updateMergeInvoice(mergeInvoice)
@@ -332,7 +334,9 @@ export default function TuitionForm() {
                                 [siid!],
                                 month,
                                 studentRate,
-                                InvoiceStatus.PENDING
+                                InvoiceStatus.PENDING,
+                                currency,
+                                studentId
                             )
 
                             await updateMergeInvoice(mergeInvoice)
@@ -370,6 +374,7 @@ export default function TuitionForm() {
                                 month,
                                 existMergePayment.rate + tutorRate,
                                 InvoiceStatus.PENDING,
+                                currency, 
                                 tutorId
                             )
 
@@ -381,6 +386,7 @@ export default function TuitionForm() {
                                 month,
                                 tutorRate,
                                 InvoiceStatus.PENDING,
+                                tuition.currency,
                                 tutorId
                             )
 
