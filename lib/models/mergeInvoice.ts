@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import Currency from "./currency";
 import { InvoiceStatus } from "./invoiceStatus";
+=======
+import type { InvoiceStatus } from "./invoiceStatus";
+>>>>>>> 594095d93c010f2c9754bf164f870b7c87c5d828
 
 export class MergeInvoice {
   constructor(
