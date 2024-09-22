@@ -16,6 +16,9 @@ import { addStudent, updateStudent } from "@/lib/firebase/student";
 import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
+import { useTuitions } from "@/lib/context/collection/tuitionContext";
+import { deleteTuition } from "@/lib/firebase/tuition";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 
 interface StudentFormProps {
   initialStudent?: Student | null;
@@ -31,6 +34,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { setStudent } = useStudentPage();
+  const { tuitions } = useTuitions();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (initialStudent) {
@@ -66,8 +71,30 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           Number.parseInt(formData.age),
           formData.status
         );
-        await updateStudent(studentData);
-        setStudent(studentData)
+
+        if (formData.status === "frozen") {
+          try {
+            var tempStudent = studentData;
+
+            //TODO : make this transactional, rollback the changes when something failed in the mid way
+            await updateStudent(tempStudent);
+
+            var freezedStudentFutureClasses = tuitions.filter(
+              (tuition) =>
+                new Date(tuition.startTime) > new Date(Date.now()) &&
+                tuition.studentId == initialStudent.id
+            );
+            freezedStudentFutureClasses.forEach(async (tuitionClass) => {
+              await deleteTuition(tuitionClass);
+            });
+          } catch (err) {
+            showSnackbar("Error: ", "error");
+          }
+        } else {
+          await updateStudent(studentData);
+        }
+
+        setStudent(studentData);
       } else {
         const studentData = new Student(
           null,
@@ -79,8 +106,9 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       }
       toast({
         title: initialStudent ? "Student Updated" : "Student Created",
-        description: `Successfully ${initialStudent ? "updated" : "added"
-          } student: ${formData.name}`,
+        description: `Successfully ${
+          initialStudent ? "updated" : "added"
+        } student: ${formData.name}`,
         variant: "default",
       });
       router.back();
@@ -127,7 +155,9 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       />
       <Select
         value={formData.status}
-        onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
+        onValueChange={(value) =>
+          setFormData((prev) => ({ ...prev, status: value }))
+        }
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Status" />
@@ -146,8 +176,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           {isSubmitting
             ? "Loading..."
             : initialStudent
-              ? "Update Student"
-              : "Add Student"}
+            ? "Update Student"
+            : "Add Student"}
         </Button>
       </div>
     </form>
