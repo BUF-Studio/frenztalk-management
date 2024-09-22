@@ -3,10 +3,8 @@
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { TutorList } from "@/app/components/main/tutorList";
 import { type Step, Stepper } from "@/app/components/general/stepper";
-import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
@@ -39,11 +37,13 @@ import { useAlert } from "@/lib/context/component/AlertContext";
 import { deleteTuition } from "@/lib/firebase/tuition";
 import { AddTuitionModalDialog } from "../tuitionModalDialog";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
-import { useLevels } from "@/lib/context/collection/levelContext";
 import type { Level } from "@/lib/models/level";
 import type { Student } from "@/lib/models/student";
 import type { Subject } from "@/lib/models/subject";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
+import { useInvoices } from "@/lib/context/collection/invoiceContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
+import { useLevels } from "@/lib/context/collection/levelContext";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();

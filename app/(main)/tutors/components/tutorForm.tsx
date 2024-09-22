@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTutorPage } from "@/lib/context/page/tutorPageContext";
 
 export default function TutorForm() {
   const router = useRouter();
   // const { subjects } = useSubjects();
-  // const { tutor, setTutor } = useTutorPage();
+  const { tutor, setTutor } = useTutorPage();
   const [name, setName] = useState(tutor?.name || "");
   const [prefer, setPrefer] = useState("");
   const [preferSubject, setPreferSubect] = useState(tutor?.subjects || []);

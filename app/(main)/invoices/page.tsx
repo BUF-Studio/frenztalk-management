@@ -1,14 +1,12 @@
 "use client";
 
 import { DataTable } from "@/app/components/dashboard/DataTable";
-import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
 import { capitalizeFirstLetter, formatDateRange } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useState } from "react";
@@ -17,6 +15,8 @@ import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { SearchBar } from "@/app/components/general/input/searchBar";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
 import InvoiceModalDialog from "./components/invoiceModalDialog";
+import { useInvoices } from "@/lib/context/collection/invoiceContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 
 export default function InvoiceList() {
   const { invoices } = useInvoices();

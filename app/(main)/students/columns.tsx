@@ -3,7 +3,7 @@
 import { Badge } from "@/app/components/general/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
-import type Student from "@/lib/models/student";
+import { Student } from "@/lib/models/student";
 import { capitalizeFirstLetter } from "@/utils/util";
 import type { ColumnDef } from "@tanstack/react-table";
 

@@ -4,56 +4,20 @@ import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import StudentDialog from "../components/studentForm";
 // import { updateStudent } from "@/lib/firebase/student";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import Student from "@/lib/models/student";
-import { capitalizeFirstLetter } from "@/utils/util";
-import { Invoice } from "@/lib/models/invoice";
-import { Tutor } from "@/lib/models/tutor";
-import { Tuition } from "@/lib/models/tuition";
-import TuitionList from "@/app/components/main/tuitionList";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { TutorList } from "@/app/components/main/tutorList";
+import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { InvoiceList } from "@/app/components/main/invoiceList";
-import PaginatedResult from "@/lib/models/paginationResult";
+import TuitionList from "@/app/components/main/tuitionList";
+import { TutorList } from "@/app/components/main/tutorList";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { capitalizeFirstLetter } from "@/utils/util";
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
 
-// interface StudentDetailDataProps{
-//   student:Student,
-//   invoices :Invoice[],
-//   tutors :Tutor[],
-//   tuition :Tuition[]
-// }
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
-  // const { student, setStudent } = useStudentPage();
-  // const { students } = useStudents();
-  // const studentInvoice: Invoice[] = [];
-  // const studentTutor: Tutor[] = [];
-  // const studentTuition: Tuition[] = [];
-  // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
-  // const { studentTuition, studentTutor, studentInvoice } = ([],[],[]);
-  // const { setTuitionStudent } = useTuitionPage();
-  // const [student, setStudent] = useState<Student>()
-  // const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
-  //   data: [],
-  //   total: 0,
-  //   page: 1,
-  //   pageSize: 10,
-  // });
-  // const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({
-  //   data: [],
-  //   total: 0,
-  //   page: 1,
-  //   pageSize: 10,
-  // });
-  // const [invoices, setInvoices] = useState<PaginatedResult<Invoice>>({
-  //   data: [],
-  //   total: 0,
-  //   page: 1,
-  //   pageSize: 10,
-  // });
+  const { student, studentInvoice, studentTuition, studentTutor, setStudent } = useStudentPage();
+
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const router = useRouter();
@@ -64,36 +28,6 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
     setIsDialogOpen(!isDialogOpen);
   };
 
-  // useEffect(() => {
-  //   fetchStudent()
-  //   fetchTutors()
-  //   fetchTuitions()
-  //   fetchInvoices()
-  // }, [])
-
-  // async function fetchStudent() {
-
-  //   const response = await fetch(`/api/students?id=${params.id}`)
-  //   const data = await response.json()
-  //   setStudent(data)
-  // }
-  // async function fetchTuitions() {
-  //   const response = await fetch(`/api/tuitions?studentId=${params.id}`)
-  //   const data = await response.json()
-  //   setTuitions(data)
-  // }
-  // async function fetchTutors() {
-  //   const response = await fetch(`/api/tutors?studentId=${params.id}`)
-  //   const data = await response.json()
-  //   console.log('tutors')
-  //   console.log(data)
-  //   setTutors(data)
-  // }
-  // async function fetchInvoices() {
-  //   const response = await fetch(`/api/invoices?studentId=${params.id}`)
-  //   const data = await response.json()
-  //   setInvoices(data)
-  // }
 
 
 
@@ -225,18 +159,18 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           {/* <StudentTuitionList filter={selectedDate} /> */}
-          <TuitionList tuitions={tuitions.data} filter={selectedDate} />
+          <TuitionList tuitions={studentTuition} filter={selectedDate} />
         </div>
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
           <div>
             <MonthCalendar
-              events={tuitions.data}
+              events={studentTuition}
               onDateSelect={(date) => setSelectedDate(date)}
               onResetDateSelect={selectedDate === null}
             />
           </div>
-          <TutorList tutors={tutors.data} />
-          <InvoiceList invoices={invoices.data} studentId={student?.id!} />
+          <TutorList tutors={studentTutor} />
+          <InvoiceList invoices={studentInvoice} studentId={student?.id!} />
           <div className="flex flex-1 h-full" />
         </div>
       </div>

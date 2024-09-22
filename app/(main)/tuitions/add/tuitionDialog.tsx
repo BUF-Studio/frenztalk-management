@@ -7,18 +7,17 @@ import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
 import { addTuition, updateTuition } from '@/lib/firebase/tuition';
 import { Tuition } from '@/lib/models/tuition';
 import { useStudents } from '@/lib/context/collection/studentsContext';
-import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
 import Currency from '@/lib/models/currency';
 import TuitionStatus from '@/lib/models/tuitionStatus';
 import { Invoice } from '@/lib/models/invoice';
 import { addInvoice } from '@/lib/firebase/invoice';
-import { useLevels } from '@/lib/context/collection/levelContext';
-import InvoiceType from '@/lib/models/invoiceType';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 import axios from 'axios';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
+import { useLevels } from '@/lib/context/collection/levelContext';
+import { useTutors } from '@/lib/context/collection/tutorContext';
 
 export default function TuitionDialogForm() {
   const [isOpen, setIsOpen] = useState(false);

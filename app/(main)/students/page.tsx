@@ -7,10 +7,14 @@ import { columns } from "./columns";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { useStudents } from "@/lib/context/collection/studentsContext";
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
+import { useRouter } from "next/navigation";
 
 
 
 export default function StudentList() {
+  const router = useRouter();
+  const { setStudent } = useStudentPage();
   const { students } = useStudents();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -57,7 +61,10 @@ export default function StudentList() {
       <DataTable
         columns={columns}
         data={students}
-        getRowHref={(student) => `/students/${student.id}`}
+        getRowHref={(student) => {
+          router.push(`/students/${student.id}`)
+          setStudent(student)
+          }}
         onPaginationChange={handlePaginationChange}
         onSortChange={handleSortChange}
         onFilterChange={handleFilterChange}

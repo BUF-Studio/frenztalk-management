@@ -12,11 +12,11 @@ import { Student } from '@/lib/models/student';
 import { Tuition } from '@/lib/models/tuition';
 import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useStudents } from '@/lib/context/collection/studentsContext';
-import { useTutors } from '@/lib/context/collection/tutorContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
 import Currency from '@/lib/models/currency';
 import { Timestamp } from 'firebase/firestore';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
+import { useTutors } from '@/lib/context/collection/tutorContext';
 
 export default function InvoiceForm() {
     const router = useRouter();
@@ -67,7 +67,7 @@ export default function InvoiceForm() {
                 duration,
                 currency,
                 price,
-                invoice!.invoiceType
+                // invoice!.invoiceType
 
             );
             await updateInvoice(updatedInvoice)

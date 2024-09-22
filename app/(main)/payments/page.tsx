@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import { useTutors } from "@/lib/context/collection/tutorContext";
 import {
   capitalizeFirstLetter,
   formatDateRange,
@@ -19,6 +18,7 @@ import { useTableColumn } from "@/lib/general_hooks/useTableColumn";
 import { TableOrderEnum } from "@/lib/enums/TableOrderEnum";
 import { useSearchTableData } from "@/lib/general_hooks/useSearchTableData";
 import { SearchBar } from "@/app/components/general/input/searchBar";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 
 export default function PaymentList() {
   const { payments } = usePayments();

@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  getRowHref?: (row: TData) => string
+  getRowHref?: (row: TData) => void
   onPaginationChange: (pageIndex: number, pageSize: number) => void
   onSortChange: (field: string, direction: 'asc' | 'desc') => void
   onFilterChange: (columnId: string, value: string) => void
@@ -127,8 +127,9 @@ export function DataTable<TData, TValue>({
 
   const handleRowClick = (row: TData) => {
     if (getRowHref) {
-      const href = getRowHref(row)
-      router.push(href)
+      // const href = 
+      getRowHref(row)
+      // router.push(href)
     }
   }
 

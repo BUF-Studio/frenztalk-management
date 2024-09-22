@@ -2,10 +2,10 @@
 
 import type { Tutor } from "@/lib/models/tutor";
 import React, { useEffect, useState } from "react";
-import type PaginatedResult from "@/lib/models/paginationResult";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./columns";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 
 interface FetchTutorsParams {
   page: number;
@@ -17,12 +17,13 @@ interface FetchTutorsParams {
 
 
 export default function TutorList() {
-  const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
-    data: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
+  // const [tutors, setTutors] = useState<PaginatedResult<Tutor>>({
+  //   data: [],
+  //   total: 0,
+  //   page: 1,
+  //   pageSize: 10,
+  // });
+  const {tutors} = useTutors()
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<string | undefined>();
@@ -86,12 +87,12 @@ export default function TutorList() {
       </div>
       <DataTable
         columns={columns}
-        data={tutors.data}
+        data={tutors}
         getRowHref={(tutor) => `/tutors/${tutor.id}`}
         onPaginationChange={handlePaginationChange}
         onSortChange={handleSortChange}
         onFilterChange={handleFilterChange}
-        pageCount={Math.ceil(tutors.total / pageSize)}
+        pageCount={Math.ceil(tutors.length / pageSize)}
         pageIndex={pageIndex}
         pageSize={pageSize}
         filters={filters}

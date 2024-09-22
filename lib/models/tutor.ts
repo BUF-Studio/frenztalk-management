@@ -1,20 +1,10 @@
-export interface Tutor {
-  id: string | null,
-  name: string,
-  subjects: string[],
-  studentId: string[],
-  des: string,
-  status: string,
-  pic: string,
-
-}
 
 export class Tutor {
   constructor(
     public id: string | null,
     public name: string,
     public subjects: string[],
-    public studentId: string[],
+    // public studentId: string[],
     public des: string,
     public status: string,
     public pic: string,
@@ -25,7 +15,7 @@ export class Tutor {
       id,
       data.name,
       data.subjects,
-      data.studentId,
+      // data.studentId,
       data.des,
       data.status,
       data.pic,
@@ -36,7 +26,7 @@ export class Tutor {
     return {
       name: this.name,
       subjects: this.subjects,
-      studentId: this.studentId,
+      // studentId: this.studentId,
       des: this.des,
       status: this.status,
       pic: this.pic,

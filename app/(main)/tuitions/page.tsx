@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
 import { AddTuitionModalDialog } from "./tuitionModalDialog";
-import { Tuition } from "@/lib/models/tuition";
-// import PaginatedResult from "@/lib/models/paginationResult";
+import { useTuitions } from "@/lib/context/collection/tuitionContext";
 
 export default function TuitionPage() {
-  // const { tuitions } = useTuitions();
-  const [tuitions, setTuitions] = useState<PaginatedResult<Tuition>>({ data: [], total: 0, page: 1, pageSize: 10 })
+  const { tuitions } = useTuitions();
   const router = useRouter();
   // const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -38,7 +36,7 @@ export default function TuitionPage() {
     <div className="flex flex-1 h-full w-full flex-row gap-4 justify-start items-start overflow-hidden">
       <div className="flex flex-col flex-1">
         <MonthCalendar
-          events={tuitions.data}
+          events={tuitions}
           onDateSelect={(date) => setSelectedDate(date)}
         />
         <div className="flex flex-1 flex-grow" />
@@ -55,7 +53,7 @@ export default function TuitionPage() {
             Add Class
           </button>
         </div>
-        <TuitionList tuitions={tuitions.data} />
+        <TuitionList tuitions={tuitions} />
       </div>
       <AddTuitionModalDialog
         isOpen={isModalOpen}

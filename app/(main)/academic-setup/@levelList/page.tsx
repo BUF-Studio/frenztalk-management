@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { Level } from "@/lib/models/level";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { useLevels } from "@/lib/context/collection/levelContext";
+import { addLevel, updateLevel } from "@/lib/firebase/level";
 
 interface CurrencyInputProps {
   currency: string;
@@ -78,7 +80,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
 };
 
 const LevelList: React.FC = () => {
-  // const { levels } = useLevels();
+  const { levels } = useLevels();
   const [expandedLevel, setExpandedLevel] = useState<string[]>([]);
   const [editingLevel, setEditingLevel] = useState<string | null>(null);
   const [editedLevel, setEditedLevel] = useState<Partial<Level>>({});

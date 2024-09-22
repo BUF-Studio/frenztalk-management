@@ -13,6 +13,17 @@ import TuitionStatus from "@/lib/models/tuitionStatus";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import axios from "axios";
 import CheckboxFieldComponent from "@/app/components/general/input/checkBox";
+import { useLevels } from "@/lib/context/collection/levelContext";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import { useTutors } from "@/lib/context/collection/tutorContext";
+import { useSubjects } from "@/lib/context/collection/subjectContext";
+import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
+import { addTuition, updateTuition } from "@/lib/firebase/tuition";
+import { updateZoomAccount } from "@/lib/firebase/zoomAccount";
+import { Invoice } from "@/lib/models/invoice";
+import { addInvoice } from "@/lib/firebase/invoice";
+import { Payment } from "@/lib/models/payment";
+import { addPayment } from "@/lib/firebase/payment";
 
 interface AddTuitionModalDialogProps {
   isOpen: boolean;
