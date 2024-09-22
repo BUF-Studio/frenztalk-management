@@ -87,15 +87,19 @@ function TuitionsProvider({ children, tutorId }: TuitionsProviderProps) {
 
         const endedTuitions = filteredTuitions.filter(tuition => tuition.status === 'end');
         setEndTuitions(endedTuitions)
+        
         const activeTuitions = filteredTuitions.filter(tuition => tuition.status !== 'end');
         setActiveTuitions(activeTuitions)
+
         const totalHour = filteredTuitions.reduce((sum, tuition) => sum + tuition.duration, 0) / 60;
         setTotalHours(totalHour)
+
         const endHour = endedTuitions.reduce((sum, tuition) => sum + tuition.duration, 0) / 60;
         setEndHours(endHour)
+
         const totalTrailDuration = filteredTuitions
             .filter(tuition => tuition.trial === true)
-            .reduce((sum, tuition) => sum + tuition.duration, 0);
+            .reduce((sum, tuition) => sum + tuition.duration, 0)/60;
         setTrialHours(totalTrailDuration)
 
 

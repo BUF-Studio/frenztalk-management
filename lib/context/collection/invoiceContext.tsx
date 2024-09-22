@@ -58,7 +58,7 @@ function InvoicesProvider({ children }: ScriptProps) {
             : invoices;
         setFilterInvoices(filteredInvoices)
 
-        const unpaidInvoice = filteredInvoices.filter(invoice => invoice.status !== 'paid');
+        const unpaidInvoice = filteredInvoices.filter(invoice => invoice.status !== 'paid' && invoice.status !== 'cancel');
         setUnpaidInvoices(unpaidInvoice);
 
         const totalReceiveRate = filteredInvoices
