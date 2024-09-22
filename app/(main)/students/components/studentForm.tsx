@@ -15,6 +15,7 @@ import { Student } from "@/lib/models/student";
 import { addStudent, updateStudent } from "@/lib/firebase/student";
 import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
+import { useStudentPage } from "@/lib/context/page/studentPageContext";
 
 interface StudentFormProps {
   initialStudent?: Student | null;
@@ -29,6 +30,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { setStudent } = useStudentPage();
 
   useEffect(() => {
     if (initialStudent) {
@@ -65,6 +67,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           formData.status
         );
         await updateStudent(studentData);
+        setStudent(studentData)
       } else {
         const studentData = new Student(
           null,
@@ -76,9 +79,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       }
       toast({
         title: initialStudent ? "Student Updated" : "Student Created",
-        description: `Successfully ${
-          initialStudent ? "updated" : "added"
-        } student: ${formData.name}`,
+        description: `Successfully ${initialStudent ? "updated" : "added"
+          } student: ${formData.name}`,
         variant: "default",
       });
       router.back();
@@ -144,8 +146,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           {isSubmitting
             ? "Loading..."
             : initialStudent
-            ? "Update Student"
-            : "Add Student"}
+              ? "Update Student"
+              : "Add Student"}
         </Button>
       </div>
     </form>
