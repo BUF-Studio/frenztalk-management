@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   type ColumnDef,
@@ -10,7 +10,8 @@ import {
   getSortedRowModel,
   type SortingState,
   useReactTable,
-} from "@tanstack/react-table"
+  type VisibilityState,
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -18,120 +19,64 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table"
-import React from "react"
-import { Input } from "./input"
-import { DataTablePagination } from "./data-table/pagination"
-import { DataTableViewOptions } from "./data-table/view-option"
-import { useRouter } from "next/navigation"
+} from "@/app/components/ui/table";
+import React from "react";
+import { Input } from "./input";
+import { DataTablePagination } from "./data-table/pagination";
+import { DataTableViewOptions } from "./data-table/view-option";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  getRowHref?: (row: TData) => void
-  onPaginationChange: (pageIndex: number, pageSize: number) => void
-  onSortChange: (field: string, direction: 'asc' | 'desc') => void
-  onFilterChange: (columnId: string, value: string) => void
-  pageCount: number
-  pageIndex: number
-  pageSize: number
-  sortField?: string
-  sortDirection?: 'asc' | 'desc'
-  filters: Record<string, string>
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  getRowHref?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   getRowHref,
-  onPaginationChange,
-  onSortChange,
-  onFilterChange,
-  pageCount,
-  pageIndex,
-  pageSize,
-  sortField,
-  sortDirection,
-  filters,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [rowSelection, setRowSelection] = React.useState({})
-  const router = useRouter()
-
-  React.useEffect(() => {
-    if (sortField && sortDirection) {
-      setSorting([{ id: sortField, desc: sortDirection === 'desc' }])
-    }
-  }, [sortField, sortDirection])
-
-  React.useEffect(() => {
-    const newColumnFilters = Object.entries(filters).map(([key, value]) => ({
-      id: key,
-      value: value,
-    }))
-    setColumnFilters(newColumnFilters)
-  }, [filters])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const router = useRouter();
 
   const table = useReactTable({
     data,
     columns,
-    pageCount: pageCount,
-    state: {
-      sorting,
-      columnFilters,
-      rowSelection,
-      pagination: {
-        pageIndex,
-        pageSize,
-      },
-    },
-    onPaginationChange: (updater) => {
-      if (typeof updater === 'function') {
-        const newPagination = updater({
-          pageIndex,
-          pageSize,
-        })
-        onPaginationChange(newPagination.pageIndex, newPagination.pageSize)
-      } else {
-        onPaginationChange(updater.pageIndex, updater.pageSize)
-      }
-    },
-    onSortingChange: (updater) => {
-      const newSorting = typeof updater === 'function' ? updater(sorting) : updater
-      setSorting(newSorting)
-      if (newSorting.length > 0) {
-        const { id, desc } = newSorting[0]
-        onSortChange(id, desc ? 'desc' : 'asc')
-      } else {
-        onSortChange('', 'asc')
-      }
-    },
-    onColumnFiltersChange: (updater) => {
-      const newFilters = typeof updater === 'function' ? updater(columnFilters) : updater
-      setColumnFilters(newFilters)
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      newFilters.forEach((filter) => {
-        onFilterChange(filter.id, filter.value as string)
-      })
-    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    manualPagination: true,
-    manualSorting: true,
-    manualFiltering: true,
-  })
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
 
   const handleRowClick = (row: TData) => {
     if (getRowHref) {
+<<<<<<< HEAD
       // const href = 
       getRowHref(row)
       // router.push(href)
+=======
+      const href = getRowHref(row);
+      router.push(href);
+>>>>>>> 035f43734e0b6b79b618a23aa2856a0fdacd1ff2
     }
-  }
+  };
 
   return (
     <div>
@@ -198,5 +143,5 @@ export function DataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
-  )
+  );
 }

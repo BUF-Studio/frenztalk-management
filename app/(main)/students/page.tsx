@@ -65,15 +65,15 @@ export default function StudentList() {
           router.push(`/students/${student.id}`)
           setStudent(student)
           }}
-        onPaginationChange={handlePaginationChange}
-        onSortChange={handleSortChange}
-        onFilterChange={handleFilterChange}
-        pageCount={Math.ceil(students.length / pageSize)}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        sortField={sortField}
-        sortDirection={sortDirection}
-        filters={filters}
+        // onPaginationChange={handlePaginationChange}
+        // onSortChange={handleSortChange}
+        // onFilterChange={handleFilterChange}
+        // pageCount={Math.ceil(students.length / pageSize)}
+        // pageIndex={pageIndex}
+        // pageSize={pageSize}
+        // sortField={sortField}
+        // sortDirection={sortDirection}
+        // filters={filters}
       />
     </div>
   );
