@@ -8,15 +8,19 @@
  * @returns Formatted date string or an error message if the input is invalid
  */
 export function formatDate(
-  date: string | null | undefined,
+  date: string | Date | null | undefined,
   includeTime?: boolean
 ): string {
+
   if (!date) {
     console.error("Invalid date: null or undefined");
     return "Invalid date";
   }
 
   try {
+    if (date instanceof Date) {
+      return includeTime ? formatDateTime(date) : date.toDateString();
+    }
     const dateObj = new Date(date);
     return includeTime ? formatDateTime(dateObj) : dateObj.toDateString();
   } catch (error) {
@@ -62,7 +66,7 @@ export const formatTime = (
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-      timeZone: 'UTC'  // Specify UTC timezone
+      timeZone: "UTC", // Specify UTC timezone
     };
 
     const startTime = start
@@ -87,7 +91,8 @@ export const formatTime = (
  */
 export function formatDateRange(
   start: string | null | undefined,
-  duration: number | null | undefined
+  duration: number | null | undefined,
+  outputFormat?: string | null
 ): string {
   if (!start) {
     console.error("Invalid start time: null or undefined");
@@ -99,12 +104,35 @@ export function formatDateRange(
     const endDate = new Date(
       startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000
     );
-    return formatDateTime(endDate);
+    return outputFormat == "date" ? formatDate(endDate) : formatDateTime(endDate);
   } catch (error) {
     console.error("Error formatting time range:", error);
     return "Invalid time range";
   }
 }
+
+/**
+ * Extracts the month from an ISO date string in either numerical or English name format.
+ * @param dateString - The ISO date string in UTC format (e.g., "2024-08-29T11:30:00.000Z")
+ * @param format - The desired output format: "number" for month as a number (1-12), or "name" for the month's English name (e.g., "August")
+ * @returns The month as a number or the month's name in English
+ */
+export function getMonthFromISOString(dateString: string, format: 'number' | 'name' = 'number'): number | string {
+  const date = new Date(dateString);
+  const monthIndex = date.getMonth(); // 0-based month index
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  if (format === 'name') {
+    return monthNames[monthIndex];
+  }
+
+  return monthIndex + 1; // 1-based month number
+}
+
 
 /**
  * Capitalizes the first letter of a string.

@@ -109,12 +109,10 @@ const UserForm: React.FC<UserFormProps> = ({ user }) => {
     }
   };
 
-  const roleOptions = Object.values(UserRole)
-    .filter((role) => role !== UserRole.NON_VERIFIED)
-    .map((role) => ({
-      value: role,
-      label: role.charAt(0).toUpperCase() + role.slice(1),
-    }));
+  const roleOptions = Object.values(UserRole).map((role) => ({
+    value: role,
+    label: role.charAt(0).toUpperCase() + role.slice(1),
+  }));
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -122,7 +120,6 @@ const UserForm: React.FC<UserFormProps> = ({ user }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-        
       <Input
         type="email"
         id="email"
