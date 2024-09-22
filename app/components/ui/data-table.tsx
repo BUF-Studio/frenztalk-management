@@ -67,14 +67,9 @@ export function DataTable<TData, TValue>({
 
   const handleRowClick = (row: TData) => {
     if (getRowHref) {
-<<<<<<< HEAD
       // const href = 
       getRowHref(row)
       // router.push(href)
-=======
-      const href = getRowHref(row);
-      router.push(href);
->>>>>>> 035f43734e0b6b79b618a23aa2856a0fdacd1ff2
     }
   };
 
