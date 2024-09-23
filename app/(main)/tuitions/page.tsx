@@ -49,7 +49,7 @@ export default function TuitionPage() {
         <div className="flex flex-col flex-1 h-full">
           <h1 className="text-lg font-normal my-2">Unpaid Invoices</h1>
           <div className="flex-1">
-            <UnpaidWarningList unpaidInvoiceList={unpaidInvoices} />
+            <UnpaidWarningList unpaidInvoiceList={unpaidInvoices} tuitions={tuitions}/>
           </div>
         </div>
       </div>

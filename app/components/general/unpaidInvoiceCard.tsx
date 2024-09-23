@@ -77,8 +77,10 @@ const UnpaidInvoiceCard: React.FC<TuitionCardProps> = ({
   const handleFreezeStudent = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      freezeStudent(studentId!, e);
+      
+      // TODO : Enhance the checking logic
       setIsFreeze(!isFreeze);
+      freezeStudent(studentId!, e);
       isFreeze
         ? showSnackbar("Student unfreezed", "success")
         : showSnackbar("Student freezed", "success");
@@ -108,10 +110,6 @@ const UnpaidInvoiceCard: React.FC<TuitionCardProps> = ({
             <CalendarToday className="h-4 w-4 mr-2" />
             {getMonthFromISOString(startDate, "name")}
           </span>
-          {/* <span className="flex items-center text-neutral-500 dark:text-neutral-400 text-sm mb-1">
-            <AccessTime className="h-4 w-4 mr-2" />
-            {formatDateRange(startDate, 730, "date")}
-          </span> */}
         </div>
 
         <div className="flex justify-between items-start h-fit">

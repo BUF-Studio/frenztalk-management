@@ -386,7 +386,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   if (!isOpen) return null;
 
   const optionsMap = {
-    student: students.map((s) => ({ value: s.id, label: s.name })),
+    student: students.filter((student) => student.status !== "frozen").map((s) => ({ value: s.id, label: s.name })),
     tutor: tutors.map((t) => ({ value: t.id, label: t.name })),
     subject: subjects.map((s) => ({ value: s.id, label: s.name })),
     level: levels.map((l) => ({ value: l.id, label: l.name })),

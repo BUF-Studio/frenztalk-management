@@ -15,13 +15,16 @@ import { MouseEvent, useEffect, useState } from "react";
 import UnpaidInvoiceCard from "../general/unpaidInvoiceCard";
 import { updateStudent } from "@/lib/firebase/student";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
+import { deleteTuition } from "@/lib/firebase/tuition";
 
 type TuitionListProps = {
   unpaidInvoiceList: Invoice[];
+  tuitions: Tuition[];
 };
 
 const UnpaidWarningList: React.FC<TuitionListProps> = ({
   unpaidInvoiceList,
+  tuitions,
 }) => {
   const router = useRouter();
   const { tutors } = useTutors();
@@ -45,21 +48,9 @@ const UnpaidWarningList: React.FC<TuitionListProps> = ({
     return student;
   };
 
-  const findLevel = (id: string) => {
-    const level = levels?.find((level) => level.id === id);
-    return level;
-  };
-
-  const handleCardClick = (tuitionId: string) => {
+  const handleCardClick = () => {
     // router.push(`/tuitions/${tuitionId}`);
   };
-
-  // const filteredTuitions = tuitions.filter((tuition) => {
-  //   if (!filter) return true; // If filter is null, return all tuition objects
-  //   const tuitionDate = new Date(tuition.startTime ?? "").toDateString();
-  //   const filterDate = new Date(filter).toDateString();
-  //   return tuitionDate === filterDate; // Compare the dates only
-  // });
 
   const freezeStudent = async (
     studentId: string,
@@ -73,8 +64,17 @@ const UnpaidWarningList: React.FC<TuitionListProps> = ({
           tempStudent.status == "frozen"
             ? (tempStudent.status = "active")
             : (tempStudent.status = "frozen");
+          //TODO : make this transactional, rollback the changes when something failed in the mid way
           await updateStudent(tempStudent);
-          
+
+          var freezedStudentFutureClasses = tuitions.filter(
+            (tuition) =>
+              new Date(tuition.startTime) > new Date(Date.now()) &&
+              tuition.studentId == studentId
+          );
+          freezedStudentFutureClasses.forEach(async (tuitionClass) => {
+            await deleteTuition(tuitionClass);
+          });
         } else {
           throw new Error("Failed to freeze the student");
         }
@@ -108,11 +108,9 @@ const UnpaidWarningList: React.FC<TuitionListProps> = ({
             studentId={findStudent(unpaidInvoice.studentId)?.id ?? ""}
             price={unpaidInvoice.price}
             currency={unpaidInvoice.currency}
-            // meetingLink={"tuition.url"}
             freezeStudent={freezeStudent}
-            onClick={() => {}}
+            onClick={handleCardClick}
           />
-          // <h1>Hello</h1>
         ))}
       </div>
     </div>
