@@ -55,6 +55,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
     },
     {
+      label: "Analytics",
+      href: "/analytics",
+      icon: (
+        <Receipt
+          strokeWidth={1.6}
+          className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
+        />
+      ),
+      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
+    },
+    {
       label: "Students",
       href: "/students",
       icon: (
@@ -88,7 +99,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       roles: [UserRole.ADMIN], // Available only to ADMIN
     },
     {
-      label: "History Classes",
+      label: "History",
       href: "/history",
       icon: (
         <Receipt
@@ -96,7 +107,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN,UserRole], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
     },
     {
       label: "Invoices",

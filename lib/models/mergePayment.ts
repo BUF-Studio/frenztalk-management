@@ -1,5 +1,5 @@
 import Currency from "./currency";
-import { InvoiceStatus } from "./invoiceStatus";
+import type { InvoiceStatus } from "./invoiceStatus";
 
 export class MergePayment {
   constructor(
