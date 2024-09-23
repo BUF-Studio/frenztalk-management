@@ -4,10 +4,11 @@ import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
 import type { MergeInvoice } from "@/lib/models/mergeInvoice";
+import type { MergePayment } from "@/lib/models/mergePayment";
 import { capitalizeFirstLetter } from "@/utils/util";
 import type { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<MergeInvoice>[] = [
+export const columns: ColumnDef<MergePayment>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -37,15 +38,15 @@ export const columns: ColumnDef<MergeInvoice>[] = [
     ),
   },
   {
-    accessorKey: "studentId",
+    accessorKey: "tutorId",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Student" />
+      <DataTableColumnHeader column={column} title="Tutor" />
     ),
     cell: ({ row }) => {
-        const studentId: string = row.getValue("studentId");
+        const tutorId: string = row.getValue("tutorId");
         return (
           <span>
-            {studentId}
+            {tutorId}
           </span>
         );
       },
