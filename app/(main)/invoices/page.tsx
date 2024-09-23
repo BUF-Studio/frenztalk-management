@@ -9,20 +9,20 @@ import { useRouter } from "next/navigation";
 
 export default function InvoiceList() {
   const router = useRouter();
-  const { setInvoice } = useMergeInvoices();
+  // const { setInvoice } = useMergeInvoices();
   const { mergeInvoices } = useMergeInvoices();
 
   return (
     <div>
       <div className="flex flex-1 flex-row justify-between items-center pb-4">
-        <h1 className="text-xl font-bold">Payment List</h1>
+        <h1 className="text-xl font-bold">Invoice List</h1>
       </div>
       <DataTable
         data={mergeInvoices}
         columns={columns}
         getRowHref={(invoice) => {
           router.push(`/invoices/${invoice.id}`);
-          setInvoice(invoice);
+          // setInvoice(invoice);
         }}
       />
     </div>

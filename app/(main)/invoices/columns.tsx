@@ -33,8 +33,8 @@ export const columns: ColumnDef<MergeInvoice>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Id" />
-      ),
+      <DataTableColumnHeader column={column} title="Id" />
+    ),
   },
   {
     accessorKey: "month",
@@ -47,6 +47,15 @@ export const columns: ColumnDef<MergeInvoice>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Rate" />
     ),
+    cell: ({ row }) => {
+      const currency: string = row.getValue("currency");
+      const rate: number = row.getValue("rate");
+      return (
+        <span>
+          {rate} {currency}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "status",
