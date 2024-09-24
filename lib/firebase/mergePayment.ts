@@ -1,5 +1,5 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import { addData, collectionStream, deleteData, setData } from "./service/firestoreService";
 import { MergePayment } from "../models/mergePayment";
 
 const PATH = "mergePayments";
@@ -29,6 +29,22 @@ export const updateMergePayment = async (
   } catch (error) {
     console.error(
       `Error setting mergePayment ${mergePayment.id} in Firestore:`,
+      error,
+    );
+  }
+};
+
+
+export const deleteMergePayment = async (
+  id: string,
+): Promise<void> => {
+  try {
+    const path = `${PATH}/${id}`;
+    await deleteData(path)
+    console.log(`MergePayment ${id} delete in Firestore`);
+  } catch (error) {
+    console.error(
+      `Error setting MergePayment ${id} in Firestore:`,
       error,
     );
   }

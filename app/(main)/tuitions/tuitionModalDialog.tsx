@@ -24,10 +24,10 @@ import { Invoice } from "@/lib/models/invoice";
 import { addInvoice, deleteInvoice } from "@/lib/firebase/invoice";
 import { Payment } from "@/lib/models/payment";
 import { addPayment, deletePayment } from "@/lib/firebase/payment";
-import { updateMergeInvoice } from "@/lib/firebase/mergeInvoice";
+import { deleteMergeInvoice, updateMergeInvoice } from "@/lib/firebase/mergeInvoice";
 import { MergeInvoice } from "@/lib/models/mergeInvoice";
 import { useMergeInvoices } from "@/lib/context/collection/mergeInvoiceContext";
-import { updateMergePayment } from "@/lib/firebase/mergePayment";
+import { deleteMergePayment, updateMergePayment } from "@/lib/firebase/mergePayment";
 import { MergePayment } from "@/lib/models/mergePayment";
 import { useMergePayments } from "@/lib/context/collection/mergePaymentContext";
 import { usePayments } from "@/lib/context/collection/paymentContext";
@@ -52,6 +52,11 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { zoomAccounts } = useZoomAccounts();
+  const { invoices } = useInvoices()
+  const { payments } = usePayments()
+
+  const { mergeInvoices } = useMergeInvoices()
+  const { mergePayments } = useMergePayments()
 
   const [formData, setFormData] = useState({
     name: tuition?.name || "",
@@ -345,7 +350,6 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             );
             siid = await addInvoice(studentInvoice);
 
-            const { mergeInvoices } = useMergeInvoices()
 
             const mergeInvoiceId = month + formData.studentId
             const existMergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
@@ -394,7 +398,6 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
             );
             tiid = await addPayment(tutorPayment);
 
-            const { mergePayments } = useMergePayments()
 
             const mergePaymentId = month + formData.tutorId
             const existMergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
@@ -434,8 +437,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           const mergeInvoiceId = month + formData.studentId
           const mergePaymentId = month + formData.tutorId
 
-          const { mergeInvoices } = useMergeInvoices()
-          const { mergePayments } = useMergePayments()
+
 
           const mergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
           const mergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
@@ -443,20 +445,32 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           let updatedMergeInvoice = mergeInvoice
           let updatedMergePayment = mergePayment
 
-          updatedMergeInvoice?.invoicesId.filter(invoiceId => invoiceId !== siid);
-          updatedMergePayment?.paymentsId.filter(paymentId => paymentId !== tiid);
+
+
           if (updatedMergeInvoice) {
-            const { invoices } = useInvoices()
-            const inv = invoices.find(inv => inv.id === siid)
-            updatedMergeInvoice.rate = updatedMergeInvoice.rate - (inv?.rate ?? 0)
-            await updateMergeInvoice(updatedMergeInvoice)
+            updatedMergeInvoice.invoicesId = updatedMergeInvoice.invoicesId.filter(invoiceId => invoiceId !== siid);
+
+            if (updatedMergeInvoice.invoicesId.length === 0) {
+              await deleteMergeInvoice(mergeInvoiceId)
+            } else {
+              const inv = invoices.find(inv => inv.id === siid)
+              updatedMergeInvoice.rate = updatedMergeInvoice.rate - (inv?.rate ?? 0)
+              await updateMergeInvoice(updatedMergeInvoice)
+            }
 
           }
+
           if (updatedMergePayment) {
-            const { payments } = usePayments()
-            const pay = payments.find(inv => inv.id === tiid)
-            updatedMergePayment.rate = updatedMergePayment.rate - (pay?.rate ?? 0)
-            await updateMergePayment(updatedMergePayment)
+            updatedMergePayment.paymentsId = updatedMergePayment?.paymentsId.filter(paymentId => paymentId !== tiid);
+
+            if (updatedMergePayment.paymentsId.length == 0) {
+              await deleteMergePayment(mergePaymentId)
+            } else {
+              const pay = payments.find(inv => inv.id === tiid)
+              updatedMergePayment.rate = updatedMergePayment.rate - (pay?.rate ?? 0)
+              await updateMergePayment(updatedMergePayment)
+
+            }
 
           }
 

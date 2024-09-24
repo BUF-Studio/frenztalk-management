@@ -1,6 +1,6 @@
 import { DocumentData, Query, query, where } from "firebase/firestore";
 import { MergeInvoice } from "../models/mergeInvoice";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import { addData, collectionStream, deleteData, setData } from "./service/firestoreService";
 
 const PATH = "mergeInvoices";
 
@@ -29,6 +29,21 @@ export const updateMergeInvoice = async (
   } catch (error) {
     console.error(
       `Error setting mergeInvoice ${mergeInvoice.id} in Firestore:`,
+      error,
+    );
+  }
+};
+export const deleteMergeInvoice = async (
+  id: string,
+  // mergeInvoice: MergeInvoice,
+): Promise<void> => {
+  try {
+    const path = `${PATH}/${id}`;
+    await deleteData(path)
+    console.log(`MergeInvoice ${id} deleted in Firestore`);
+  } catch (error) {
+    console.error(
+      `Error setting mergeInvoice ${id} in Firestore:`,
       error,
     );
   }
