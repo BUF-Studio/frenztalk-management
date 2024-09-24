@@ -21,9 +21,17 @@ import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { addTuition, updateTuition } from "@/lib/firebase/tuition";
 import { updateZoomAccount } from "@/lib/firebase/zoomAccount";
 import { Invoice } from "@/lib/models/invoice";
-import { addInvoice } from "@/lib/firebase/invoice";
+import { addInvoice, deleteInvoice } from "@/lib/firebase/invoice";
 import { Payment } from "@/lib/models/payment";
-import { addPayment } from "@/lib/firebase/payment";
+import { addPayment, deletePayment } from "@/lib/firebase/payment";
+import { updateMergeInvoice } from "@/lib/firebase/mergeInvoice";
+import { MergeInvoice } from "@/lib/models/mergeInvoice";
+import { useMergeInvoices } from "@/lib/context/collection/mergeInvoiceContext";
+import { updateMergePayment } from "@/lib/firebase/mergePayment";
+import { MergePayment } from "@/lib/models/mergePayment";
+import { useMergePayments } from "@/lib/context/collection/mergePaymentContext";
+import { usePayments } from "@/lib/context/collection/paymentContext";
+import { useInvoices } from "@/lib/context/collection/invoiceContext";
 
 interface AddTuitionModalDialogProps {
   isOpen: boolean;
@@ -223,8 +231,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-              i * 7 * 24 * 60 * 60 * 1000 +
-              8 * 60 * 60 * 1000
+            i * 7 * 24 * 60 * 60 * 1000 +
+            8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
 
@@ -319,6 +327,7 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
           formData.status === TuitionStatus.END &&
           (!tiid || !siid)
         ) {
+          const month = zoomStartTime.slice(0, 7);
           if (!siid) {
             const studentRate = (formData.studentPrice * duration) / 60;
             const studentInvoice = new Invoice(
@@ -335,6 +344,38 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               formData.studentPrice
             );
             siid = await addInvoice(studentInvoice);
+
+            const { mergeInvoices } = useMergeInvoices()
+
+            const mergeInvoiceId = month + formData.studentId
+            const existMergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
+
+            if (existMergeInvoice) {
+              const mergeInvoice = new MergeInvoice(
+                mergeInvoiceId,
+                [...existMergeInvoice.invoicesId, siid!],
+                month,
+                existMergeInvoice.rate + studentRate,
+                InvoiceStatus.PENDING,
+                existMergeInvoice.currency,
+                formData.studentId
+              )
+
+              await updateMergeInvoice(mergeInvoice)
+            } else {
+              const mergeInvoice = new MergeInvoice(
+                mergeInvoiceId,
+                [siid!],
+                month,
+                studentRate,
+                InvoiceStatus.PENDING,
+                formData.currency,
+                formData.studentId
+              )
+
+              await updateMergeInvoice(mergeInvoice)
+            }
+
           }
           if (!tiid) {
             const tutorRate = (formData.tutorPrice * duration) / 60;
@@ -352,7 +393,79 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
               formData.tutorPrice
             );
             tiid = await addPayment(tutorPayment);
+
+            const { mergePayments } = useMergePayments()
+
+            const mergePaymentId = month + formData.tutorId
+            const existMergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
+
+            if (existMergePayment) {
+              const mergePayment = new MergePayment(
+                mergePaymentId,
+                [...existMergePayment.paymentsId, tiid!],
+                month,
+                existMergePayment.rate + tutorRate,
+                InvoiceStatus.PENDING,
+                existMergePayment.currency,
+                formData.tutorId
+              )
+
+              await updateMergePayment(mergePayment)
+            } else {
+              const mergePayment = new MergePayment(
+                mergePaymentId,
+                [tiid!],
+                month,
+                tutorRate,
+                InvoiceStatus.PENDING,
+                formData.currency,
+                formData.tutorId
+              )
+
+              await updateMergePayment(mergePayment)
+            }
           }
+        }
+
+
+        if (tuition.status === TuitionStatus.END && formData.status !== TuitionStatus.END && tiid && siid) {
+
+          const month = tuition.startTime.slice(0, 7)
+          const mergeInvoiceId = month + formData.studentId
+          const mergePaymentId = month + formData.tutorId
+
+          const { mergeInvoices } = useMergeInvoices()
+          const { mergePayments } = useMergePayments()
+
+          const mergeInvoice = mergeInvoices.find(minv => minv.id === mergeInvoiceId);
+          const mergePayment = mergePayments.find(minv => minv.id === mergePaymentId);
+
+          let updatedMergeInvoice = mergeInvoice
+          let updatedMergePayment = mergePayment
+
+          updatedMergeInvoice?.invoicesId.filter(invoiceId => invoiceId !== siid);
+          updatedMergePayment?.paymentsId.filter(paymentId => paymentId !== tiid);
+          if (updatedMergeInvoice) {
+            const { invoices } = useInvoices()
+            const inv = invoices.find(inv => inv.id === siid)
+            updatedMergeInvoice.rate = updatedMergeInvoice.rate - (inv?.rate ?? 0)
+            await updateMergeInvoice(updatedMergeInvoice)
+
+          }
+          if (updatedMergePayment) {
+            const { payments } = usePayments()
+            const pay = payments.find(inv => inv.id === tiid)
+            updatedMergePayment.rate = updatedMergePayment.rate - (pay?.rate ?? 0)
+            await updateMergePayment(updatedMergePayment)
+
+          }
+
+          await deleteInvoice(siid)
+          await deletePayment(tiid)
+
+          siid = null
+          tiid = null
+
         }
 
         const updatedTuition = new Tuition(
