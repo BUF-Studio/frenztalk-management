@@ -717,8 +717,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           <Label htmlFor="datetime">Date & Time</Label>
           <Input
             type="datetime-local"
-            name="startTime"
-            value={formatDateTimeLocal(formData.startDateTime)}
+            name="startDateTime"
+            value={formatDateTimeLocal(formData.startDateTime as string)}
             onChange={handleChange}
             placeholder="Start Time"
             required
