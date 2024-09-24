@@ -47,7 +47,8 @@ export const AddTuitionModalDialog: React.FC<AddTuitionModalDialogProps> = ({
   setTuition,
 }) => {
   const { levels } = useLevels();
-  // const { tuition, setTuition } = useTuitionPage();
+  // const { tuition, f
+   } = useTuitionPage();
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();

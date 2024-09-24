@@ -1,29 +1,26 @@
 "use client";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { ArrowBackIosNew } from "@mui/icons-material";
+import TuitionForm from "../components/tuitionForm";
 
-import Link from 'next/link';
-import TuitionForm from '../tuitionForm';
-import { useTuitionPage } from '@/lib/context/page/tuitionPageContext';
-import { useRouter } from 'next/navigation';
-
-
-export default function AddTuition() {
-    const { tuition, setTuition } = useTuitionPage();
-    const router = useRouter();
-    setTuition(null)
-
-
-
-    return (
-        <div>
-         
-                <button onClick={(e)=>{router.back()}}>Back</button>
-      
-
-            <h2>Add Tuition</h2>
-            <TuitionForm></TuitionForm>
-        </div>
-
-
-
-    );
+function AddTuitionPage() {
+  const router = useRouter();
+  return (
+    <>
+      <button
+        type="button"
+        onClick={(e) => {
+          router.back();
+        }}
+        className="flex items-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors mb-4"
+      >
+        <ArrowBackIosNew className="h-5 w-5 mr-2" />
+        <h1 className="text-lg font-semibold">Add Tuition</h1>
+      </button>
+      <TuitionForm />
+    </>
+  );
 }
+
+export default AddTuitionPage;

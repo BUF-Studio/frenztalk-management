@@ -35,15 +35,16 @@ import { useCallback, useEffect, useState } from "react";
 import DropdownButton from "@/app/components/general/dropdown";
 import { useAlert } from "@/lib/context/component/AlertContext";
 import { deleteTuition } from "@/lib/firebase/tuition";
-import { AddTuitionModalDialog } from "../tuitionModalDialog";
+// import { AddTuitionModalDialog } from "../tuitionModalDialog";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import type { Level } from "@/lib/models/level";
 import type { Student } from "@/lib/models/student";
 import type { Subject } from "@/lib/models/subject";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useInvoices } from "@/lib/context/collection/invoiceContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
+import { Badge } from "@/app/components/ui/badge";
+import TuitionStatus from "@/lib/models/tuitionStatus";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
@@ -59,22 +60,20 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { showAlert } = useAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getStatusVariant = (status: string): BadgeProps["variant"] => {
-    switch (status.toLowerCase()) {
-      case "active":
-      case "end":
-        return "success";
-      case "pending":
-        return "info";
-      case "on hold":
-        return "warning";
-      case "failed":
-      case "":
-        return "error";
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
+    switch (status?.toLowerCase()) {
+      case TuitionStatus.ACTIVE:
+        return "default";
+      case TuitionStatus.END:
+        return "outline";
+      case TuitionStatus.PENDING:
+        return "secondary";
       default:
-        return "info";
+        return "destructive";
     }
-  };
+  }
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -141,14 +140,14 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
       title: "Meeting",
       description: "Set up your account",
       icon: <CreditCard className="w-4 h-4 text-gray-500 dark:text-gray-400" />,
-      status: "current",
+      status: "completed",
       link: tuition?.url,
     },
     {
-      title: "Payment",
+      title: "Completed",
       description: "Review your information",
       icon: <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />,
-      status: "upcoming",
+      status: "completed",
     },
   ];
 
@@ -171,7 +170,8 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
   }, [tuition, showAlert, showSnackbar, router]);
 
   function handleEdit(): void {
-    setIsModalOpen(true);
+    // setIsModalOpen(true);
+    router.push(`/tuitions/${tuition?.id}/update`);
   }
 
   return (
@@ -310,10 +310,11 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
             invoices={[
               findInvoice(tuition?.studentInvoiceId ?? "") || ({} as Invoice),
             ]}
+            studentId={tuition?.studentId ?? ""}
           />
         </div>
       </div>
-      <AddTuitionModalDialog
+      {/* <AddTuitionModalDialog
         isOpen={isModalOpen}
         onClose={() => {
           // setTuition(null)
@@ -321,7 +322,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
         }}
         tuition={tuition}
         setTuition={setTuition}
-      />
+      /> */}
     </div>
   );
 }

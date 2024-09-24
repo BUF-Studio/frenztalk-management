@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import TuitionList from "../../components/main/tuitionList";
-import { AddTuitionModalDialog } from "./tuitionModalDialog";
+// import { AddTuitionModalDialog } from "./tuitionModalDialog";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import UnpaidWarningList from "@/app/components/main/unpaidWarningList";
 import { useInvoices } from "@/lib/context/collection/invoiceContext";
@@ -29,9 +29,9 @@ export default function TuitionPage() {
   //   setTuitions(data)
   // }
 
-  const addTuition = () => {
+  const handleAddTuition = () => {
     // setTuition(null);
-    setIsModalOpen(true);
+    router.push("/tuitions/add");
   };
 
   return (
@@ -59,7 +59,7 @@ export default function TuitionPage() {
           <button
             className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
             type="button"
-            onClick={addTuition}
+            onClick={handleAddTuition}
           >
             <Plus size={16} strokeWidth={3} className="mr-1" />
             Add Class
@@ -68,14 +68,14 @@ export default function TuitionPage() {
 
         <TuitionList tuitions={tuitions} />
       </div>
-      <AddTuitionModalDialog
+      {/* <AddTuitionModalDialog
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
         }}
         tuition={null}
         setTuition={() => {}}
-      />
+      /> */}
     </div>
   );
 }
