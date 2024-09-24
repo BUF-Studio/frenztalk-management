@@ -11,9 +11,9 @@ type TuitionsContextType = {
     activeTuitions: Tuition[];
     endTuitions: Tuition[];
     upcomingTuitions: Tuition[];
-    totalHours: Number;
-    endHours: Number;
-    trialHours: Number;
+    totalHours: number;
+    endHours: number;
+    trialHours: number;
     month: string;
     setMonth: (month: string) => void;
 

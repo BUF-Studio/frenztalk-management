@@ -5,7 +5,7 @@ import { createContext, type ReactNode, useContext, useEffect, useState } from "
 type PaymentsContextType = {
     payments: Payment[];
     filteredPayments: Payment[];
-    totalPaymentRate: Number;
+    totalPaymentRate: number;
     month: string;
     setMonth: (month: string) => void;
 };
@@ -31,7 +31,7 @@ type PaymentsProviderProps = {
 function PaymentsProvider({ children, tutorId }: PaymentsProviderProps) {
     const [payments, setPayments] = useState<Payment[]>([]);
     const [filteredPayments, setFilteredPayments] = useState<Payment[]>([]);
-    const [totalPaymentRate, setTotalPayments] = useState<Number>(0);
+    const [totalPaymentRate, setTotalPayments] = useState<number>(0);
     const [month, setMonth] = useState<string>('');
 
     // Fetch data from Firebase and set up listeners
