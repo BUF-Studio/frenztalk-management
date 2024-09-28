@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";

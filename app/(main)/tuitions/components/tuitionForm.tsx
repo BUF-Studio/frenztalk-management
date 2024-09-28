@@ -298,6 +298,10 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             )
           );
         }
+        toast({
+          title: "Success",
+          description: `${repeatWeeks} tuition sessions created successfully.`,
+        });
       } else {
         const newStartTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
         const zoomStartTime = newStartTime.toISOString();
@@ -520,6 +524,10 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         );
         await updateTuition(updatedTuition);
         setTuition(updatedTuition);
+        toast({
+          title: "Success",
+          description: "Tuition updated successfully.",
+        });
       }
     } catch (error) {
       console.error("Failed to submit the form", error);
