@@ -111,7 +111,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (initialTuition) {
@@ -235,6 +234,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const startTime = new Date(formData.startDateTime);
@@ -531,6 +531,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       }
     } catch (error) {
       console.error("Failed to submit the form", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -772,13 +774,17 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         </label>
       </div>
       <div className="flex justify-end space-x-2 mt-6">
-        <Button type="submit" variant="default" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting
-            ? "Loading..."
-            : initialTuition
-            ? "Update Tuition"
-            : "Add Tuition"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : initialTuition ? (
+            "Update Tuition"
+          ) : (
+            "Add Tuition"
+          )}
         </Button>
       </div>
     </form>

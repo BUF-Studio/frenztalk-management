@@ -69,7 +69,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
       case TuitionStatus.END:
         return "outline";
       case TuitionStatus.PENDING:
-        return "secondary";
+        return "destructive";
       default:
         return "destructive";
     }
