@@ -41,12 +41,15 @@ export const formatTime = (
   date: string | null | undefined,
   duration: number | null | undefined
 ) => {
+
   if (!date) {
     console.error("Invalid start time: null or undefined");
     return "Invalid time";
   }
   try {
     // Create a date object in UTC
+    console.log('format time')
+    console.log(date)
     const start = new Date(date);
     const end = new Date(start.getTime() + (duration ?? 0) * 60 * 1000);
 
