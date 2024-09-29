@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useStudents } from "@/lib/context/collection/studentsContext";
-import { capitalizeFirstLetter, formatDateRange } from "@/utils/util";
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { usePaymentPage } from "@/lib/context/page/paymentPageContext";
 import { useState } from "react";

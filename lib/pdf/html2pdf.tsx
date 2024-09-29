@@ -14,15 +14,14 @@ import type { Subject } from "../models/subject";
 import type { Tuition } from "../models/tuition";
 import type { Tutor } from "../models/tutor";
 import {
-  capitalizeFirstLetter,
   formatDate,
-  formatDateRange,
 } from "@/utils/util";
 import { updateInvoice } from "../firebase/invoice";
 import { InvoiceStatus } from "../models/invoiceStatus";
 import { useSnackbar } from "../context/component/SnackbarContext";
 import InvoiceModalDialog from "@/app/(main)/invoices/components/invoiceModalDialog";
 import { useInvoicePage } from "../context/page/invoicePageContext";
+import { capitalizeFirstLetter } from "../utils";
 
 type InvoiceTemplateProps = {
   invoice: Invoice | null;
@@ -202,7 +201,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
           <div className="flex-1 p-4 border-r border-gray-900">
             <p className="font-normal text-sm">Due Date:</p>
             <p className="mt-1 font-bold text-md">
-              {formatDateRange(invoice?.startDateTime, invoice?.duration)}
+              {/* {formatDateRange(invoice?.startDateTime, invoice?.duration)} */}
             </p>
           </div>
           <div className="flex-1 p-4">

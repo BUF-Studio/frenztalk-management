@@ -5,7 +5,7 @@ import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
 import type { Tutor } from "@/lib/models/tutor";
-import { capitalizeFirstLetter } from "@/utils/util";
+import { capitalizeFirstLetter } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 

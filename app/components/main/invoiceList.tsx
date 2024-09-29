@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { Invoice } from "@/lib/models/invoice";
 import { Badge, type BadgeProps } from "../general/badge";
-import { capitalizeFirstLetter } from "@/utils/util";
 import { useEffect, useState } from "react";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { Student } from "@/lib/models/student";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface InvoicesProps {
   invoices?: Invoice[];

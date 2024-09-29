@@ -7,26 +7,14 @@
  * @param includeTime - Whether to include the time in the formatted output
  * @returns Formatted date string or an error message if the input is invalid
  */
-export function formatDate(
-  date: string | Date | null | undefined,
-  includeTime?: boolean
-): string {
-
-  if (!date) {
-    console.error("Invalid date: null or undefined");
-    return "Invalid date";
-  }
-
-  try {
-    if (date instanceof Date) {
-      return includeTime ? formatDateTime(date) : date.toDateString();
-    }
-    const dateObj = new Date(date);
-    return includeTime ? formatDateTime(dateObj) : dateObj.toDateString();
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return "Invalid date";
-  }
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 /**
@@ -104,99 +92,22 @@ export function formatDateRange(
     const endDate = new Date(
       startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000
     );
-    return outputFormat === "date" ? formatDate(endDate) : formatDateTime(endDate);
+    return outputFormat === "date"
+      ? formatDate(endDate)
+      : formatDateTime(endDate);
   } catch (error) {
     console.error("Error formatting time range:", error);
     return "Invalid time range";
   }
 }
 
-/**
- * Extracts the month from an ISO date string in either numerical or English name format.
- * @param dateString - The ISO date string in UTC format (e.g., "2024-08-29T11:30:00.000Z")
- * @param format - The desired output format: "number" for month as a number (1-12), or "name" for the month's English name (e.g., "August")
- * @returns The month as a number or the month's name in English
- */
-export function getMonthFromISOString(dateString: string, format: 'number' | 'name' = 'number'): number | string {
-  const date = new Date(dateString);
-  const monthIndex = date.getMonth(); // 0-based month index
-
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  if (format === 'name') {
-    return monthNames[monthIndex];
-  }
-
-  return monthIndex + 1; // 1-based month number
-}
-
 export const formatDateTimeLocal = (isoString: string): string => {
-  if (!isoString) return '';
+  if (!isoString) return "";
   const date = new Date(isoString);
   // Adjust for local timezone offset
   const offset = date.getTimezoneOffset() * 60000;
-  const localISOTime = (new Date(date.getTime() - offset)).toISOString();
+  const localISOTime = new Date(date.getTime() - offset).toISOString();
   return localISOTime.slice(0, 16); // Remove seconds and milliseconds
 };
 
-/**
- * Capitalizes the first letter of a string.
- * @param str - The string to capitalize
- * @returns The string with the first letter capitalized or an error message if the input is invalid
- */
 
-export function capitalizeFirstLetter(str: string | null | undefined): string {
-  if (!str) {
-    return "Invalid string";
-  }
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/**
- * Copies meeting details to the clipboard.
- *
- * @param meetingLink - The Zoom meeting link
- * @param tutorName - The name of the tutor
- * @param studentName - The name of the student
- * @param subject - The subject of the class
- * @param level - The level of the class
- * @returns A promise that resolves when copying is successful, or rejects with an error
- */
-export const copyMeetingLink = async (
-  meetingLink: string,
-  tutorName: string,
-  studentName: string,
-  subject: string,
-  level: string
-): Promise<void> => {
-  if (!navigator.clipboard) {
-    throw new Error("Clipboard access not available");
-  }
-
-  const template = `
-Hi, here is the Zoom link for your upcoming class:
-
-Details:
-  • Tutor: ${tutorName}
-  • Student: ${studentName}
-  • Subject: ${subject}
-  • Level: ${level}
-
-Zoom Link: ${meetingLink}
-
-Please be ready a few minutes before the scheduled time. If you have any questions or need assistance, feel free to reach out.
-
-Best regards,
-Frenztalk
-  `.trim();
-
-  try {
-    await navigator.clipboard.writeText(template);
-  } catch (err) {
-    console.error("Failed to copy text: ", err);
-    throw new Error("Failed to copy meeting details");
-  }
-};

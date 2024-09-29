@@ -10,8 +10,6 @@ import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import type { Invoice } from "@/lib/models/invoice";
 import type { Tutor } from "@/lib/models/tutor";
 import {
-  capitalizeFirstLetter,
-  copyMeetingLink,
   formatDate,
   formatTime,
 } from "@/utils/util";
@@ -45,6 +43,7 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { Badge } from "@/app/components/ui/badge";
 import TuitionStatus from "@/lib/models/tuitionStatus";
+import { copyMeetingLink, capitalizeFirstLetter } from "@/lib/utils";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();

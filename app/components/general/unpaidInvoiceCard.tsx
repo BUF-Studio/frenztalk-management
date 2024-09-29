@@ -1,21 +1,14 @@
 "use client";
 
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { updateStudent } from "@/lib/firebase/student";
-import {
-  capitalizeFirstLetter,
-  copyMeetingLink,
-  formatDate,
-  formatDateRange,
-  formatTime,
-  getMonthFromISOString,
-} from "@/utils/util";
+import { getMonthFromISOString, capitalizeFirstLetter } from "@/lib/utils";
 import { AccessTime, CalendarToday } from "@mui/icons-material";
 import { Ban, CircleOff } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
 import { useState } from "react";
+import { Badge } from "../ui/badge";
 
 interface TuitionCardProps {
   subject: string;
@@ -61,23 +54,26 @@ const UnpaidInvoiceCard: React.FC<TuitionCardProps> = ({
       (1000 * 60 * 60 * 24)
   );
 
-  const getStatusVariant = (status: string): BadgeProps["variant"] => {
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
+    if (!status) {
+      return "destructive";
+    }
+
     switch (status.toLowerCase()) {
       case "paid":
-        return "success";
+        return "default";
       case "pending":
-        return "warning";
-      case "cancel":
-        return "info";
+        return "destructive";
       default:
-        return "info";
+        return "outline";
     }
-  };
+  }
 
   const handleFreezeStudent = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      
       // TODO : Enhance the checking logic
       setIsFreeze(!isFreeze);
       freezeStudent(studentId!, e);
@@ -124,7 +120,6 @@ const UnpaidInvoiceCard: React.FC<TuitionCardProps> = ({
               >
                 Overdue by {daysFromTodayToFirstOfMonth} days
               </h2>
-              {/* TODO : Badge useless here, every type is the same */}
               <Badge variant={getStatusVariant(status)}>
                 {capitalizeFirstLetter(status)}
               </Badge>

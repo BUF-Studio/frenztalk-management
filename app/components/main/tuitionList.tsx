@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { Separator } from "@/app/components/ui/separator"
-import TuitionCard from "@/app/components/general/tuitionCard"
 import { useLevels } from "@/lib/context/collection/levelContext"
 import { useStudents } from "@/lib/context/collection/studentsContext"
 import { useSubjects } from "@/lib/context/collection/subjectContext"
 import { useTutors } from "@/lib/context/collection/tutorContext"
 import type { Tuition } from "@/lib/models/tuition"
+import TuitionCard from "../general/tuitionCard"
 
 type TuitionListProps = {
   tuitions: Tuition[]
@@ -30,22 +30,30 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
 
   const filteredTuitions = tuitions.filter((tuition) => {
     if (!filter) return true
-    const tuitionDate = new Date(tuition.startTime ?? "").toDateString()
-    const filterDate = new Date(filter).toDateString()
+    const tuitionDate = new Date(tuition.startTime ?? "").toUTCString().split(' ').slice(0, 4).join(' ')
+    const filterDate = filter.toUTCString().split(' ').slice(0, 4).join(' ')
     return tuitionDate === filterDate
   })
 
   const now = new Date()
-  const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const utcNow = new Date(now.toUTCString())
+  const in24Hours = new Date(utcNow.getTime() + 24 * 60 * 60 * 1000)
+
+  const pastTuitions = filteredTuitions.filter((tuition) => {
+    const startTime = new Date(tuition.startTime ?? "")
+    const endTime = new Date(startTime.getTime() + (tuition.duration ?? 0) * 60000)
+    return endTime < utcNow
+  })
 
   const upcomingTuitions = filteredTuitions.filter((tuition) => {
-    const tuitionDate = new Date(tuition.startTime ?? "")
-    return tuitionDate >= now && tuitionDate <= in24Hours
+    const startTime = new Date(tuition.startTime ?? "")
+    const endTime = new Date(startTime.getTime() + (tuition.duration ?? 0) * 60000)
+    return endTime >= utcNow && startTime <= in24Hours
   })
 
   const otherTuitions = filteredTuitions.filter((tuition) => {
-    const tuitionDate = new Date(tuition.startTime ?? "")
-    return tuitionDate > in24Hours
+    const startTime = new Date(tuition.startTime ?? "")
+    return startTime > in24Hours
   })
 
   const renderTuitionCards = (tuitions: Tuition[]) => {
@@ -69,6 +77,15 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
 
   return (
     <div className="grid gap-4">
+      {pastTuitions.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Past Tuitions</h2>
+          <div className="flex flex-col gap-2">{renderTuitionCards(pastTuitions)}</div>
+        </div>
+      )}
+
+      {pastTuitions.length > 0 && (upcomingTuitions.length > 0 || otherTuitions.length > 0) && <Separator />}
+
       {upcomingTuitions.length > 0 && (
         <div>
           <h2 className="text-xl font-bold mb-4">Upcoming Tuitions</h2>
@@ -78,21 +95,10 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
 
       {upcomingTuitions.length > 0 && otherTuitions.length > 0 && <Separator />}
 
-      {(otherTuitions.length > 0 || upcomingTuitions.length === 0) && (
+      {otherTuitions.length > 0 && (
         <div>
-          <div className="flex flex-col gap-2">
-            {otherTuitions.length > 0 ? (
-              renderTuitionCards(otherTuitions)
-            ) : upcomingTuitions.length === 0 ? (
-              renderTuitionCards(filteredTuitions)
-            ) : (
-              <div className="bg-white dark:bg-neutral-800 w-full border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden p-4">
-                <h1 className="flex justify-center font-normal text-neutral-500 dark:text-neutral-400">
-                  No Other Tuitions Found
-                </h1>
-              </div>
-            )}
-          </div>
+          <h2 className="text-xl font-bold mb-4">Future Tuitions</h2>
+          <div className="flex flex-col gap-2">{renderTuitionCards(otherTuitions)}</div>
         </div>
       )}
 

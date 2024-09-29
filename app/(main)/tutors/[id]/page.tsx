@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { ArrowBackIosNew, Close } from "@mui/icons-material";
 import { Edit } from "lucide-react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { capitalizeFirstLetter } from "@/utils/util";
+import { capitalizeFirstLetter } from "@/lib/utils";
 import TuitionList from "../../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";

@@ -1,14 +1,15 @@
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Tuition } from "@/lib/models/tuition";
-import { cn } from "@/utils/manage-class-name";
-import { Subject } from "@/lib/models/subject";
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { Tuition } from "@/lib/models/tuition"
+import { cn } from "@/utils/manage-class-name"
+import { Subject } from "@/lib/models/subject"
 
 interface MonthCalendarProps {
-  events: Tuition[];
-  onDateSelect: (date: Date) => void;
-  onResetDateSelect?: boolean;
+  events: Tuition[]
+  onDateSelect: (date: Date) => void
+  onResetDateSelect?: boolean
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = ({
@@ -16,12 +17,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   onDateSelect,
   onResetDateSelect,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [componentSize, setComponentSize] = useState({ width: 0, height: 0 });
-  const [resetDateSelect, setResetDateSelect] = useState(false);
-  const calendarRef = useRef<HTMLDivElement>(null);
-  // const { subjects } = useSubjects();
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [componentSize, setComponentSize] = useState({ width: 0, height: 0 })
+  const [resetDateSelect, setResetDateSelect] = useState(false)
+  const calendarRef = useRef<HTMLDivElement>(null)
   const [subjects, setSubjects] = useState<Subject[]>([])
 
   useEffect(() => {
@@ -29,53 +29,53 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   }, [])
 
   async function fetchSubjects() {
-    // const response = await fetch(`/api/subjects`)
-    // const data = await response.json()
-    // setSubjects(data)
+    // Implement your subject fetching logic here
+    // For now, we'll use an empty array
+    setSubjects([])
   }
 
   useEffect(() => {
-    if (!calendarRef.current) return;
+    if (!calendarRef.current) return
 
     const resizeObserver = new ResizeObserver((entries) => {
-      entries.map((entry) => {
-        const { width, height } = entry.contentRect;
-        setComponentSize({ width, height });
-      });
-    });
+      entries.forEach((entry) => {
+        const { width, height } = entry.contentRect
+        setComponentSize({ width, height })
+      })
+    })
 
-    resizeObserver.observe(calendarRef.current);
+    resizeObserver.observe(calendarRef.current)
 
-    return () => resizeObserver.disconnect();
-  }, []);
+    return () => resizeObserver.disconnect()
+  }, [])
 
   useEffect(() => {
     if (resetDateSelect) {
-      setSelectedDate(null);
-      setResetDateSelect(false);
+      setSelectedDate(null)
+      setResetDateSelect(false)
     }
-  }, [resetDateSelect]);
+  }, [resetDateSelect])
 
   useEffect(() => {
     if (onResetDateSelect) {
-      setResetDateSelect(true);
+      setResetDateSelect(true)
     }
-  }, [onResetDateSelect]);
+  }, [onResetDateSelect])
 
   const findSubject = (id: string) => {
-    return subjects.find((subject) => subject.id === id);
-  };
+    return subjects.find((subject) => subject.id === id)
+  }
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
     0
-  ).getDate();
+  ).getDate()
   const firstDayOfMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
     1
-  ).getDay();
+  ).getDay()
 
   const monthNames = [
     "Jan",
@@ -90,73 +90,78 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
     "Oct",
     "Nov",
     "Dec",
-  ];
+  ]
 
   const prevMonth = () => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
-  };
+    )
+  }
 
   const thisMonth = () => {
-    setCurrentDate(new Date());
-  };
+    setCurrentDate(new Date())
+  }
 
   const nextMonth = () => {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
-  };
+    )
+  }
+
+  const utcToLocal = (utcDate: string): Date => {
+    const date = new Date(utcDate)
+    return new Date(date.getTime() + date.getTimezoneOffset() * 60000)
+  }
 
   const getEventsForDate = (date: number) => {
-    const dayEvents = events.filter(
-      (event) =>
-        new Date(event.startTime?.toString() ?? "").toDateString() ===
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          date
-        ).toDateString()
-    );
+    const dayEvents = events.filter((event) => {
+      if (!event.startTime) return false
+      const localEventDate = utcToLocal(event.startTime)
+      return (
+        localEventDate.getDate() === date &&
+        localEventDate.getMonth() === currentDate.getMonth() &&
+        localEventDate.getFullYear() === currentDate.getFullYear()
+      )
+    })
 
     dayEvents.sort(
       (a, b) =>
-        new Date(a.startTime ?? "").getTime() -
-        new Date(b.startTime ?? "").getTime()
-    );
+        utcToLocal(a.startTime ?? "").getTime() -
+        utcToLocal(b.startTime ?? "").getTime()
+    )
 
     return {
       topEvents: dayEvents.slice(0, 1),
       moreCount: dayEvents.length - 1,
-    };
-  };
+    }
+  }
 
   const isSelected = (date: number) =>
     selectedDate?.getDate() === date &&
     selectedDate?.getMonth() === currentDate.getMonth() &&
-    selectedDate?.getFullYear() === currentDate.getFullYear();
+    selectedDate?.getFullYear() === currentDate.getFullYear()
 
   const handleDateClick = (date: number) => {
     const newSelectedDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       date
-    );
-    setSelectedDate(newSelectedDate);
-    if (onDateSelect) onDateSelect(newSelectedDate);
-  };
+    )
+    setSelectedDate(newSelectedDate)
+    if (onDateSelect) onDateSelect(newSelectedDate)
+  }
 
   const isToday = (date: number) => {
-    const today = new Date();
+    const today = new Date()
     return (
       date === today.getDate() &&
       currentDate.getMonth() === today.getMonth() &&
       currentDate.getFullYear() === today.getFullYear()
-    );
-  };
+    )
+  }
 
   const getResponsiveStyles = () => {
-    const { width } = componentSize;
+    const { width } = componentSize
 
     if (width < 400) {
       return {
@@ -164,7 +169,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
         headerSize: "text-lg",
         buttonSize: "text-xs h-6",
         showEvents: false,
-      };
+      }
     }
 
     if (width < 600) {
@@ -173,7 +178,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
         headerSize: "text-xl",
         buttonSize: "text-sm h-7",
         showEvents: true,
-      };
+      }
     }
 
     return {
@@ -181,14 +186,14 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
       headerSize: "text-2xl",
       buttonSize: "text-base h-8",
       showEvents: true,
-    };
-  };
+    }
+  }
 
-  const styles = getResponsiveStyles();
+  const styles = getResponsiveStyles()
 
-  const totalCells = 42;
-  const emptyCellsAtStart = firstDayOfMonth;
-  const emptyCellsAtEnd = totalCells - daysInMonth - emptyCellsAtStart;
+  const totalCells = 42
+  const emptyCellsAtStart = firstDayOfMonth
+  const emptyCellsAtEnd = totalCells - daysInMonth - emptyCellsAtStart
 
   return (
     <div
@@ -261,21 +266,20 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
           </div>
         ))}
         {Array.from({ length: totalCells }).map((_, index) => {
-          const isEmptyStart = index < emptyCellsAtStart;
-          const isEmptyEnd = index >= emptyCellsAtStart + daysInMonth;
-          const date = index - emptyCellsAtStart + 1;
+          const isEmptyStart = index < emptyCellsAtStart
+          const isEmptyEnd = index >= emptyCellsAtStart + daysInMonth
+          const date = index - emptyCellsAtStart + 1
           const { topEvents, moreCount } =
             !isEmptyStart && !isEmptyEnd
               ? getEventsForDate(date)
-              : { topEvents: [], moreCount: 0 };
+              : { topEvents: [], moreCount: 0 }
 
-          const isLastColumn = (index + 1) % 7 === 0;
-          const isLastRow = index >= totalCells - 7;
+          const isLastColumn = (index + 1) % 7 === 0
+          const isLastRow = index >= totalCells - 7
 
           return (
             <button
               type="button"
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={`cell-${index}`}
               className={cn(
                 "aspect-square p-1 overflow-hidden",
@@ -331,11 +335,11 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
                 </>
               )}
             </button>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MonthCalendar;
+export default MonthCalendar

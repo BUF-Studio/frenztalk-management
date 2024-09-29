@@ -1,37 +1,31 @@
-"use client";
+"use client"
 
-
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import {
-  capitalizeFirstLetter,
-  copyMeetingLink,
-  formatDate,
-  formatTime,
-} from "@/utils/util";
-import { AccessTime, CalendarToday } from "@mui/icons-material";
-import { Check, Copy } from "lucide-react";
-import Link from "next/link";
-import type React from "react";
-import { useEffect, useState } from "react";
-import Live from "../ui/icon/live";
-import { Badge } from "../ui/badge";
-import TuitionStatus from "@/lib/models/tuitionStatus";
+import { useSnackbar } from "@/lib/context/component/SnackbarContext"
+import { formatDate, formatTime } from "@/utils/util"
+import { AccessTime, CalendarToday } from "@mui/icons-material"
+import { Check, Copy } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import Live from "../ui/icon/live"
+import { Badge } from "../ui/badge"
+import TuitionStatus from "@/lib/models/tuitionStatus"
+import { capitalizeFirstLetter, copyMeetingLink } from "@/lib/utils"
 
 interface TuitionCardProps {
-  subject: string;
-  level?: string;
-  time: string;
-  duration: number;
-  status: string;
-  tutor?: string;
-  student?: string;
-  studentId?: string;
-  price: string;
-  meetingLink: string;
-  onClick?: () => void;
+  subject: string
+  level?: string
+  time: string
+  duration: number
+  status: string
+  tutor?: string
+  student?: string
+  studentId?: string
+  price: string
+  meetingLink: string
+  onClick?: () => void
 }
 
-const TuitionCard: React.FC<TuitionCardProps> = ({
+export default function TuitionCard({
   subject,
   level,
   time,
@@ -42,50 +36,47 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   studentId,
   meetingLink,
   onClick,
-}) => {
-  const [isCopied, setIsCopied] = useState(false);
-  const [isLive, setIsLive] = useState(false);
-  const { showSnackbar } = useSnackbar();
-  // const { tuitions } = useTuitions();
-  // const { invoices } = useInvoices();
-  // const { tutors } = useTutors();
-  // const { students } = useStudents();
+}: TuitionCardProps) {
+  const [isCopied, setIsCopied] = useState(false)
+  const [isLive, setIsLive] = useState(false)
+  const { showSnackbar } = useSnackbar()
 
   useEffect(() => {
     const checkIfLive = () => {
-      const now = new Date();
-      const startTime = new Date(time);
-      const endTime = new Date(startTime.getTime() + duration * 60000);
-      setIsLive(now >= startTime && now <= endTime);
-    };
+      const now = new Date()
+      const startTime = new Date(time)
+      const endTime = new Date(startTime.getTime() + duration * 60000)
+      const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      setIsLive(localNow >= startTime && localNow <= endTime)
+    }
 
-    checkIfLive();
-    const intervalId = setInterval(checkIfLive, 60000); // Check every minute
+    checkIfLive()
+    const intervalId = setInterval(checkIfLive, 60000) // Check every minute
 
-    return () => clearInterval(intervalId);
-  }, [time, duration]);
+    return () => clearInterval(intervalId)
+  }, [time, duration])
 
   function getStatusVariant(
     status: string | undefined
   ): "default" | "secondary" | "destructive" | "outline" | undefined {
     if (!status) {
-      return "destructive";
+      return "destructive"
     }
 
     switch (status.toLowerCase()) {
       case TuitionStatus.ACTIVE:
-        return "default";
+        return "default"
       case TuitionStatus.PENDING:
-        return "destructive";
+        return "destructive"
       case TuitionStatus.END:
-        return "secondary";
+        return "secondary"
       default:
-        return "outline";
+        return "outline"
     }
   }
 
   const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (navigator.clipboard) {
       try {
         await copyMeetingLink(
@@ -94,22 +85,22 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
           student ?? "",
           subject,
           level ?? ""
-        );
-        setIsCopied(true);
-        showSnackbar("Meeting link copied to clipboard", "success");
-        setTimeout(() => setIsCopied(false), 2000);
+        )
+        setIsCopied(true)
+        showSnackbar("Meeting link copied to clipboard", "success")
+        setTimeout(() => setIsCopied(false), 2000)
       } catch (err) {
-        console.error("Failed to copy text: ", err);
+        console.error("Failed to copy text: ", err)
       }
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onClick?.();
+      e.preventDefault()
+      onClick?.()
     }
-  };
+  }
 
   return (
     <div
@@ -126,13 +117,18 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
             <CalendarToday className="h-4 w-4 mr-2" />
             {formatDate(time)}
           </span>
-          <span className="flex items-center text-neutral-500 dark:text-neutral-400 text-sm mb-1">
-            <AccessTime className="h-4 w-4 mr-2" />
-            {formatTime(time, duration)}
-          </span>
-          {isLive && (
-              <Live />
-          )}
+          <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400 mb-1 space-x-4">
+            <div className="flex items-center">
+              <AccessTime className="h-4 w-4 mr-2" />
+              <span>{formatTime(time, duration)}</span>
+            </div>
+            {isLive && (
+              <div className="flex items-center space-x-2">
+                <Live />
+                <span>Live</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-between items-start h-fit">
@@ -193,7 +189,5 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
         </div>
       </div>
     </div>
-  );
-};
-
-export default TuitionCard;
+  )
+}

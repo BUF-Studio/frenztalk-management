@@ -2,7 +2,7 @@
 
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import MonthCalendar from "@/app/components/dashboard/Calendar";
 import TuitionList from "@/app/components/main/tuitionList";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
@@ -27,15 +27,24 @@ export default function TuitionPage() {
     router.push("/tuitions/add");
   };
 
+  useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
+
+  const utcToLocal = (utcDate: string): Date => {
+    const date = new Date(utcDate);
+    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  };
+
   const { presentTuitions, pastTuitions } = useMemo(() => {
     const present = [];
     const past = [];
 
     for (const tuition of tuitions) {
-      const startTime = new Date(tuition.startTime).getTime();
-      const endTime = startTime + tuition.duration * 60000; // Assuming duration is in minutes
+      const localStartTime = utcToLocal(tuition.startTime);
+      const localEndTime = new Date(localStartTime.getTime() + tuition.duration * 60000);
 
-      if (endTime <= currentTime) {
+      if (localEndTime.getTime() <= currentTime) {
         past.push(tuition);
       } else {
         present.push(tuition);
@@ -44,6 +53,33 @@ export default function TuitionPage() {
 
     return { presentTuitions: present, pastTuitions: past };
   }, [tuitions, currentTime]);
+
+  const isSameDay = (utcDate: string, localDate: Date) => {
+    const utcDateTime = new Date(utcDate);
+    const localDateTime = new Date(
+      localDate.getTime() - localDate.getTimezoneOffset() * 60000
+    );
+
+    return (
+      utcDateTime.getUTCFullYear() === localDateTime.getUTCFullYear() &&
+      utcDateTime.getUTCMonth() === localDateTime.getUTCMonth() &&
+      utcDateTime.getUTCDate() === localDateTime.getUTCDate()
+    );
+  };
+
+  const filteredPresentTuitions = useMemo(() => {
+    if (!selectedDate) return presentTuitions;
+    return presentTuitions.filter((tuition) =>
+      isSameDay(tuition.startTime, selectedDate)
+    );
+  }, [presentTuitions, selectedDate]);
+
+  const filteredPastTuitions = useMemo(() => {
+    if (!selectedDate) return pastTuitions;
+    return pastTuitions.filter((tuition) =>
+      isSameDay(tuition.startTime, selectedDate)
+    );
+  }, [pastTuitions, selectedDate]);
 
   return (
     <div className="dark:transparent dark:text-neutral-100 h-full flex flex-col">
@@ -61,10 +97,10 @@ export default function TuitionPage() {
             </TabsList>
             <div className="flex-grow overflow-hidden">
               <TabsContent value="present" className="h-full overflow-y-auto">
-                <TuitionList tuitions={presentTuitions} filter={selectedDate} />
+                <TuitionList tuitions={filteredPresentTuitions} />
               </TabsContent>
               <TabsContent value="past" className="h-full overflow-y-auto">
-                <TuitionList tuitions={pastTuitions} filter={selectedDate} />
+                <TuitionList tuitions={filteredPastTuitions} />
               </TabsContent>
             </div>
           </Tabs>
@@ -74,23 +110,23 @@ export default function TuitionPage() {
         <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4 overflow-y-auto">
           <div className="flex flex-row justify-between items-center">
             {selectedDate ? (
-              <Button
-                variant={"secondary"}
-                onClick={() => setSelectedDate(null)}
-              >
-                {selectedDate.toDateString()}
+              <Button variant="secondary" onClick={() => setSelectedDate(null)}>
+                {selectedDate.toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                })}
                 <X className="ml-2" size={16} strokeWidth={3} />
               </Button>
             ) : (
               <Button
-                variant={"outline"}
+                variant="outline"
                 onClick={() => setSelectedDate(null)}
                 disabled
               >
                 No Filter
               </Button>
             )}
-            <Button variant={"default"} onClick={handleAddTuition}>
+            <Button variant="default" onClick={handleAddTuition}>
               <Plus size={16} strokeWidth={3} className="mr-1" />
               Add Class
             </Button>

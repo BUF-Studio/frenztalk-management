@@ -10,9 +10,9 @@ import { InvoiceList } from "@/app/components/main/invoiceList";
 import TuitionList from "@/app/components/main/tuitionList";
 import { TutorList } from "@/app/components/main/tutorList";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { capitalizeFirstLetter } from "@/utils/util";
 import { useStudentPage } from "@/lib/context/page/studentPageContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export default function StudentDetail({ params }: { params: { id: string } }) {
   const { student, studentInvoice, studentTuition, studentTutor, setStudent } =
