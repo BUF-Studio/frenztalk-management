@@ -65,6 +65,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { mergeInvoices } = useMergeInvoices();
   const { mergePayments } = useMergePayments();
 
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     studentId: "",
@@ -302,6 +304,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           title: "Success",
           description: `${repeatWeeks} tuition sessions created successfully.`,
         });
+        router.back();
       } else {
         const newStartTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
         const zoomStartTime = newStartTime.toISOString();
@@ -528,6 +531,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           title: "Success",
           description: "Tuition updated successfully.",
         });
+        router.back();
       }
     } catch (error) {
       console.error("Failed to submit the form", error);

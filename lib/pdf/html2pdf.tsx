@@ -1,59 +1,54 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import html2pdf from "html2pdf.js";
-import { Invoice } from "../models/invoice";
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
-import DropdownButton from "@/app/components/general/dropdown";
-import { Download, Pencil, Trash2 } from "lucide-react";
-import { useStudents } from "../context/collection/studentsContext";
-import { useSubjects } from "../context/collection/subjectContext";
-import { useTuitions } from "../context/collection/tuitionContext";
-import { useTutors } from "../context/collection/tutorContext";
-import type { Student } from "../models/student";
-import type { Subject } from "../models/subject";
-import type { Tuition } from "../models/tuition";
-import type { Tutor } from "../models/tutor";
+"use client"
+
+import { useEffect, useState } from "react"
+import html2pdf from "html2pdf.js"
+import { Invoice } from "@/lib/models/invoice"
+import { Badge } from "@/app/components/ui/badge"
+import { Button } from "@/app/components/ui/button"
 import {
-  formatDate,
-} from "@/utils/util";
-import { updateInvoice } from "../firebase/invoice";
-import { InvoiceStatus } from "../models/invoiceStatus";
-import { useSnackbar } from "../context/component/SnackbarContext";
-import InvoiceModalDialog from "@/app/(main)/invoices/components/invoiceModalDialog";
-import { useInvoicePage } from "../context/page/invoicePageContext";
-import { capitalizeFirstLetter } from "../utils";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu"
+import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { useStudents } from "@/lib/context/collection/studentsContext"
+import { useSubjects } from "@/lib/context/collection/subjectContext"
+import { useTuitions } from "@/lib/context/collection/tuitionContext"
+import { Student } from "@/lib/models/student"
+import { Subject } from "@/lib/models/subject"
+import { Tuition } from "@/lib/models/tuition"
+import { updateInvoice } from "@/lib/firebase/invoice"
+import { InvoiceStatus } from "@/lib/models/invoiceStatus"
+import { useSnackbar } from "@/lib/context/component/SnackbarContext"
+import { useInvoicePage } from "@/lib/context/page/invoicePageContext"
+import { capitalizeFirstLetter } from "@/lib/utils"
 
-type InvoiceTemplateProps = {
-  invoice: Invoice | null;
-};
+interface InvoiceTemplateProps {
+  invoice: Invoice | null
+}
 
-const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
-  const { setInvoice } = useInvoicePage();
-  const [logoLoaded, setLogoLoaded] = useState(false);
-  const { students } = useStudents();
-  const { subjects } = useSubjects();
-  const { tuitions } = useTuitions();
-  const { showSnackbar } = useSnackbar();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
+  const { setInvoice } = useInvoicePage()
+  const [logoLoaded, setLogoLoaded] = useState(false)
+  const { students } = useStudents()
+  const { subjects } = useSubjects()
+  const { tuitions } = useTuitions()
+  const { showSnackbar } = useSnackbar()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const tuition: Tuition | undefined = tuitions.find(
-    (tuition) => tuition.id === invoice?.tuitionId
-  );
-  const student: Student | undefined = students.find(
-    (student) => student.id === invoice?.studentId
-  );
-  const subject: Subject | undefined = subjects.find(
-    (subject) => subject.id === invoice?.subjectId
-  );
+  const tuition = tuitions.find((t) => t.id === invoice?.tuitionId)
+  const student = students.find((s) => s.id === invoice?.studentId)
+  const subject = subjects.find((s) => s.id === invoice?.subjectId)
 
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => setLogoLoaded(true);
-    img.src = "/frenztalk-logo.jpg";
-  }, []);
+    const img = new Image()
+    img.onload = () => setLogoLoaded(true)
+    img.src = "/frenztalk-logo.jpg"
+  }, [])
 
   const generatePDF = () => {
-    const element = document.getElementById("invoice");
+    const element = document.getElementById("invoice")
     if (element) {
       const opt = {
         margin: 10,
@@ -61,30 +56,29 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
-      html2pdf().set(opt).from(element).save();
-    }
-  };
-
-  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
-    if (!status) {
-      // Handle the case where status is undefined or null
-      return "error"; // or any appropriate fallback value
-    }
-
-    switch (status.toLowerCase()) {
-      case "paid":
-        return "success";
-      case "pending":
-        return "info";
-      case "cancel":
-        return "warning";
-      // Add other cases as needed
-      default:
-        return "error"; // Handle unexpected statuses
+      }
+      html2pdf().set(opt).from(element).save()
     }
   }
 
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
+    if (!status) {
+      return "destructive";
+    }
+
+    switch (status.toLowerCase()) {
+      case InvoiceStatus.PAID:
+        return "secondary";
+      case InvoiceStatus.PENDING:
+        return "default";
+      case InvoiceStatus.CANCEL:
+        return "outline";
+      default:
+        return "destructive";
+    }
+  }
   const handleStatusChange = async (status: InvoiceStatus) => {
     if (invoice) {
       const updatedInvoice = new Invoice(
@@ -99,216 +93,156 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
         invoice.duration,
         invoice.currency,
         invoice.price
-      );
-      await updateInvoice(updatedInvoice);
-      showSnackbar("Invoice status updated", "success");
+      )
+      await updateInvoice(updatedInvoice)
+      showSnackbar("Invoice status updated", "success")
     }
-  };
-
-  function handleEdit(): void {
-    setIsModalOpen(true);
   }
 
+  function handleEdit() {
+    setIsModalOpen(true)
+  }
+  
+
   return (
-    <div id="invoice" className="font-sans min-w-3xl max-w-3xl mx-auto p-6">
-      <div className="flex flex-col gap-6 justify-between">
+    <div id="invoice" className="font-sans min-w-[768px] max-w-[768px] mx-auto p-6 bg-background text-foreground">
+      <div className="flex flex-col gap-6">
         <div>
-          <div className="flex flex-1 justify-start mb-4 gap-4">
+          <div className="flex items-center mb-4 gap-4">
             <div className="w-8 h-8">
               {logoLoaded && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src="/frenztalk-logo.jpg"
                   alt="Frenztalk Logo"
                   width={32}
                   height={32}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    objectFit: "contain",
-                  }}
+                  className="object-contain"
                 />
               )}
             </div>
-            <h2 className="text-lg font-medium text-red-600 mb-1">
-              Invoice Statement
-            </h2>
+            <h2 className="text-lg font-medium text-primary">Invoice Statement</h2>
           </div>
-          <div className="flex flex-row justify-between">
-            <div className="flex flex-row gap-4 items-center">
-              <h2 className="text-xl text-gray-900 font-bold">{invoice?.id}</h2>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-bold">{invoice?.id}</h2>
               <Badge variant={getStatusVariant(invoice?.status)}>
                 {capitalizeFirstLetter(invoice?.status)}
               </Badge>
             </div>
-            <div className="flex flex-row gap-2" data-html2canvas-ignore>
-              <DropdownButton
-                title="Change Status"
-                items={Object.values(InvoiceStatus)
-                  .filter((status) => status !== invoice?.status)
-                  .map((status) => ({
-                    label: capitalizeFirstLetter(status),
-                    onClick: () => handleStatusChange(status),
-                  }))}
-              />
-              <DropdownButton
-                title="..."
-                arrowDown={false}
-                items={[
-                  {
-                    icon: <Download size={16} />,
-                    label: "Download PDF",
-                    onClick: generatePDF,
-                  },
-                  {
-                    icon: <Pencil size={16} />,
-                    label: "Edit",
-                    onClick: handleEdit,
-                  },
-                  {
-                    icon: <Trash2 size={16} />,
-                    label: "Delete",
-                    onClick: () => console.log("Delete"),
-                  },
-                ]}
-              />
+            <div className="flex gap-2" data-html2canvas-ignore>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">Change Status</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {Object.values(InvoiceStatus)
+                    .filter((status) => status !== invoice?.status)
+                    .map((status) => (
+                      <DropdownMenuItem key={status} onClick={() => handleStatusChange(status)}>
+                        {capitalizeFirstLetter(status)}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={generatePDF}>
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Download PDF</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleEdit}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    <span>Edit</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => console.log("Delete")}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
-        <div className="flex w-full flex-row justify-between">
-          <div className="flex flex-col">
-            <p className="text-md mb-1 text-gray-600">Billed to:</p>
-            <strong className="font-bold text-lg mb-1 text-gray-900">
-              {student?.name}
-            </strong>
-            <div className="flex flex-row gap-1 text-sm text-gray-900">
-              <p className="font-medium">Email:</p>
-              <p className="font-light">--</p>
-            </div>
-            <div className="flex flex-row gap-1 text-sm text-gray-900">
-              <p className="font-medium">Phone No.:</p>
-              <p className="font-light">--</p>
-            </div>
+        <div className="flex justify-between">
+          <div>
+            <p className="text-md mb-1 text-muted-foreground">Billed to:</p>
+            <strong className="font-bold text-lg mb-1">{student?.name}</strong>
+            {/* <div className="text-sm">
+              <p><span className="font-medium">Email:</span> --</p>
+              <p><span className="font-medium">Phone No.:</span> --</p>
+            </div> */}
           </div>
         </div>
-        <div className="flex flex-row justify-between border border-gray-900 text-gray-900">
-          <div className="flex-1 p-4 border-r border-gray-900">
-            <p className="font-normal text-sm">Date Issued:</p>
-            <p className="mt-1 font-bold text-md">
-              {formatDate(invoice?.startDateTime, true)}
-            </p>
+        <div className="grid grid-cols-3 border border-border">
+          <div className="p-4 border-r border-border">
+            <p className="font-normal text-sm text-muted-foreground">Date Issued:</p>
+            <p className="mt-1 font-bold text-md">{invoice?.startDateTime}</p>
           </div>
-          <div className="flex-1 p-4 border-r border-gray-900">
-            <p className="font-normal text-sm">Due Date:</p>
-            <p className="mt-1 font-bold text-md">
-              {/* {formatDateRange(invoice?.startDateTime, invoice?.duration)} */}
-            </p>
+          <div className="p-4 border-r border-border">
+            <p className="font-normal text-sm text-muted-foreground">Due Date:</p>
+            <p className="mt-1 font-bold text-md">--</p>
           </div>
-          <div className="flex-1 p-4">
-            <p className="font-normal text-sm">Due Amount:</p>
-            <p className="mt-1 font-bold text-md">
-              {`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}
-            </p>
+          <div className="p-4">
+            <p className="font-normal text-sm text-muted-foreground">Due Amount:</p>
+            <p className="mt-1 font-bold text-md">{`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}</p>
           </div>
         </div>
         <table className="w-full border-collapse mt-4">
           <thead>
-            <tr className="border-b border-gray-400">
-              <th className="text-left text-md py-3 px-4 font-bold text-gray-700">
-                Description
-              </th>
-              <th className="text-left text-md py-3 px-4 font-bold text-gray-700">
-                Date
-              </th>
-              <th className="text-center text-md py-3 px-4 font-bold text-gray-700">
-                Quantity
-              </th>
-              <th className="text-center text-md py-3 px-4 font-bold text-gray-700">
-                Unit Price (RM)
-              </th>
-              <th className="text-right text-md py-3 px-4 font-bold text-gray-700">
-                Total (RM)
-              </th>
+            <tr className="border-b border-border">
+              <th className="text-left text-md py-3 px-4 font-bold text-muted-foreground">Description</th>
+              <th className="text-left text-md py-3 px-4 font-bold text-muted-foreground">Date</th>
+              <th className="text-center text-md py-3 px-4 font-bold text-muted-foreground">Quantity</th>
+              <th className="text-center text-md py-3 px-4 font-bold text-muted-foreground">Unit Price (RM)</th>
+              <th className="text-right text-md py-3 px-4 font-bold text-muted-foreground">Total (RM)</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-gray-300 text-gray-900">
+            <tr className="border-b border-border">
               <td className="py-3 px-4">{subject?.name}</td>
-              <td className="py-3 px-4">{formatDate(tuition?.startTime)}</td>
+              <td className="py-3 px-4">{tuition?.startTime}</td>
               <td className="py-3 px-4 text-center">{tuition?.duration}</td>
-              <td className="py-3 px-4 text-center">
-                {tuition?.studentPrice.toFixed(2)}
-              </td>
+              <td className="py-3 px-4 text-center">{tuition?.studentPrice.toFixed(2)}</td>
               <td className="py-3 px-4 text-right">
-                {(
-                  (tuition?.studentPrice ?? 0) * (tuition?.duration ?? 0)
-                ).toFixed(2)}
+                {((tuition?.studentPrice ?? 0) * (tuition?.duration!/60)).toFixed(2)}
               </td>
             </tr>
           </tbody>
-          <tfoot className="pt-8 text-gray-900">
+          <tfoot>
             <tr>
-              <td colSpan={4} className="py-4  px-4 text-right font-medium">
-                Subtotal
-              </td>
-              <td className="py-4 px-4 text-right">
-                {invoice?.rate.toFixed(2)}
-              </td>
+              <td colSpan={4} className="py-4 px-4 text-right font-medium">Subtotal</td>
+              <td className="py-4 px-4 text-right">{invoice?.rate.toFixed(2)}</td>
             </tr>
             <tr>
-              <td colSpan={4} className="px-4 text-right font-medium">
-                Discount
-              </td>
+              <td colSpan={4} className="px-4 text-right font-medium">Discount</td>
               <td className="px-4 text-right">--</td>
             </tr>
             <tr>
-              <td
-                colSpan={4}
-                className="py-3 px-4 text-right font-bold text-xl"
-              >
-                Total
-              </td>
+              <td colSpan={4} className="py-3 px-4 text-right font-bold text-xl">Total</td>
               <td className="py-3 px-4 text-right font-bold text-xl">
                 {`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}
               </td>
             </tr>
           </tfoot>
         </table>
-        <div className="flex flex-col">
-          <p className="font-normal text-gray-900 text-xl mb-2">
-            Thanks for choosing Frenztalk!
+        <div>
+          <p className="font-normal text-xl mb-2">Thanks for choosing Frenztalk!</p>
+          <p className="font-normal text-sm text-muted-foreground">
+            Kindly forward your payment receipt to the WhatsApp group after payment.
           </p>
-          <p className="font-normal text-gray-600 text-sm">
-            Kindly forward your payment receipt to the WhatsApp group after
-            payment.
-          </p>
-          <p className="font-normal text-gray-600 text-sm">
-            Thank you and have a nice day!
-          </p>
+          <p className="font-normal text-sm text-muted-foreground">Thank you and have a nice day!</p>
         </div>
-        <div className="text-gray-900">
+        <div>
           <div className="font-bold mb-1">Payment Information</div>
-          <div className="flex flex-row gap-1 text-sm">
-            <p className="font-medium">Account Name:</p>
-            <p className="font-medium">FREN TALK HUB</p>
-          </div>
-          <div className="flex flex-row gap-1 text-sm">
-            <p className="font-medium">Account No.:</p>
-            <p className="font-medium">04400099507</p>
-          </div>
+          <p className="text-sm"><span className="font-medium">Account Name:</span> FREN TALK HUB</p>
+          <p className="text-sm"><span className="font-medium">Account No.:</span> 04400099507</p>
         </div>
       </div>
-      <InvoiceModalDialog
-        isOpen={isModalOpen}
-        onClose={() => {
-          // setTuition(null)
-          setIsModalOpen(false);
-        }}
-        invoice={invoice}
-        setInvoice={setInvoice}
-      />
     </div>
-  );
-};
-
-export default InvoiceTemplate;
+  )
+}

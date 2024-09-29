@@ -6,13 +6,10 @@ import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
-import type { Invoice } from "@/lib/models/invoice";
 import type { Student } from "@/lib/models/student";
 import type { Subject } from "@/lib/models/subject";
 import type { Tuition } from "@/lib/models/tuition";
 import type { Tutor } from "@/lib/models/tutor";
-import generatePDF from "@/lib/pdf/pdf";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -36,7 +33,7 @@ const PDFDownloadLink = dynamic(
   }
 );
 
-export default function InvoiceDetail({ params }: { params: { id: string } }) {
+export default function SingleInvoiceDetail({ params }: { params: { singleInvoiceId: string } }) {
   const { invoice, setInvoice } = useInvoicePage();
   const { invoices } = useInvoices();
   const { tuitions } = useTuitions();
@@ -60,15 +57,11 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
   );
 
   useEffect(() => {
-    if (invoice === null || invoice.id !== params.id) {
-      const foundInvoice = invoices.find((s) => s.id === params.id);
+    if (invoice === null || invoice.id !== params.singleInvoiceId) {
+      const foundInvoice = invoices.find((s) => s.id === params.singleInvoiceId);
       if (foundInvoice) setInvoice(foundInvoice);
     }
   }, [params, invoice, invoices, setInvoice]);
-
-  const handleGeneratePDF = (invoice: Invoice | null) => {
-    generatePDF(invoice);
-  };
 
   return (
     <div>
@@ -80,7 +73,7 @@ export default function InvoiceDetail({ params }: { params: { id: string } }) {
         className="flex items-center text-gray-600 dark:text-neutral-400 hover:text-gray-800 dark:hover:text-neutral-200 transition-colors mb-4"
       >
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
-        <h1 className="text-lg font-semibold">Tutor Details</h1>
+        <h1 className="text-lg font-semibold">Single Invoice Details</h1>
       </button>
 
       <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">

@@ -3,6 +3,8 @@
 import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
+import { useStudents } from "@/lib/context/collection/studentsContext";
+import Currency from "@/lib/models/currency";
 import type { MergeInvoice } from "@/lib/models/mergeInvoice";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -42,10 +44,12 @@ export const columns: ColumnDef<MergeInvoice>[] = [
       <DataTableColumnHeader column={column} title="Student" />
     ),
     cell: ({ row }) => {
+      const {students} = useStudents();
+      const student = (id: string) => students.find((s) => s.id === id);
         const studentId: string = row.getValue("studentId");
         return (
           <span>
-            {studentId}
+            {student(studentId)?.name}
           </span>
         );
       },
@@ -62,11 +66,11 @@ export const columns: ColumnDef<MergeInvoice>[] = [
       <DataTableColumnHeader column={column} title="Rate" />
     ),
     cell: ({ row }) => {
-      const currency: string = row.getValue("currency");
+      const currency: Currency = row.getValue("currency");
       const rate: number = row.getValue("rate");
       return (
         <span>
-          {rate} {currency}
+           {currency} {rate.toFixed(2)}
         </span>
       );
     },
