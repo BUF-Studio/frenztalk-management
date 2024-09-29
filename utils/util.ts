@@ -107,7 +107,7 @@ export function formatDateRange(
     const endDate = new Date(
       startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000
     );
-    return outputFormat == "date" ? formatDate(endDate) : formatDateTime(endDate);
+    return outputFormat === "date" ? formatDate(endDate) : formatDateTime(endDate);
   } catch (error) {
     console.error("Error formatting time range:", error);
     return "Invalid time range";
@@ -136,6 +136,14 @@ export function getMonthFromISOString(dateString: string, format: 'number' | 'na
   return monthIndex + 1; // 1-based month number
 }
 
+export const formatDateTimeLocal = (isoString: string): string => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  // Adjust for local timezone offset
+  const offset = date.getTimezoneOffset() * 60000;
+  const localISOTime = (new Date(date.getTime() - offset)).toISOString();
+  return localISOTime.slice(0, 16); // Remove seconds and milliseconds
+};
 
 /**
  * Capitalizes the first letter of a string.

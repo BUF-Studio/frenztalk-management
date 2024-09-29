@@ -1,15 +1,15 @@
 import { AppProps } from "next/app";
-import { ScriptProps } from "next/script";
+import type { ScriptProps } from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Invoice } from "../../models/invoice";
+import type { Invoice } from "../../models/invoice";
 import { invoicesStream } from "@/lib/firebase/invoice";
 
 type InvoicesContextType = {
     invoices: Invoice[];
     filteredInvoices: Invoice[];
     unpaidInvoices: Invoice[];
-    totalReceiveRate: Number;
-    totalUnreceiveRate: Number;
+    totalReceiveRate: number;
+    totalUnreceiveRate: number;
     month: string;
     setMonth: (month: string) => void;
 
@@ -33,8 +33,8 @@ function InvoicesProvider({ children }: ScriptProps) {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [filteredInvoices, setFilterInvoices] = useState<Invoice[]>([]);
     const [unpaidInvoices, setUnpaidInvoices] = useState<Invoice[]>([]);
-    const [totalReceiveRate, setTotalReceiveRate] = useState<Number>(0);
-    const [totalUnreceiveRate, setTotalUnreceiveRate] = useState<Number>(0);
+    const [totalReceiveRate, setTotalReceiveRate] = useState<number>(0);
+    const [totalUnreceiveRate, setTotalUnreceiveRate] = useState<number>(0);
     const [month, setMonth] = useState<string>('');
 
     // Fetch data from Firebase and set up listeners

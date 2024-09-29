@@ -1,81 +1,122 @@
 "use client";
 
-import MonthCalendar from "@/app/components/dashboard/Calendar";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-import TuitionList from "../../components/main/tuitionList";
-import { AddTuitionModalDialog } from "./tuitionModalDialog";
+import { useState, useMemo } from "react";
+import MonthCalendar from "@/app/components/dashboard/Calendar";
+import TuitionList from "@/app/components/main/tuitionList";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import UnpaidWarningList from "@/app/components/main/unpaidWarningList";
 import { useInvoices } from "@/lib/context/collection/invoiceContext";
+import { Button } from "@/app/components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs";
 
 export default function TuitionPage() {
   const { tuitions } = useTuitions();
   const router = useRouter();
-  // const { tuition, setTuition } = useTuitionPage();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { unpaidInvoices } = useInvoices();
+  const [currentTime] = useState(() => new Date().getTime());
 
-  // useEffect(() => {
-  //   fetchTuitions()
-  // }, [])
-
-  // async function fetchTuitions(page = 1, pageSize = 10) {
-  //   const response = await fetch(`/api/tuitions?page=${page}&pageSize=${pageSize}`)
-  //   const data = await response.json()
-  //   console.log(data)
-  //   setTuitions(data)
-  // }
-
-  const addTuition = () => {
-    // setTuition(null);
-    setIsModalOpen(true);
+  const handleAddTuition = () => {
+    router.push("/tuitions/add");
   };
 
+  const { presentTuitions, pastTuitions } = useMemo(() => {
+    const present = [];
+    const past = [];
+
+    for (const tuition of tuitions) {
+      const startTime = new Date(tuition.startTime).getTime();
+      const endTime = startTime + tuition.duration * 60000; // Assuming duration is in minutes
+
+      if (endTime <= currentTime) {
+        past.push(tuition);
+      } else {
+        present.push(tuition);
+      }
+    }
+
+    return { presentTuitions: present, pastTuitions: past };
+  }, [tuitions, currentTime]);
+
   return (
-    <div className="flex flex-1 h-full w-full flex-row gap-4 justify-start items-start overflow-hidden">
-      <div className="flex flex-col flex-1 overflow-y-auto h-full">
-        {/* Calendar section */}
-        <div className="flex flex-col flex-1 h-full">
-          <MonthCalendar
-            events={tuitions}
-            onDateSelect={(date) => setSelectedDate(date)}
-          />
-          <div className="flex flex-1 flex-grow" />
+    <div className="dark:transparent dark:text-neutral-100 h-full flex flex-col">
+      <div className="flex flex-row justify-between items-center mb-2">
+        <h1 className="text-xl font-bold">Home</h1>
+      </div>
+      {/* Main Section */}
+      <div className="flex flex-col lg:flex-row gap-4 flex-grow overflow-hidden">
+        {/* Left Side */}
+        <div className="flex-grow overflow-hidden flex flex-col">
+          <Tabs defaultValue="present" className="w-full h-full flex flex-col">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="present">Present</TabsTrigger>
+              <TabsTrigger value="past">Past</TabsTrigger>
+            </TabsList>
+            <div className="flex-grow overflow-hidden">
+              <TabsContent value="present" className="h-full overflow-y-auto">
+                <TuitionList tuitions={presentTuitions} filter={selectedDate} />
+              </TabsContent>
+              <TabsContent value="past" className="h-full overflow-y-auto">
+                <TuitionList tuitions={pastTuitions} filter={selectedDate} />
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
-        {/* Unpaid classes section */}
-        <div className="flex flex-col flex-1 h-full">
-          <h1 className="text-lg font-normal my-2">Unpaid Invoices</h1>
-          <div className="flex-1">
-            <UnpaidWarningList unpaidInvoiceList={unpaidInvoices} tuitions={tuitions}/>
+
+        {/* Right Side */}
+        <div className="lg:w-[300px] flex-shrink-0 flex flex-col gap-4 overflow-y-auto">
+          <div className="flex flex-row justify-between items-center">
+            {selectedDate ? (
+              <Button
+                variant={"secondary"}
+                onClick={() => setSelectedDate(null)}
+              >
+                {selectedDate.toDateString()}
+                <X className="ml-2" size={16} strokeWidth={3} />
+              </Button>
+            ) : (
+              <Button
+                variant={"outline"}
+                onClick={() => setSelectedDate(null)}
+                disabled
+              >
+                No Filter
+              </Button>
+            )}
+            <Button variant={"default"} onClick={handleAddTuition}>
+              <Plus size={16} strokeWidth={3} className="mr-1" />
+              Add Class
+            </Button>
+          </div>
+          <div>
+            <MonthCalendar
+              events={tuitions}
+              onDateSelect={(date) => setSelectedDate(date)}
+              onResetDateSelect={selectedDate === null}
+            />
+          </div>
+          <div className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold dark:text-neutral-200">
+                Unpaid Invoices
+              </h2>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto">
+              <UnpaidWarningList
+                unpaidInvoiceList={unpaidInvoices}
+                tuitions={tuitions}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-[460px] h-full flex-shrink-0 flex flex-col overflow-y-auto">
-        <div className="flex flex-row justify-between items-center mb-2">
-          <h1 className="text-lg font-normal">Classes</h1>
-          <button
-            className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
-            type="button"
-            onClick={addTuition}
-          >
-            <Plus size={16} strokeWidth={3} className="mr-1" />
-            Add Class
-          </button>
-        </div>
-
-        <TuitionList tuitions={tuitions} />
-      </div>
-      <AddTuitionModalDialog
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
-        tuition={null}
-        setTuition={() => {}}
-      />
     </div>
   );
 }

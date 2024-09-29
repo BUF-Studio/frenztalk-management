@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, type BadgeProps } from "@/app/components/general/badge";
+
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import {
   capitalizeFirstLetter,
@@ -12,7 +12,10 @@ import { AccessTime, CalendarToday } from "@mui/icons-material";
 import { Check, Copy } from "lucide-react";
 import Link from "next/link";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Live from "../ui/icon/live";
+import { Badge } from "../ui/badge";
+import TuitionStatus from "@/lib/models/tuitionStatus";
 
 interface TuitionCardProps {
   subject: string;
@@ -41,28 +44,45 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
   onClick,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const { showSnackbar } = useSnackbar();
   // const { tuitions } = useTuitions();
   // const { invoices } = useInvoices();
   // const { tutors } = useTutors();
   // const { students } = useStudents();
 
-  const getStatusVariant = (status: string): BadgeProps["variant"] => {
-    switch (status.toLowerCase()) {
-      case "active":
-      case "end":
-        return "success";
-      case "pending":
-        return "info";
-      case "on hold":
-        return "warning";
-      case "failed":
-      case "":
-        return "error";
-      default:
-        return "info";
+  useEffect(() => {
+    const checkIfLive = () => {
+      const now = new Date();
+      const startTime = new Date(time);
+      const endTime = new Date(startTime.getTime() + duration * 60000);
+      setIsLive(now >= startTime && now <= endTime);
+    };
+
+    checkIfLive();
+    const intervalId = setInterval(checkIfLive, 60000); // Check every minute
+
+    return () => clearInterval(intervalId);
+  }, [time, duration]);
+
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
+    if (!status) {
+      return "destructive";
     }
-  };
+
+    switch (status.toLowerCase()) {
+      case TuitionStatus.ACTIVE:
+        return "default";
+      case TuitionStatus.PENDING:
+        return "destructive";
+      case TuitionStatus.END:
+        return "secondary";
+      default:
+        return "outline";
+    }
+  }
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -110,6 +130,9 @@ const TuitionCard: React.FC<TuitionCardProps> = ({
             <AccessTime className="h-4 w-4 mr-2" />
             {formatTime(time, duration)}
           </span>
+          {isLive && (
+              <Live />
+          )}
         </div>
 
         <div className="flex justify-between items-start h-fit">

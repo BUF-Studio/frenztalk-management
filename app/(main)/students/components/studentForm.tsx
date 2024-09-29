@@ -74,15 +74,15 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
 
         if (formData.status === "frozen") {
           try {
-            var tempStudent = studentData;
+            const tempStudent = studentData;
 
             //TODO : make this transactional, rollback the changes when something failed in the mid way
             await updateStudent(tempStudent);
 
-            var freezedStudentFutureClasses = tuitions.filter(
+            const freezedStudentFutureClasses = tuitions.filter(
               (tuition) =>
                 new Date(tuition.startTime) > new Date(Date.now()) &&
-                tuition.studentId == initialStudent.id
+                tuition.studentId === initialStudent.id
             );
             freezedStudentFutureClasses.forEach(async (tuitionClass) => {
               await deleteTuition(tuitionClass);

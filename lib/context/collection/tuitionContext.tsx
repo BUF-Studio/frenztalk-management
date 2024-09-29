@@ -1,8 +1,8 @@
 import { AppProps } from "next/app";
 import { ScriptProps } from "next/script";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import { tuitionsStream } from "@/lib/firebase/tuition";
-import { Tuition } from "@/lib/models/tuition";
+import type { Tuition } from "@/lib/models/tuition";
 
 type TuitionsContextType = {
 
@@ -11,9 +11,9 @@ type TuitionsContextType = {
     activeTuitions: Tuition[];
     endTuitions: Tuition[];
     upcomingTuitions: Tuition[];
-    totalHours: Number;
-    endHours: Number;
-    trialHours: Number;
+    totalHours: number;
+    endHours: number;
+    trialHours: number;
     month: string;
     setMonth: (month: string) => void;
 

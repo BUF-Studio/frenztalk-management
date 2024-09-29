@@ -1,7 +1,14 @@
 export default function StudentLayout({
-    children
-  }: {
-    children: React.ReactNode;
-  }) {
-    return <>{children}</>;
-  }
+  children,
+  modal,
+}: {
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}) {
+  return (
+    <>
+      {children}
+      {modal}
+    </>
+  );
+}
