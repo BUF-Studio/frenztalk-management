@@ -7,14 +7,23 @@
  * @param includeTime - Whether to include the time in the formatted output
  * @returns Formatted date string or an error message if the input is invalid
  */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+export function formatDate(dateString: string): string | null | undefined {
+  if (!dateString) {
+    console.error("Invalid start time: null or undefined");
+    return "Invalid time";
+  }
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid date";
+  }
 }
 
 /**
@@ -41,15 +50,12 @@ export const formatTime = (
   date: string | null | undefined,
   duration: number | null | undefined
 ) => {
-
   if (!date) {
     console.error("Invalid start time: null or undefined");
     return "Invalid time";
   }
   try {
     // Create a date object in UTC
-    console.log('format time')
-    console.log(date)
     const start = new Date(date);
     const end = new Date(start.getTime() + (duration ?? 0) * 60 * 1000);
 
@@ -112,5 +118,3 @@ export const formatDateTimeLocal = (isoString: string): string => {
   const localISOTime = new Date(date.getTime() - offset).toISOString();
   return localISOTime.slice(0, 16); // Remove seconds and milliseconds
 };
-
-

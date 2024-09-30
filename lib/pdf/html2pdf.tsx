@@ -23,6 +23,7 @@ import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { Payment } from "../models/payment";
 
 interface InvoiceTemplateProps {
   invoice: Invoice | null;
@@ -272,4 +273,8 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
       </div>
     </div>
   );
+}
+
+interface PaymentTemplateProps {
+  payment: Payment | null;
 }

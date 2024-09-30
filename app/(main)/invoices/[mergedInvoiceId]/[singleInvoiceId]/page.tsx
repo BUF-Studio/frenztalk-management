@@ -33,7 +33,11 @@ const PDFDownloadLink = dynamic(
   }
 );
 
-export default function SingleInvoiceDetail({ params }: { params: { singleInvoiceId: string } }) {
+export default function SingleInvoiceDetail({
+  params,
+}: {
+  params: { singleInvoiceId: string };
+}) {
   const { invoice, setInvoice } = useInvoicePage();
   const { invoices } = useInvoices();
   const { tuitions } = useTuitions();
@@ -58,7 +62,9 @@ export default function SingleInvoiceDetail({ params }: { params: { singleInvoic
 
   useEffect(() => {
     if (invoice === null || invoice.id !== params.singleInvoiceId) {
-      const foundInvoice = invoices.find((s) => s.id === params.singleInvoiceId);
+      const foundInvoice = invoices.find(
+        (s) => s.id === params.singleInvoiceId
+      );
       if (foundInvoice) setInvoice(foundInvoice);
     }
   }, [params, invoice, invoices, setInvoice]);

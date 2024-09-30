@@ -238,7 +238,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
             <div className="flex gap-4">
               <span className="flex items-center text-gray-500 dark:text-neutral-400 text-sm">
                 <CalendarToday className="h-4 w-4 mr-2" />
-                {formatDate(tuition?.startTime)}
+                {formatDate(tuition?.startTime!)}
               </span>
               <span className="flex items-center text-gray-500 dark:text-neutral-400 text-sm">
                 <AccessTime className="h-4 w-4 mr-2" />
