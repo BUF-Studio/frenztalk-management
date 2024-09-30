@@ -23,6 +23,14 @@ import { Invoice } from "@/lib/models/invoice";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
 import { Separator } from "@/app/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
+import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import generatePDF from "@/lib/pdf/pdf";
 
 export default function InvoiceDetail({
   params,
@@ -86,6 +94,10 @@ export default function InvoiceDetail({
     }
   }
 
+  function handleStatusChange(status: InvoiceStatus): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="container mx-auto">
       <button
@@ -106,9 +118,35 @@ export default function InvoiceDetail({
               </Badge>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <Button variant="outline" size="sm">
               Download
+            </Button>
+          </div> */}
+          <div className="flex gap-2" data-html2canvas-ignore>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Change Status</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {Object.values(InvoiceStatus)
+                  .filter((status) => status !== mergeInvoice?.status)
+                  .map((status) => (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={() => handleStatusChange(status)}
+                    >
+                      {capitalizeFirstLetter(status)}
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              variant="outline"
+              onClick={() => console.log("Edit")}
+            >
+              Download
+              <Download className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>
@@ -180,11 +218,6 @@ export default function InvoiceDetail({
               ))}
             </TableBody>
           </Table>
-        </div>
-        <div className="flex justify-end">
-          <div className="bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium">
-            Total: {mergeInvoice.currency} {mergeInvoice.rate.toFixed(2)}
-          </div>
         </div>
       </div>
     </div>

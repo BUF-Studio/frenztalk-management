@@ -75,7 +75,7 @@ export default function AnalyticsDashboard() {
               <Users className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalHours.toString()}</div>
+              <div className="text-2xl font-bold">{totalHours.toFixed(2)}</div>
               {/* <p className="text-xs text-muted-foreground">
                 +20.1% from last month
               </p> */}
@@ -103,7 +103,7 @@ export default function AnalyticsDashboard() {
               <PieChart className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{trialHours.toString()}</div>
+              <div className="text-2xl font-bold">{trialHours.toFixed(2)}</div>
               {/* <p className="text-xs text-muted-foreground">
                 -3.2% from last month
               </p> */}
@@ -119,7 +119,7 @@ export default function AnalyticsDashboard() {
               <LineChartIcon className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{(totalReceiveRate - totalPaymentRate).toString()}</div>
+              <div className="text-2xl font-bold">{(totalReceiveRate - totalPaymentRate).toFixed(2)}</div>
               {/* <p className="text-xs text-muted-foreground">
                 +12.3% from last month
               </p> */}

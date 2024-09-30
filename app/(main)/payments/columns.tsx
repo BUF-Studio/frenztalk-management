@@ -3,6 +3,7 @@
 import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
+import { useTutors } from "@/lib/context/collection/tutorContext";
 import type { MergeInvoice } from "@/lib/models/mergeInvoice";
 import type { MergePayment } from "@/lib/models/mergePayment";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -43,10 +44,12 @@ export const columns: ColumnDef<MergePayment>[] = [
       <DataTableColumnHeader column={column} title="Tutor" />
     ),
     cell: ({ row }) => {
+      const { tutors } = useTutors();
+      const tutor = ( id: string) => tutors.find((t) => t.id === id);
         const tutorId: string = row.getValue("tutorId");
         return (
           <span>
-            {tutorId}
+            {tutor(tutorId)?.name}
           </span>
         );
       },
@@ -67,7 +70,7 @@ export const columns: ColumnDef<MergePayment>[] = [
       const rate: number = row.getValue("rate");
       return (
         <span>
-          {rate} {currency}
+          {currency} {rate}
         </span>
       );
     },
