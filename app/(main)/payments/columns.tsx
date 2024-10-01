@@ -70,7 +70,7 @@ export const columns: ColumnDef<MergePayment>[] = [
       const rate: number = row.getValue("rate");
       return (
         <span>
-          {currency} {rate}
+          {currency} {rate.toFixed(2)}
         </span>
       );
     },

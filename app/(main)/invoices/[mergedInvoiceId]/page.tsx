@@ -29,8 +29,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import generatePDF from "@/lib/pdf/pdf";
+import { Download } from "lucide-react";
+import { updateMergeInvoice } from "@/lib/firebase/mergeInvoice";
+import { updateInvoice } from "@/lib/firebase/invoice";
+import { toast } from "@/app/components/hooks/use-toast";
 
 export default function InvoiceDetail({
   params,
@@ -84,18 +86,56 @@ export default function InvoiceDetail({
 
     switch (status.toLowerCase()) {
       case InvoiceStatus.PAID:
-        return "secondary";
+        return "outline";
       case InvoiceStatus.PENDING:
         return "default";
-      case InvoiceStatus.CANCEL:
-        return "outline";
       default:
         return "destructive";
     }
   }
 
-  function handleStatusChange(status: InvoiceStatus): void {
-    throw new Error("Function not implemented.");
+  async function handleStatusChange(status: InvoiceStatus): Promise<void> {
+    if (!mergeInvoice) return;
+
+    try {
+      const updatedMergeInvoice = new MergeInvoice(
+        mergeInvoice.id,
+        mergeInvoice.invoicesId,
+        mergeInvoice.month,
+        mergeInvoice.rate,
+        status,
+        mergeInvoice.currency,
+        mergeInvoice.studentId
+      );
+      await updateMergeInvoice(updatedMergeInvoice);
+
+      for (const invoice of singleInvoices) {
+        const updatedInvoice = new Invoice(
+          invoice.id,
+          invoice.tuitionId,
+          invoice.tutorId,
+          invoice.studentId,
+          invoice.subjectId,
+          invoice.rate,
+          status,
+          invoice.startDateTime,
+          invoice.duration,
+          invoice.currency,
+          invoice.price
+        );
+        await updateInvoice(updatedInvoice);
+      }
+      toast({
+        title: "Status Updated Successfully",
+        description: `Merge Invoice status has been updated to ${status}`
+      });
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Error Updating Status",
+        description: "An error occurred while updating the status.",
+      });
+    }
   }
 
   return (
@@ -118,11 +158,6 @@ export default function InvoiceDetail({
               </Badge>
             </div>
           </div>
-          {/* <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Download
-            </Button>
-          </div> */}
           <div className="flex gap-2" data-html2canvas-ignore>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -201,11 +236,11 @@ export default function InvoiceDetail({
                   </TableCell>
                   <TableCell>{tutor(invoice.tutorId)?.name}</TableCell>
                   <TableCell>
-                    {invoice.currency} {invoice.rate.toFixed(2)}
+                    {invoice.currency} {invoice.price.toFixed(2)}
                   </TableCell>
                   <TableCell>{invoice.duration} min</TableCell>
                   <TableCell>
-                    {invoice.currency} {invoice.price.toFixed(2)}
+                    {invoice.currency} {invoice.rate.toFixed(2)}
                   </TableCell>
                   <TableCell>
                     <div>
