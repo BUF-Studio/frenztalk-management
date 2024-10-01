@@ -749,7 +749,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           <Input
             type="datetime-local"
             name="startDateTime"
-            value={formatDateTimeLocal(formData.startDateTime as string)}
+            value={formatDateTimeLocal(formData.startDateTime)}
             onChange={handleChange}
             placeholder="Start Time"
             required

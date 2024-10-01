@@ -111,10 +111,17 @@ export function formatDateRange(
 }
 
 export const formatDateTimeLocal = (isoString: string): string => {
+  console.log("isoString date: ", isoString);
   if (!isoString) return "";
+
   const date = new Date(isoString);
-  // Adjust for local timezone offset
-  const offset = date.getTimezoneOffset() * 60000;
-  const localISOTime = new Date(date.getTime() - offset).toISOString();
-  return localISOTime.slice(0, 16); // Remove seconds and milliseconds
+
+  // Get the timezone offset in minutes
+  const timezoneOffsetInMinutes = date.getTimezoneOffset();
+  const utcIsoTime = new Date(date.getTime()).toISOString();
+
+  // Adjust for local timezone offset (convert minutes to milliseconds)
+  // const offsetInMilliseconds = timezoneOffsetInMinutes * 60000;
+  // const localISOTime = new Date(date.getTime() - offsetInMilliseconds).toISOString();
+  return utcIsoTime.slice(0, 16); // Remove seconds and milliseconds
 };
