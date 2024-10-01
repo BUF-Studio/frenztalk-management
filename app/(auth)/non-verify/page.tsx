@@ -26,7 +26,8 @@ const NonVerify = () => {
                 Please contact Frenztalk Admin for more information.
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button
+                {/* TODO: Add contact admin button */}
+                {/* <button
                   type="button"
                   className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                   onClick={() => {
@@ -34,7 +35,7 @@ const NonVerify = () => {
                   }}
                 >
                   Contact Admin
-                </button>
+                </button> */}
                 <button
                   type="button"
                   className="w-full sm:w-auto bg-white hover:bg-gray-100 text-red-600 font-bold py-3 px-6 rounded-lg border border-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
