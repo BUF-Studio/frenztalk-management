@@ -1,18 +1,13 @@
 "use client";
 
 import { usePayments } from "@/lib/context/collection/paymentContext";
-import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
-import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
-import type { Payment } from "@/lib/models/payment";
-import type { Tuition } from "@/lib/models/tuition";
+import { Payment } from "@/lib/models/payment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import dynamic from "next/dynamic";
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { usePaymentPage } from "@/lib/context/page/paymentPageContext";
 import { Separator } from "@/app/components/ui/separator";
 import {
   DropdownMenu,
@@ -35,45 +30,24 @@ import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { MergePayment } from "@/lib/models/mergePayment";
 import { Button } from "@/app/components/ui/button";
 import { Download } from "lucide-react";
-
-const PDFViewer = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
-  {
-    ssr: false,
-    loading: () => <p>Loading...</p>,
-  }
-);
-
-const PDFDownloadLink = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => <p>Loading...</p>,
-  }
-);
+import { updateMergePayment } from "@/lib/firebase/mergePayment";
+import { toast } from "@/app/components/hooks/use-toast";
+import { updatePayment } from "@/lib/firebase/payment";
 
 export default function PaymentDetail({
   params,
 }: {
   params: { mergedPaymentId: string };
 }) {
-  const { payment, setPayment } = usePaymentPage();
   const { payments } = usePayments();
   const [mergePayment, setMergePayment] = useState<MergePayment | null>(null);
   const [singlePayments, setSinglePayments] = useState<Payment[]>([]);
   const { mergePayments } = useMergePayments();
-  const { tuitions } = useTuitions();
-  const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const [loading, setLoading] = useState(true);
 
-
   const router = useRouter();
-
-  const tuition: Tuition | undefined = tuitions.find(
-    (tuition) => tuition.id === payment?.tuitionId
-  );
 
   useEffect(() => {
     const foundMergePayment = mergePayments.find(
@@ -109,19 +83,62 @@ export default function PaymentDetail({
 
     switch (status.toLowerCase()) {
       case InvoiceStatus.PAID:
-        return "secondary";
+        return "outline";
       case InvoiceStatus.PENDING:
         return "default";
-      case InvoiceStatus.CANCEL:
-        return "outline";
       default:
         return "destructive";
     }
   }
 
-  function handleStatusChange(status: InvoiceStatus): void {
-    throw new Error("Function not implemented.");
+  async function handleStatusChange(status: InvoiceStatus): Promise<void> {
+    if (!mergePayment || loading) return;
+
+    setLoading(true);
+    try {
+      const updatedMergePayment = new MergePayment(
+        mergePayment.id,
+        mergePayment.paymentsId,
+        mergePayment.month,
+        mergePayment.rate,
+        status,
+        mergePayment.currency,
+        mergePayment.tutorId
+      );
+      await updateMergePayment(updatedMergePayment);
+
+      for (const payment of singlePayments) {
+        const updatedPayment = new Payment(
+          payment.id,
+          payment.tuitionId,
+          payment.tutorId,
+          payment.studentId,
+          payment.subjectId,
+          payment.rate,
+          status,
+          payment.startDateTime,
+          payment.duration,
+          payment.currency,
+          payment.price
+        );
+        await updatePayment(updatedPayment);
+      }
+      toast({
+        title: "Status Updated Successfully",
+        description: `Merge payment status has been updated to ${status}`
+      });
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Error Updating Status",
+        description: "An error occurred while updating the status.",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
+
+  
 
   return (
     <div className="container mx-auto">
@@ -143,11 +160,6 @@ export default function PaymentDetail({
               </Badge>
             </div>
           </div>
-          {/* <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Download
-            </Button>
-          </div> */}
           <div className="flex gap-2" data-html2canvas-ignore>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -223,11 +235,11 @@ export default function PaymentDetail({
                   </TableCell>
                   <TableCell>{tutor?.name}</TableCell>
                   <TableCell>
-                    {payment.currency} {payment.rate.toFixed(2)}
+                    {payment.currency} {payment.price.toFixed(2)}
                   </TableCell>
                   <TableCell>{payment.duration} min</TableCell>
                   <TableCell>
-                    {payment.currency} {payment.price.toFixed(2)}
+                    {payment.currency} {payment.rate.toFixed(2)}
                   </TableCell>
                   <TableCell>
                     <div>

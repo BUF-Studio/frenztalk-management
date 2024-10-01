@@ -15,10 +15,10 @@ import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
-import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { Payment } from "../models/payment";
 import { updatePayment } from "../firebase/payment";
+import { toast } from "@/app/components/hooks/use-toast";
 
 interface PaymentTemplateProps {
   payment: Payment | null;
@@ -29,7 +29,6 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
   const { students } = useStudents();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
-  const { showSnackbar } = useSnackbar();
 
   const tuition = tuitions.find((t) => t.id === payment?.tuitionId);
   const tutor = students.find((s) => s.id === payment?.tutorId);
@@ -64,17 +63,17 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
 
     switch (status.toLowerCase()) {
       case InvoiceStatus.PAID:
-        return "secondary";
+        return "outline";
       case InvoiceStatus.PENDING:
         return "default";
-      case InvoiceStatus.CANCEL:
-        return "outline";
       default:
         return "destructive";
     }
   }
   const handleStatusChange = async (status: InvoiceStatus) => {
-    if (payment) {
+    if (!payment) return;
+
+    try {
       const updatedPayment = new Payment(
         payment.id,
         payment.tuitionId,
@@ -89,7 +88,16 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
         payment.price
       );
       await updatePayment(updatedPayment);
-      showSnackbar("Payment status updated", "success");
+      toast({
+        title: "Status Updated Successfully",
+        description: `Merge payment status has been updated to ${status}`,
+      });
+      onStatusChange(updatedPayment)
+    } catch (error) {
+      toast({
+        title: "Error Updating Status",
+        description: "An error occurred while updating the status.",
+      });
     }
   };
 
@@ -117,7 +125,7 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
             </h2>
           </div>
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold">{payment?.id}</h2>
               <Badge variant={getStatusVariant(payment?.status)}>
                 {capitalizeFirstLetter(payment?.status)}
