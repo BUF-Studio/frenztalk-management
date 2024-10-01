@@ -113,7 +113,7 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
               )}
             </div>
             <h2 className="text-lg font-medium text-primary">
-              payment Statement
+              Payment Statement
             </h2>
           </div>
           <div className="flex justify-between items-center">

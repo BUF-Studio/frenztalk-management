@@ -11,12 +11,13 @@ import type { Subject } from "@/lib/models/subject";
 import type { Tuition } from "@/lib/models/tuition";
 import type { Tutor } from "@/lib/models/tutor";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import paymentPDF from "@/lib/pdf/html2pdf";
 import dynamic from "next/dynamic";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import PaymentTemplate from "@/lib/pdf/paymentTempate";
+import { Payment } from "@/lib/models/payment";
 
 const PDFViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
@@ -34,32 +35,15 @@ const PDFDownloadLink = dynamic(
   }
 );
 
-export default function SinglePaymentDetail({ params }: { params: { singlepaymentId: string } }) {
-  const { payment, setPayment } = usePaymentPage();
+export default function SinglePaymentDetail({ params }: { params: { singlePaymentId: string } }) {
+  const [ payment, setPayment ] = useState<Payment | null>(null);
   const { payments } = usePayments();
-  const { tuitions } = useTuitions();
-  const { students } = useStudents();
-  const { tutors } = useTutors();
-  const { subjects } = useSubjects();
 
   const router = useRouter();
 
-  const tuition: Tuition | undefined = tuitions.find(
-    (tuition) => tuition.id === payment?.tuitionId
-  );
-  const student: Student | undefined = students.find(
-    (student) => student.id === payment?.studentId
-  );
-  const tutor: Tutor | undefined = tutors.find(
-    (tutor) => tutor.id === payment?.tutorId
-  );
-  const subject: Subject | undefined = subjects.find(
-    (subject) => subject.id === payment?.subjectId
-  );
-
   useEffect(() => {
-    if (payment === null || payment.id !== params.singlepaymentId) {
-      const foundPayment = payments.find((s) => s.id === params.singlepaymentId);
+    if (payment === null || payment.id !== params.singlePaymentId) {
+      const foundPayment = payments.find((s) => s.id === params.singlePaymentId);
       if (foundPayment) setPayment(foundPayment);
     }
   }, [params, payment, payments, setPayment]);
@@ -78,7 +62,6 @@ export default function SinglePaymentDetail({ params }: { params: { singlepaymen
       </button>
 
       <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">
-        {/* <paymentPDF payment={payment}/> */}
         <PaymentTemplate payment={payment}/>
       </div>
     </div>
