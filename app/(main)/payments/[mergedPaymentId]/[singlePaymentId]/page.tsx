@@ -1,11 +1,11 @@
 "use client";
 
-import { useInvoices } from "@/lib/context/collection/invoiceContext";
+import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
-import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
+import { usePaymentPage } from "@/lib/context/page/paymentPageContext";
 import type { Student } from "@/lib/models/student";
 import type { Subject } from "@/lib/models/subject";
 import type { Tuition } from "@/lib/models/tuition";
@@ -13,9 +13,10 @@ import type { Tutor } from "@/lib/models/tutor";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import InvoicePDF from "@/lib/pdf/html2pdf";
+import paymentPDF from "@/lib/pdf/html2pdf";
 import dynamic from "next/dynamic";
 import { ArrowBackIosNew } from "@mui/icons-material";
+import PaymentTemplate from "@/lib/pdf/paymentTempate";
 
 const PDFViewer = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
@@ -33,9 +34,9 @@ const PDFDownloadLink = dynamic(
   }
 );
 
-export default function SingleInvoiceDetail({ params }: { params: { singleInvoiceId: string } }) {
-  const { invoice, setInvoice } = useInvoicePage();
-  const { invoices } = useInvoices();
+export default function SinglePaymentDetail({ params }: { params: { singlepaymentId: string } }) {
+  const { payment, setPayment } = usePaymentPage();
+  const { payments } = usePayments();
   const { tuitions } = useTuitions();
   const { students } = useStudents();
   const { tutors } = useTutors();
@@ -44,24 +45,24 @@ export default function SingleInvoiceDetail({ params }: { params: { singleInvoic
   const router = useRouter();
 
   const tuition: Tuition | undefined = tuitions.find(
-    (tuition) => tuition.id === invoice?.tuitionId
+    (tuition) => tuition.id === payment?.tuitionId
   );
   const student: Student | undefined = students.find(
-    (student) => student.id === invoice?.studentId
+    (student) => student.id === payment?.studentId
   );
   const tutor: Tutor | undefined = tutors.find(
-    (tutor) => tutor.id === invoice?.tutorId
+    (tutor) => tutor.id === payment?.tutorId
   );
   const subject: Subject | undefined = subjects.find(
-    (subject) => subject.id === invoice?.subjectId
+    (subject) => subject.id === payment?.subjectId
   );
 
   useEffect(() => {
-    if (invoice === null || invoice.id !== params.singleInvoiceId) {
-      const foundInvoice = invoices.find((s) => s.id === params.singleInvoiceId);
-      if (foundInvoice) setInvoice(foundInvoice);
+    if (payment === null || payment.id !== params.singlepaymentId) {
+      const foundPayment = payments.find((s) => s.id === params.singlepaymentId);
+      if (foundPayment) setPayment(foundPayment);
     }
-  }, [params, invoice, invoices, setInvoice]);
+  }, [params, payment, payments, setPayment]);
 
   return (
     <div>
@@ -73,11 +74,12 @@ export default function SingleInvoiceDetail({ params }: { params: { singleInvoic
         className="flex items-center text-gray-600 dark:text-neutral-400 hover:text-gray-800 dark:hover:text-neutral-200 transition-colors mb-4"
       >
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
-        <h1 className="text-lg font-semibold">Single Invoice Details</h1>
+        <h1 className="text-lg font-semibold">Single payment Details</h1>
       </button>
 
       <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">
-        {/* <InvoicePDF invoice={invoice}/> */}
+        {/* <paymentPDF payment={payment}/> */}
+        <PaymentTemplate payment={payment}/>
       </div>
     </div>
   );
