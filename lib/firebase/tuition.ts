@@ -62,6 +62,7 @@ export const tuitionsStream = (
     // queryBuilder = (q: Query<DocumentData>) => query(q, where('status', history ? '==' : '!=', 'end'));
 
     if (tutorId) {
+        console.log("tutorId when fetching tuitions ", tutorId);
         queryBuilder = (q: Query<DocumentData>) => query(q, where('tutorId', '==', tutorId));
     }
 

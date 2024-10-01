@@ -69,10 +69,24 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    studentId: string;
+    tutorId: string;
+    subjectId: string;
+    levelId: string;
+    status: string;
+    currency: string;
+    studentPrice: number;
+    tutorPrice: number;
+    startDateTime: string;
+    duration: number;
+    repeatWeeks: number;
+    trial: boolean;
+  }>({
     name: "",
     studentId: "",
-    tutorId: "",
+    tutorId: user?.role === "tutor" ? user.id ?? "" : "",
     subjectId: "",
     levelId: "",
     status: "",
