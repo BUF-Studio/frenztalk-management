@@ -47,12 +47,14 @@ import {
   updateMergePayment,
 } from "@/lib/firebase/mergePayment";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
+import { useUser } from "@/lib/context/collection/userContext";
 
 interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
+  const { user } = useUser();
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
@@ -599,7 +601,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             </SelectContent>
           </Select>
         </div>
-        <div className="grid w-full items-center gap-1.5">
+        {user?.role !== "tutor" && <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="tutor">Tutor</Label>
           <Select
             value={formData.tutorId}
@@ -618,7 +620,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div>}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
@@ -702,7 +704,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {user?.role !== "tutor" && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="student-rate">Student Rate</Label>
           <Input
@@ -725,7 +727,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             required
           />
         </div>
-      </div>
+      </div>}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
@@ -738,6 +740,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             required
           />
         </div>
+        {/* FIXME : Duration's granularity should be 30 minutes instead of 1 minute? */}
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="duration">Duration (min)</Label>
           <Input
