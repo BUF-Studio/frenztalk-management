@@ -10,18 +10,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
-import { Student } from "@/lib/models/student";
-import { Subject } from "@/lib/models/subject";
-import { Tuition } from "@/lib/models/tuition";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { Payment } from "../models/payment";
-import { useTutors } from "../context/collection/tutorContext";
 import { updatePayment } from "../firebase/payment";
 
 interface PaymentTemplateProps {
@@ -32,7 +28,6 @@ export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
   const [logoLoaded, setLogoLoaded] = useState(false);
   const { students } = useStudents();
   const { subjects } = useSubjects();
-  const { tutors } = useTutors();
   const { tuitions } = useTuitions();
   const { showSnackbar } = useSnackbar();
 
