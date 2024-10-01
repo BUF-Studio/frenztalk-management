@@ -36,17 +36,16 @@ function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
     if (tutorId) {
       let tutorStudents: Student[] = [];
 
-      // TODO: Filter students based on tuitions and tutor
-      // students.forEach(student => {
-      //   const checkStudent = tuitions.some(tuition => {
-      //     return tuition.tutorId === tutorId && tuition.studentId === student.id;
-      //   });
+      students.forEach(student => {
+        const checkStudent = tuitions.some(tuition => {
+          return tuition.tutorId === tutorId && tuition.studentId === student.id;
+        });
 
-      //   if (checkStudent && !tutorStudents.some(s => s.id === student.id)) {
-      //     tutorStudents.push(student);
-      //   }
-      // });
-      setStudents(students);
+        if (checkStudent && !tutorStudents.some(s => s.id === student.id)) {
+          tutorStudents.push(student);
+        }
+      });
+      setStudents(tutorStudents);
     } else {
       setStudents(students);
     }
