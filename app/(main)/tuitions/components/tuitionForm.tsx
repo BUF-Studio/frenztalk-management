@@ -47,12 +47,15 @@ import {
   updateMergePayment,
 } from "@/lib/firebase/mergePayment";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
+import { useUser } from "@/lib/context/collection/userContext";
 
 interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
+// Do input field validation!!!!!
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
+  const { user } = useUser();
   const { students } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
@@ -67,10 +70,24 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    studentId: string;
+    tutorId: string;
+    subjectId: string;
+    levelId: string;
+    status: string;
+    currency: string;
+    studentPrice: number;
+    tutorPrice: number;
+    startDateTime: string;
+    duration: number;
+    repeatWeeks: number;
+    trial: boolean;
+  }>({
     name: "",
     studentId: "",
-    tutorId: "",
+    tutorId: user?.role === "tutor" ? user.id ?? "" : "",
     subjectId: "",
     levelId: "",
     status: "",
@@ -199,7 +216,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         password: null,
         recurrence: null,
       });
-      if (response.status === 204) {
+      if (response.status >= 200 && response.status < 300) {
         return { success: true };
       }
       throw new Error(`Unexpected response status: ${response.status}`);
@@ -599,7 +616,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             </SelectContent>
           </Select>
         </div>
-        <div className="grid w-full items-center gap-1.5">
+        {user?.role !== "tutor" && <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="tutor">Tutor</Label>
           <Select
             value={formData.tutorId}
@@ -618,7 +635,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div>}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
@@ -702,7 +719,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {user?.role !== "tutor" && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="student-rate">Student Rate</Label>
           <Input
@@ -725,7 +742,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             required
           />
         </div>
-      </div>
+      </div>}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
@@ -738,6 +755,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             required
           />
         </div>
+        {/* FIXME : Duration's granularity should be 30 minutes instead of 1 minute? */}
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="duration">Duration (min)</Label>
           <Input
@@ -750,7 +768,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           />
         </div>
       </div>
-      <div className="grid w-full items-center gap-1.5">
+      {initialTuition == null && <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
         <Input
           type="number"
@@ -761,7 +779,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           required
           min={1}
         />
-      </div>
+      </div>}
       <div className="flex items-center space-x-2">
         <Checkbox
           id="trial"

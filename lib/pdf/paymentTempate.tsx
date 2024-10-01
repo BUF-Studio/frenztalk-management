@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import html2pdf from "html2pdf.js";
-import { Invoice } from "@/lib/models/invoice";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -11,34 +10,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
-import { Student } from "@/lib/models/student";
-import { Subject } from "@/lib/models/subject";
-import { Tuition } from "@/lib/models/tuition";
-import { updateInvoice } from "@/lib/firebase/invoice";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { Payment } from "../models/payment";
+import { updatePayment } from "../firebase/payment";
 
-interface InvoiceTemplateProps {
-  invoice: Invoice | null;
+interface PaymentTemplateProps {
+  payment: Payment | null;
 }
 
-export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
+export default function PaymentTemplate({ payment }: PaymentTemplateProps) {
   const [logoLoaded, setLogoLoaded] = useState(false);
   const { students } = useStudents();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
   const { showSnackbar } = useSnackbar();
 
-  const tuition = tuitions.find((t) => t.id === invoice?.tuitionId);
-  const student = students.find((s) => s.id === invoice?.studentId);
-  const subject = subjects.find((s) => s.id === invoice?.subjectId);
+  const tuition = tuitions.find((t) => t.id === payment?.tuitionId);
+  const tutor = students.find((s) => s.id === payment?.tutorId);
+  const subject = subjects.find((s) => s.id === payment?.subjectId);
 
   useEffect(() => {
     const img = new Image();
@@ -47,11 +42,11 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
   }, []);
 
   const generatePDF = () => {
-    const element = document.getElementById("invoice");
+    const element = document.getElementById("payment");
     if (element) {
       const opt = {
         margin: 10,
-        filename: "invoice.pdf",
+        filename: "payment.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -79,28 +74,28 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
     }
   }
   const handleStatusChange = async (status: InvoiceStatus) => {
-    if (invoice) {
-      const updatedInvoice = new Invoice(
-        invoice.id,
-        invoice.tuitionId,
-        invoice.tutorId,
-        invoice.studentId,
-        invoice.subjectId,
-        invoice.rate,
+    if (payment) {
+      const updatedPayment = new Payment(
+        payment.id,
+        payment.tuitionId,
+        payment.tutorId,
+        payment.studentId,
+        payment.subjectId,
+        payment.rate,
         status,
-        invoice.startDateTime,
-        invoice.duration,
-        invoice.currency,
-        invoice.price
+        payment.startDateTime,
+        payment.duration,
+        payment.currency,
+        payment.price
       );
-      await updateInvoice(updatedInvoice);
-      showSnackbar("Invoice status updated", "success");
+      await updatePayment(updatedPayment);
+      showSnackbar("Payment status updated", "success");
     }
   };
 
   return (
     <div
-      id="invoice"
+      id="payment"
       className="font-sans min-w-[768px] max-w-[768px] mx-auto p-6 bg-background text-foreground"
     >
       <div className="flex flex-col gap-6">
@@ -118,14 +113,14 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
               )}
             </div>
             <h2 className="text-lg font-medium text-primary">
-              Invoice Statement
+              Payment Statement
             </h2>
           </div>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-bold">{invoice?.id}</h2>
-              <Badge variant={getStatusVariant(invoice?.status)}>
-                {capitalizeFirstLetter(invoice?.status)}
+              <h2 className="text-xl font-bold">{payment?.id}</h2>
+              <Badge variant={getStatusVariant(payment?.status)}>
+                {capitalizeFirstLetter(payment?.status)}
               </Badge>
             </div>
             <div className="flex gap-2" data-html2canvas-ignore>
@@ -135,7 +130,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {Object.values(InvoiceStatus)
-                    .filter((status) => status !== invoice?.status)
+                    .filter((status) => status !== payment?.status)
                     .map((status) => (
                       <DropdownMenuItem
                         key={status}
@@ -156,7 +151,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
         <div className="flex justify-between">
           <div>
             <p className="text-md mb-1 text-muted-foreground">Billed to:</p>
-            <strong className="font-bold text-lg mb-1">{student?.name}</strong>
+            <strong className="font-bold text-lg mb-1">{tutor?.name}</strong>
             {/* <div className="text-sm">
               <p><span className="font-medium">Email:</span> --</p>
               <p><span className="font-medium">Phone No.:</span> --</p>
@@ -168,7 +163,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
             <p className="font-normal text-sm text-muted-foreground">
               Date Issued:
             </p>
-            <p className="mt-1 font-bold text-md">{invoice?.startDateTime}</p>
+            <p className="mt-1 font-bold text-md">{payment?.startDateTime}</p>
           </div>
           <div className="p-4 border-r border-border">
             <p className="font-normal text-sm text-muted-foreground">
@@ -181,8 +176,8 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
               Due Amount:
             </p>
             <p className="mt-1 font-bold text-md">{`${
-              invoice?.currency
-            } ${invoice?.rate.toFixed(2)}`}</p>
+              payment?.currency
+            } ${payment?.rate.toFixed(2)}`}</p>
           </div>
         </div>
         <table className="w-full border-collapse mt-4">
@@ -227,7 +222,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
                 Subtotal
               </td>
               <td className="py-4 px-4 text-right">
-                {invoice?.rate.toFixed(2)}
+                {payment?.rate.toFixed(2)}
               </td>
             </tr>
             <tr>
@@ -244,7 +239,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
                 Total
               </td>
               <td className="py-3 px-4 text-right font-bold text-xl">
-                {`${invoice?.currency} ${invoice?.rate.toFixed(2)}`}
+                {`${payment?.currency} ${payment?.rate.toFixed(2)}`}
               </td>
             </tr>
           </tfoot>
