@@ -15,12 +15,18 @@ interface InvoicesProps {
   studentId: string;
 }
 
-export const InvoiceList: React.FC<InvoicesProps> = ({ invoices,studentId }) => {
+export const InvoiceList: React.FC<InvoicesProps> = ({ invoices, studentId }) => {
   const router = useRouter();
   const { students } = useStudents();
   const [student, setStudent] = useState<Student>()
 
-  
+  if (!invoices || invoices?.length === 0) {
+    return (
+      <></>
+    );
+  }
+
+
 
   const handleOnClick = (id: string) => {
     router.push(`/invoices/${id}`);
@@ -81,6 +87,7 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices,studentId }) => 
         return "destructive";
     }
   }
+
 
   return (
     <div>

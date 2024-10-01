@@ -19,9 +19,11 @@ import MergeInvoicesProvider from "@/lib/context/collection/mergeInvoiceContext"
 
 function ObjectProvider({ children }: ScriptProps) {
     const { user } = useUser();
-
+    console.log('obpro')
+    console.log(user?.role)
 
     if (user?.role === UserRole.TUTOR) {
+        console.log('tutor acccc')
         return (
             <TuitionsProvider tutorId={user?.id}>
                 <ZoomAccountsProvider>
@@ -42,33 +44,40 @@ function ObjectProvider({ children }: ScriptProps) {
         )
     }
 
+    if (user?.role === UserRole.ADMIN) {
 
+        return (
+            <TuitionsProvider>
+                <ZoomAccountsProvider>
+
+                    <StudentsProvider>
+                        <TutorsProvider>
+                            <SubjectsProvider>
+                                <MergeInvoicesProvider>
+                                    <InvoicesProvider>
+                                        <MergePaymentsProvider>
+                                            <PaymentsProvider>
+                                                <UsersProvider>
+                                                    <LevelsProvider>
+                                                        <PageProvider>{children}</PageProvider>
+                                                    </LevelsProvider>
+                                                </UsersProvider>
+                                            </PaymentsProvider>
+                                        </MergePaymentsProvider>
+                                    </InvoicesProvider>
+                                </MergeInvoicesProvider>
+                            </SubjectsProvider>
+                        </TutorsProvider>
+                    </StudentsProvider >
+                </ZoomAccountsProvider>
+            </TuitionsProvider>
+        );
+    }
     return (
-        <TuitionsProvider>
-            <ZoomAccountsProvider>
-
-                <StudentsProvider>
-                    <TutorsProvider>
-                        <SubjectsProvider>
-                            <MergeInvoicesProvider>
-                                <InvoicesProvider>
-                                    <MergePaymentsProvider>
-                                        <PaymentsProvider>
-                                            <UsersProvider>
-                                                <LevelsProvider>
-                                                    <PageProvider>{children}</PageProvider>
-                                                </LevelsProvider>
-                                            </UsersProvider>
-                                        </PaymentsProvider>
-                                    </MergePaymentsProvider>
-                                </InvoicesProvider>
-                            </MergeInvoicesProvider>
-                        </SubjectsProvider>
-                    </TutorsProvider>
-                </StudentsProvider >
-            </ZoomAccountsProvider>
-        </TuitionsProvider>
-    );
+        <>
+            {children}
+        </>
+    )
 }
 
 export default ObjectProvider;
