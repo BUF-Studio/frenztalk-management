@@ -53,6 +53,7 @@ interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
+// Do input field validation!!!!!
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { user } = useUser();
   const { students } = useStudents();
@@ -215,7 +216,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         password: null,
         recurrence: null,
       });
-      if (response.status === 204) {
+      if (response.status >= 200 && response.status < 300) {
         return { success: true };
       }
       throw new Error(`Unexpected response status: ${response.status}`);
@@ -767,7 +768,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           />
         </div>
       </div>
-      <div className="grid w-full items-center gap-1.5">
+      {initialTuition == null && <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
         <Input
           type="number"
@@ -778,7 +779,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           required
           min={1}
         />
-      </div>
+      </div>}
       <div className="flex items-center space-x-2">
         <Checkbox
           id="trial"
