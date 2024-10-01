@@ -35,24 +35,30 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
     return tuitionDate === filterDate
   })
 
+  const utcToLocal = (utcDate: string): Date => {
+    const date = new Date(utcDate);
+    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  };
+
   const now = new Date()
   const utcNow = new Date(now.toUTCString())
   const in24Hours = new Date(utcNow.getTime() + 24 * 60 * 60 * 1000)
 
   const pastTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = new Date(tuition.startTime ?? "")
-    const endTime = new Date(startTime.getTime() + (tuition.duration ?? 0) * 60000)
+    const startTime = utcToLocal(tuition.startTime);
+    const endTime = new Date(startTime.getTime() + tuition.duration * 60000);
+
     return endTime < utcNow
   })
 
   const upcomingTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = new Date(tuition.startTime ?? "")
-    const endTime = new Date(startTime.getTime() + (tuition.duration ?? 0) * 60000)
+    const startTime = utcToLocal(tuition.startTime);
+    const endTime = new Date(startTime.getTime() + tuition.duration * 60000);
     return endTime >= utcNow && startTime <= in24Hours
   })
 
   const otherTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = new Date(tuition.startTime ?? "")
+    const startTime = utcToLocal(tuition.startTime);
     return startTime > in24Hours
   })
 

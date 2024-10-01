@@ -44,12 +44,15 @@ import { useLevels } from "@/lib/context/collection/levelContext";
 import { Badge } from "@/app/components/ui/badge";
 import TuitionStatus from "@/lib/models/tuitionStatus";
 import { copyMeetingLink, capitalizeFirstLetter } from "@/lib/utils";
+import { useUser } from "@/lib/context/collection/userContext";
+import { UserRole } from "@/lib/models/user";
 
 export default function TuitionDetail({ params }: { params: { id: string } }) {
   const { tuition, setTuition } = useTuitionPage();
   const { tuitions } = useTuitions();
   const { invoices } = useInvoices();
   const router = useRouter();
+  const { user } = useUser();
   const { tutors } = useTutors();
   const { students } = useStudents();
   const { subjects } = useSubjects();
@@ -163,7 +166,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
           router.back();
           showSnackbar("Tuition deleted successfully", "success");
         },
-        onCancel: () => {},
+        onCancel: () => { },
       });
     }
   }, [tuition, showAlert, showSnackbar, router]);
@@ -172,6 +175,8 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     // setIsModalOpen(true);
     router.push(`/tuitions/${tuition?.id}/update`);
   }
+
+  const invoice = findInvoice(tuition?.studentInvoiceId ?? "");
 
   return (
     <div>
@@ -281,14 +286,17 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
                 )}
               </button>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
-                Student Price
-              </span>
-              <span className="text-sm dark:text-neutral-300">
-                {tuition?.currency} {tuition?.studentPrice}
-              </span>
-            </div>
+            {
+              user?.role === UserRole.ADMIN &&
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
+                  Student Price
+                </span>
+                <span className="text-sm dark:text-neutral-300">
+                  {tuition?.currency} {tuition?.studentPrice}
+                </span>
+              </div>
+            }
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-900 dark:text-neutral-100">
                 Tutor Price
@@ -306,9 +314,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
             tutors={[findTutor(tuition?.tutorId ?? "") || ({} as Tutor)]}
           />
           <InvoiceList
-            invoices={[
-              findInvoice(tuition?.studentInvoiceId ?? "") || ({} as Invoice),
-            ]}
+            invoices={invoice ? [invoice as Invoice] : []}
             studentId={tuition?.studentId ?? ""}
           />
         </div>
