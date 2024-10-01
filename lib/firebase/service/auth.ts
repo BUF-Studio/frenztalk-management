@@ -38,9 +38,12 @@ export const signInWithGoogle = async () => {
     const uid = resultUserCredential.user.uid;
 
     try {
-      const existUserCheck = await getDoc(doc(db, "tutors", uid));
+      const user = await getDoc(doc(db, "users", uid));
+      const existTutorCheck = await getDoc(doc(db, "tutors", uid));
 
-      if (!existUserCheck.exists()) {
+      const existsAdmin = user.exists() && user.data()?.role === "admin";
+
+      if (!existTutorCheck.exists() && !existsAdmin) {
         addUserToFirestore(
           uid,
           resultUserCredential.user.displayName || "",
@@ -130,8 +133,8 @@ export const deleteUserFromAuth = async (user: User) => {
 
 export const signOut = async () => {
   try {
-    await firebaseSignOut(auth);
     await fetch("/api/auth", { method: "DELETE" });
+    await firebaseSignOut(auth);
     console.log("Signed out successfully");
   } catch (error) {
     console.error("Error signing out:", error);
