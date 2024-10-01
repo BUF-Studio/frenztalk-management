@@ -38,8 +38,8 @@ export default function SinglePaymentDetail({ params }: { params: { singlePaymen
         <h1 className="text-lg font-semibold">Single Payment Details</h1>
       </button>
 
-      <div className="bg-white w-fit border-1 border-grey-600 rounded-lg overflow-hidden">
-        <PaymentTemplate payment={payment}/>
+      <div className=" w-fit border-1 border-grey-600 rounded-lg overflow-hidden">
+        <PaymentTemplate initialPayment={payment}/>
       </div>
     </div>
   );

@@ -61,16 +61,29 @@ export const columns: ColumnDef<MergeInvoice>[] = [
     ),
   },
   {
+    accessorKey: "currency",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Currency" />
+    ),
+    cell: ({ row }) => {
+      const currency: Currency = row.getValue("currency");
+      return (
+        <span>
+          {currency}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "rate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Rate" />
     ),
     cell: ({ row }) => {
-      const currency: Currency = row.getValue("currency");
       const rate: number = row.getValue("rate");
       return (
         <span>
-           {currency} {rate.toFixed(2)}
+          {rate.toFixed(2)}
         </span>
       );
     },
@@ -91,11 +104,11 @@ export const columns: ColumnDef<MergeInvoice>[] = [
 
         switch (status.toLowerCase()) {
           case "paid":
-            return "default";
-          case "pending":
-            return "destructive";
-          default:
             return "outline";
+          case "pending":
+            return "default";
+          default:
+            return "destructive";
         }
       }
 

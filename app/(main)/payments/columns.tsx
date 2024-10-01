@@ -4,6 +4,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-header";
 import { useTutors } from "@/lib/context/collection/tutorContext";
+import Currency from "@/lib/models/currency";
 import type { MergeInvoice } from "@/lib/models/mergeInvoice";
 import type { MergePayment } from "@/lib/models/mergePayment";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -61,6 +62,20 @@ export const columns: ColumnDef<MergePayment>[] = [
     ),
   },
   {
+    accessorKey: "currency",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Currency" />
+    ),
+    cell: ({ row }) => {
+      const currency: Currency = row.getValue("currency");
+      return (
+        <span>
+          {currency}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "rate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Rate" />
@@ -91,11 +106,11 @@ export const columns: ColumnDef<MergePayment>[] = [
 
         switch (status.toLowerCase()) {
           case "paid":
-            return "default";
-          case "pending":
-            return "destructive";
-          default:
             return "outline";
+          case "pending":
+            return "default";
+          default:
+            return "destructive";
         }
       }
 
