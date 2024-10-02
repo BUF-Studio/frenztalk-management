@@ -12,9 +12,6 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { auth } from "firebase-admin";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/service/clientApp";
-import { TutorList } from "@/app/components/main/tutorList";
-import Image from "next/image";
-import { Tuition } from "@/lib/models/tuition";
 import TuitionList from "../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
@@ -105,7 +102,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             />
           </div>
           {authContext.role === "tutor" && <StudentList />}
-          <InvoiceList />
+          {/* TODO: Add Payment List instead of Invoice List */}
+          {/* <InvoiceList /> */}
           <div className="flex flex-1 h-full" />
         </div>
       </div>

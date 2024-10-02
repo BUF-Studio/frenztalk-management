@@ -1,16 +1,10 @@
-"use client";
+'use client'
 
-import type React from "react";
-import { useState } from "react";
-import {
-  type Links,
-  Sidebar,
-  SidebarBody,
-  SidebarLink,
-} from "../components/general/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
-import Image from "next/image";
+import React, { useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import {
   Home,
   SchoolRounded,
@@ -20,27 +14,60 @@ import {
   LogoutRounded,
   Receipt,
   DashboardCustomize,
-} from "@mui/icons-material";
-import { cn } from "@/utils/manage-class-name";
-import Link from "next/link";
-import { motion, useAnimationControls } from "framer-motion";
-import { useAuth } from "@/lib/context/AuthContext";
-import { useUser } from "@/lib/context/collection/userContext";
-import { type User, UserRole } from "@/lib/models/user";
-import { useUsers } from "@/lib/context/collection/usersContext";
-import UserAvatar from "../components/general/avatar";
+} from "@mui/icons-material"
+import { cn } from "@/utils/manage-class-name"
+import { useAuth } from "@/lib/context/AuthContext"
+import { useUser } from "@/lib/context/collection/userContext"
+import { useUsers } from "@/lib/context/collection/usersContext"
+import { type User, UserRole } from "@/lib/models/user"
+import {
+  type Links,
+  Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "@/app/components/general/sidebar"
+import UserAvatar from "@/app/components/general/avatar"
+
+const Logo = ({ open }: { open: boolean }) => {
+  return (
+    <Link
+      href="#"
+      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
+    >
+      <Image
+        src="/frenztalk-logo.jpg"
+        alt="Frenztalk Logo"
+        width={80}
+        height={80}
+        priority
+        className="h-10 w-10 bg-black dark:bg-white flex-shrink-0"
+      />
+      {open && (
+        <motion.span
+          initial={{ opacity: 0, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="font-medium text-black dark:text-white whitespace-pre"
+        >
+          Frenztalk
+        </motion.span>
+      )}
+    </Link>
+  )
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const authContext = useAuth();
-  const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useUser();
-  const { verifiedUsers } = useUsers();
+  const authContext = useAuth()
+  const pathname = usePathname()
+  const router = useRouter()
+  const { user } = useUser()
+  const { verifiedUsers } = useUsers()
+  const [open, setOpen] = useState(false)
 
   const findVerifiedUser = (id: string | undefined): User | undefined => {
-    if (!id) return undefined;
-    return verifiedUsers.find((user) => user.id === id);
-  };
+    if (!id) return undefined
+    return verifiedUsers.find((user) => user.id === id)
+  }
 
   const allLinks: Links[] = [
     {
@@ -52,7 +79,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN, UserRole.TUTOR],
     },
     {
       label: "Analytics",
@@ -63,7 +90,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Students",
@@ -74,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN, UserRole.TUTOR],
     },
     {
       label: "Tutors",
@@ -85,7 +112,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available only to ADMIN
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Users",
@@ -96,7 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available only to ADMIN
+      roles: [UserRole.ADMIN],
     },
     {
       label: "History",
@@ -107,7 +134,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Invoices",
@@ -118,7 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Payments",
@@ -129,7 +156,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN, UserRole.TUTOR],
     },
     {
       label: "Academic Setup",
@@ -140,7 +167,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available only to ADMIN
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Settings",
@@ -151,7 +178,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
       ),
-      roles: [UserRole.ADMIN], // Available only to ADMIN
+      roles: [UserRole.ADMIN],
     },
     {
       label: "Logout",
@@ -159,22 +186,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <LogoutRounded className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0" />
       ),
       onClick: async () => {
-        await authContext.signOut();
-        router.push("/sign-in");
+        await authContext.signOut()
+        router.push("/sign-in")
       },
-      roles: [UserRole.ADMIN, UserRole.TUTOR], // Available to both ADMIN and USER
+      roles: [UserRole.ADMIN, UserRole.TUTOR],
     },
-  ];
+  ]
 
   const links: Links[] = allLinks.filter((link) =>
     link.roles?.includes(user?.role ?? UserRole.TUTOR)
-  );
-  const [open, setOpen] = useState(false);
+  )
+
   return (
     <div
       className={cn(
         "flex flex-col md:flex-row bg-transparent w-full flex-1 overflow-hidden",
-        "h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
+        "h-screen"
       )}
     >
       <Sidebar open={open} setOpen={setOpen} animate={false}>
@@ -184,8 +211,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                  key={idx}
+                  key={link.href || idx}
                   link={link}
                   className={
                     link.href && pathname?.startsWith(link.href)
@@ -203,17 +229,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   findVerifiedUser(authContext.user?.uid)?.name ?? "Anonymous",
                 href: "/profile",
                 icon: (
-                  //TODO: Change the default image type based on the theme mode
-                  // <Image
-                  //   src={authContext.user?.photoURL ?? "/account-darkmode.png"}
-                  //   className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
-                  //   width={24}
-                  //   height={24}
-                  //   alt="Avatar"
-                  // />
                   <div className="w-8 h-8">
-                    {" "}
-                    {/* Or any other size you want */}
                     <UserAvatar url={authContext.user?.photoURL} />
                   </div>
                 ),
@@ -228,33 +244,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
-
-export const Logo = ({ open }: { open: boolean }) => {
-  return (
-    <Link
-      href="#"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-    >
-      <Image
-        src="/frenztalk-logo.jpg"
-        alt="Frenztalk Logo"
-        width={80}
-        height={80}
-        priority
-        className="h-10 w-10 bg-black dark:bg-white flex-shrink-0"
-      />
-      {true && (
-        <motion.span
-          initial={{ opacity: 0, x: 0 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-          className="font-medium text-black dark:text-white whitespace-pre"
-        >
-          Frenztalk
-        </motion.span>
-      )}
-    </Link>
-  );
-};
