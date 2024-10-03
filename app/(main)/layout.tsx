@@ -13,6 +13,7 @@ import {
   Settings,
   LogoutRounded,
   Receipt,
+  History,
   DashboardCustomize,
 } from "@mui/icons-material"
 import { cn } from "@/utils/manage-class-name"
@@ -66,6 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const findVerifiedUser = (id: string | undefined): User | undefined => {
     if (!id) return undefined
+    console.log("verifiedUser " , verifiedUsers)
     return verifiedUsers.find((user) => user.id === id)
   }
 
@@ -129,7 +131,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       label: "History",
       href: "/history",
       icon: (
-        <Receipt
+        <History
           strokeWidth={1.6}
           className="text-neutral-700 dark:text-neutral-200 h-6 w-6 flex-shrink-0"
         />
