@@ -24,7 +24,7 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import { formatDateTimeLocal } from "@/utils/util";
+import { formatDateTimeLocal, formatDateTimeLocalTuitionForm } from "@/utils/util";
 import { Label } from "@/app/components/ui/label";
 import { Meeting, ZoomAccount } from "@/lib/models/zoom";
 import axios from "axios";
@@ -746,10 +746,11 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
+          {/* TODO:  TIME FORMAT PROBLEM */}
           <Input
             type="datetime-local"
             name="startDateTime"
-            value={formatDateTimeLocal(formData.startDateTime)}
+            value={ formatDateTimeLocalTuitionForm(formData.startDateTime)}
             onChange={handleChange}
             placeholder="Start Time"
             required
