@@ -125,3 +125,12 @@ export const formatDateTimeLocal = (isoString: string): string => {
   // const localISOTime = new Date(date.getTime() - offsetInMilliseconds).toISOString();
   return utcIsoTime.slice(0, 16); // Remove seconds and milliseconds
 };
+
+export const formatDateTimeLocalTuitionForm = (isoString: string): string => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  // Adjust for local timezone offset
+  const offset = date.getTimezoneOffset() * 60000;
+  const localISOTime = new Date(date.getTime() - offset).toISOString();
+  return localISOTime.slice(0, 16); // Remove seconds and milliseconds
+};
