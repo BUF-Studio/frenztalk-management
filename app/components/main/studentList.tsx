@@ -48,8 +48,7 @@ export const StudentList: React.FC<StudentsProps> = ({ students }) =>{
                       {student.name}
                     </button>
                     <p className="text-gray-500 dark:text-neutral-400 text-sm line-clamp-2">
-                      Hello there I am just bombing whatever to test out whether
-                      this thing is working or not
+                      {student.status}
                     </p>
                   </div>
                 </div>
