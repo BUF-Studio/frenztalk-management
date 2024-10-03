@@ -107,7 +107,7 @@ export const columns: ColumnDef<Tutor>[] = [
                 <Tooltip>
                   <TooltipTrigger className="cursor-default">
                     <Badge variant="outline" className="text-xs px-2 py-0.5">
-                      {truncatedSubject}
+                      {subject}
                     </Badge>
                   </TooltipTrigger>
                   {isTruncated && (
