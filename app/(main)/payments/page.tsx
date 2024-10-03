@@ -10,12 +10,14 @@ import { DataTableColumnHeader } from "@/app/components/ui/data-table/column-hea
 import Currency from "@/lib/models/currency";
 import type { MergePayment } from "@/lib/models/mergePayment";
 import type { ColumnDef } from "@tanstack/react-table";
-
+import { useUser } from "@/lib/context/collection/userContext";
+import { UserRole } from "@/lib/models/user";
 
 export default function PaymentList() {
-  const { mergePayments} = useMergePayments();
+  const { mergePayments } = useMergePayments();
   const router = useRouter();
   const { tutors } = useTutors();
+  const { user } = useUser();
 
   const columns: ColumnDef<MergePayment>[] = [
     {
@@ -35,6 +37,7 @@ export default function PaymentList() {
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
+          onClick={(e) => e.stopPropagation()} // Prevent row click
         />
       ),
       enableSorting: false,
@@ -46,21 +49,21 @@ export default function PaymentList() {
         <DataTableColumnHeader column={column} title="Id" />
       ),
     },
-    {
-      accessorKey: "tutorId",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Tutor" />
-      ),
-      cell: ({ row }) => {
-        const tutor = ( id: string) => tutors.find((t) => t.id === id);
-          const tutorId: string = row.getValue("tutorId");
-          return (
-            <span>
-              {tutor(tutorId)?.name}
-            </span>
-          );
-        },
-    },
+    ...(user!.role === UserRole.ADMIN
+      ? [
+          {
+            accessorKey: "tutorId",
+            header: ({ column }) => (
+              <DataTableColumnHeader column={column} title="Tutor" />
+            ),
+            cell: ({ row }) => {
+              const tutor = (id: string) => tutors.find((t) => t.id === id);
+              const tutorId: string = row.getValue("tutorId");
+              return <span>{tutor(tutorId)?.name}</span>;
+            },
+          },
+        ]
+      : []),
     {
       accessorKey: "month",
       header: ({ column }) => (
@@ -74,11 +77,7 @@ export default function PaymentList() {
       ),
       cell: ({ row }) => {
         const currency: Currency = row.getValue("currency");
-        return (
-          <span>
-            {currency}
-          </span>
-        );
+        return <span>{currency}</span>;
       },
     },
     {
@@ -109,7 +108,7 @@ export default function PaymentList() {
           if (!status) {
             return "destructive";
           }
-  
+
           switch (status.toLowerCase()) {
             case "paid":
               return "outline";
@@ -119,7 +118,7 @@ export default function PaymentList() {
               return "destructive";
           }
         }
-  
+
         return (
           <Badge variant={getStatusVariant(status)}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
