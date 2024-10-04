@@ -24,7 +24,10 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import { formatDateTimeLocal, formatDateTimeLocalTuitionForm } from "@/utils/util";
+import {
+  formatDateTimeLocal,
+  formatDateTimeLocalTuitionForm,
+} from "@/utils/util";
 import { Label } from "@/app/components/ui/label";
 import { Meeting, ZoomAccount } from "@/lib/models/zoom";
 import axios from "axios";
@@ -132,23 +135,22 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (initialTuition) {
-      setFormData({
-        name: initialTuition?.name || "",
-        studentId: initialTuition?.studentId || "",
-        tutorId: initialTuition?.tutorId || "",
-        subjectId: initialTuition?.subjectId || "",
-        levelId: initialTuition?.levelId || "",
-        status: initialTuition?.status || "",
-        currency: initialTuition?.currency || Currency.MYR,
-        studentPrice: initialTuition?.studentPrice || 0,
-        tutorPrice: initialTuition?.tutorPrice || 0,
-        startDateTime: initialTuition?.startTime || "",
-        duration: initialTuition?.duration || 60,
-        repeatWeeks: 1,
-        trial: initialTuition?.trial ?? true,
-      });
-    }
+    setFormData({
+      name: initialTuition?.name || "",
+      studentId: initialTuition?.studentId || "",
+      tutorId: initialTuition?.tutorId || "",
+      subjectId: initialTuition?.subjectId || "",
+      levelId: initialTuition?.levelId || "",
+      status: initialTuition?.status || "",
+      currency: initialTuition?.currency || Currency.MYR,
+      studentPrice: initialTuition?.studentPrice || 0,
+      tutorPrice: initialTuition?.tutorPrice || 0,
+      startDateTime: initialTuition?.startTime || "",
+      duration: initialTuition?.duration || 60,
+      repeatWeeks: 1,
+      trial: initialTuition?.trial ?? true,
+    });
+
     setIsLoading(false);
   }, [initialTuition]);
 
@@ -616,26 +618,28 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             </SelectContent>
           </Select>
         </div>
-        {user?.role !== "tutor" && <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="tutor">Tutor</Label>
-          <Select
-            value={formData.tutorId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, tutorId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Tutor" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.tutor.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>}
+        {user?.role !== "tutor" && (
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="tutor">Tutor</Label>
+            <Select
+              value={formData.tutorId}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, tutorId: value }))
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Tutor" />
+              </SelectTrigger>
+              <SelectContent>
+                {optionsMap.tutor.map((option) => (
+                  <SelectItem key={option.value} value={option.value as string}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
@@ -719,30 +723,32 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           </SelectContent>
         </Select>
       </div>
-      {user?.role !== "tutor" && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="student-rate">Student Rate</Label>
-          <Input
-            type="number"
-            name="studentPrice"
-            value={formData.studentPrice}
-            onChange={handleChange}
-            placeholder="Student Price"
-            required
-          />
+      {user?.role !== "tutor" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="student-rate">Student Rate</Label>
+            <Input
+              type="number"
+              name="studentPrice"
+              value={formData.studentPrice}
+              onChange={handleChange}
+              placeholder="Student Price"
+              required
+            />
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="tutor-rate">Tutor Rate</Label>
+            <Input
+              type="number"
+              name="tutorPrice"
+              value={formData.tutorPrice}
+              onChange={handleChange}
+              placeholder="Tutor Price"
+              required
+            />
+          </div>
         </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="tutor-rate">Tutor Rate</Label>
-          <Input
-            type="number"
-            name="tutorPrice"
-            value={formData.tutorPrice}
-            onChange={handleChange}
-            placeholder="Tutor Price"
-            required
-          />
-        </div>
-      </div>}
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
@@ -750,7 +756,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           <Input
             type="datetime-local"
             name="startDateTime"
-            value={ formatDateTimeLocalTuitionForm(formData.startDateTime)}
+            value={formatDateTimeLocalTuitionForm(formData.startDateTime)}
             onChange={handleChange}
             placeholder="Start Time"
             required
@@ -769,18 +775,20 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           />
         </div>
       </div>
-      {initialTuition == null && <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
-        <Input
-          type="number"
-          name="repeatWeeks"
-          value={formData.repeatWeeks}
-          onChange={handleChange}
-          placeholder="Repeat Weeks"
-          required
-          min={1}
-        />
-      </div>}
+      {initialTuition == null && (
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
+          <Input
+            type="number"
+            name="repeatWeeks"
+            value={formData.repeatWeeks}
+            onChange={handleChange}
+            placeholder="Repeat Weeks"
+            required
+            min={1}
+          />
+        </div>
+      )}
       <div className="flex items-center space-x-2">
         <Checkbox
           id="trial"
@@ -788,7 +796,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           onCheckedChange={(checked) =>
             setFormData((prev) => ({ ...prev, trial: checked as boolean }))
           }
-          onClick={(e)=> e.stopPropagation}
+          onClick={(e) => e.stopPropagation}
         />
         <label
           htmlFor="trial"
