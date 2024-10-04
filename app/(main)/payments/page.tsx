@@ -30,6 +30,7 @@ export default function PaymentList() {
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
+          onClick={(e)=> e.stopPropagation}
         />
       ),
       cell: ({ row }) => (

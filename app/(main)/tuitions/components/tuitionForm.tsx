@@ -788,6 +788,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           onCheckedChange={(checked) =>
             setFormData((prev) => ({ ...prev, trial: checked as boolean }))
           }
+          onClick={(e)=> e.stopPropagation}
         />
         <label
           htmlFor="trial"

@@ -18,6 +18,7 @@ export const columns: ColumnDef<Student>[] = [
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
+        onClick={(e)=> e.stopPropagation}
       />
     ),
     cell: ({ row }) => (
@@ -25,6 +26,7 @@ export const columns: ColumnDef<Student>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        onClick={(e)=> e.stopPropagation}
       />
     ),
     enableSorting: false,
