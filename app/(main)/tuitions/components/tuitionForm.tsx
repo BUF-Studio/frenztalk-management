@@ -227,29 +227,41 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   };
 
   const getZoomAcc = (
-    zoomStartTime: string,
-    duration: number
+    startTime: string,
+    duration: number,
+    repeatWeeks: number
   ): ZoomAccount | null => {
-    const newStartTime = new Date(zoomStartTime).getTime();
-    const newEndTime = newStartTime + duration * 60 * 1000;
+    const baseStartTime = new Date(startTime).getTime();
 
     return (
+
       zoomAccounts.find((zoom) => {
-        if (zoom.meetings.length === 0) return true;
-        return !zoom.meetings.some((meeting) => {
-          const meetingStartTime = new Date(meeting.start).getTime();
-          const meetingEndTime =
-            meetingStartTime + meeting.duration * 60 * 1000;
-          return (
-            (newStartTime >= meetingStartTime &&
-              newStartTime < meetingEndTime) ||
-            (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
-            (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
-          );
-        });
+        for (let i = 0; i < repeatWeeks; i++) {
+          const newStartTime = baseStartTime + i * 7 * 24 * 60 * 60 * 1000;
+          const newEndTime = newStartTime + duration * 60 * 1000;
+
+          const isConflicting = zoom.meetings.some((meeting) => {
+            const meetingStartTime = new Date(meeting.start).getTime();
+            const meetingEndTime =
+              meetingStartTime + meeting.duration * 60 * 1000;
+
+            return (
+              (newStartTime >= meetingStartTime && newStartTime < meetingEndTime) ||
+              (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
+              (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
+            );
+          });
+
+          if (isConflicting) {
+            return false;
+          }
+        }
+
+        return true;
       }) || null
     );
   };
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -264,12 +276,17 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-              i * 7 * 24 * 60 * 60 * 1000 +
-              8 * 60 * 60 * 1000
+            i * 7 * 24 * 60 * 60 * 1000 +
+            8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
 
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
+          let zoomAcc: ZoomAccount | null = null;
+
+          if (i === 0) {
+            zoomAcc = getZoomAcc(zoomStartTime, duration, repeatWeeks);
+          }
+
           if (!zoomAcc) throw new Error("No Zoom Account Available");
 
           const zoom = await createZoom(
@@ -278,6 +295,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             zoomStartTime,
             duration
           );
+
           if (!zoom) throw new Error("Failed to create zoom meeting");
 
           const { meetingid, url } = zoom;
@@ -331,31 +349,35 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           initialTuition.name !== formData.name ||
           initialTuition.duration !== duration
         ) {
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
-          if (!zoomAcc) throw new Error("No Zoom Account Available");
 
-          await updateZoom(
-            zoomAcc,
-            initialTuition.meetingId ?? "",
-            formData.name,
-            zoomStartTime,
-            duration
-          );
+          if (newStartTime.getTime() > Date.now()) {
 
-          const updatedMeetings = [
-            ...zoomAcc.meetings,
-            new Meeting(zoomStartTime, duration),
-          ];
-          await updateZoomAccount(
-            new ZoomAccount(
-              zoomAcc.id,
-              zoomAcc.email,
-              zoomAcc.clientid,
-              zoomAcc.clientsecret,
-              zoomAcc.accountid,
-              updatedMeetings
-            )
-          );
+            const zoomAcc = getZoomAcc(zoomStartTime, duration, 1);
+            if (!zoomAcc) throw new Error("No Zoom Account Available");
+
+            await updateZoom(
+              zoomAcc,
+              initialTuition.meetingId ?? "",
+              formData.name,
+              zoomStartTime,
+              duration
+            );
+            const updatedMeetings = [
+              ...zoomAcc.meetings,
+              new Meeting(zoomStartTime, duration),
+            ];
+            await updateZoomAccount(
+              new ZoomAccount(
+                zoomAcc.id,
+                zoomAcc.email,
+                zoomAcc.clientid,
+                zoomAcc.clientsecret,
+                zoomAcc.accountid,
+                updatedMeetings
+              )
+            );
+          }
+
         }
 
         let tiid = initialTuition.tutorInvoiceId;
