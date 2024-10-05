@@ -94,6 +94,149 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { createZoom, updateZoom, getZoomAcc } = useZoomAPI();
 
   
+  const authToken = async (zoom: ZoomAccount) => {
+    try {
+      const response = await axios.post("/api/auth/authorize", {
+        clientId: zoom.clientid,
+        clientSecret: zoom.clientsecret,
+        accountId: zoom.accountid,
+      });
+      return response.data.access_token;
+    } catch (error) {
+      console.error("Error getting auth token:", error);
+      throw error;
+    }
+  };
+
+  const createZoom = async (
+    account: ZoomAccount,
+    topic: string,
+    start_time: string,
+    duration: number
+  ) => {
+    try {
+      const token = await authToken(account);
+      const response = await axios.post("/api/addZoom", {
+        accessToken: token,
+        topic,
+        start_time,
+        duration,
+        password: null,
+      });
+      return { meetingid: response.data.id, url: response.data.join_url };
+    } catch (error) {
+      console.error("Error creating Zoom meeting:", error);
+      throw error;
+    }
+  };
+
+  const updateZoom = async (
+    zoom: ZoomAccount,
+    meetingId: string,
+    topic: string,
+    start_time: string,
+    duration: number
+  ) => {
+    try {
+      const token = await authToken(zoom);
+      const response = await axios.post("/api/updateZoom", {
+        accessToken: token,
+        meetingId,
+        topic,
+        start_time,
+        duration,
+        password: null,
+        recurrence: null,
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true };
+      }
+      throw new Error(`Unexpected response status: ${response.status}`);
+    } catch (error) {
+      console.error("Error updating Zoom meeting:", error);
+      throw error;
+    }
+  };
+  const deleteZoom = async (
+    zoom: ZoomAccount,
+    meetingId: string,
+
+  ) => {
+    try {
+      const token = await authToken(zoom);
+      const response = await axios.post("/api/deleteZoom", {
+        accessToken: token,
+        meetingId,
+
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return { success: true };
+      }
+      throw new Error(`Unexpected response status: ${response.status}`);
+    } catch (error) {
+      console.error("Error updating Zoom meeting:", error);
+      throw error;
+    }
+  };
+
+  const getZoomAcc = (
+    startTime: string,
+    duration: number,
+    repeatWeeks: number
+  ): ZoomAccount | null => {
+    const baseStartTime = new Date(startTime).getTime();
+
+    console.log("Base Start Time:", baseStartTime);
+
+    return (
+      zoomAccounts.find((zoom) => {
+        console.log("Checking Zoom Account:", zoom.id);
+
+        // Check across all weeks for conflicts
+        for (let i = 0; i < repeatWeeks; i++) {
+          const newStartTime = baseStartTime + i * 7 * 24 * 60 * 60 * 1000; // Each new start time, week by week
+          const newEndTime = newStartTime + duration * 60 * 1000;
+
+          console.log(`Week ${i + 1}: Checking newStartTime: ${new Date(newStartTime).toISOString()}, newEndTime: ${new Date(newEndTime).toISOString()}`);
+
+          const conflict = zoom.meetings.some((meeting) => {
+            const meetingStartTime = new Date(meeting.start).getTime();
+            const meetingEndTime = meetingStartTime + meeting.duration * 60 * 1000;
+
+            console.log("Comparing with Meeting:", {
+              meetingStartTime: new Date(meetingStartTime).toISOString(),
+              meetingEndTime: new Date(meetingEndTime).toISOString(),
+            });
+
+            // Check if the new meeting conflicts with this meeting
+            const isConflicting =
+              (newStartTime >= meetingStartTime && newStartTime < meetingEndTime) ||
+              (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
+              (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime);
+
+            if (isConflicting) {
+              console.log("Conflict found with meeting:", {
+                meetingStartTime: new Date(meetingStartTime).toISOString(),
+                meetingEndTime: new Date(meetingEndTime).toISOString(),
+              });
+            }
+
+            return isConflicting;
+          });
+
+          // If any conflict is found for any week, skip this account
+          if (conflict) {
+            console.log(`Conflict found in week ${i + 1} for Zoom Account: ${zoom.id}`);
+            return false; // Break and move to the next Zoom account
+          }
+        }
+
+        // No conflicts found, return this Zoom account
+        console.log("No conflicts found for Zoom Account:", zoom.id);
+        return true;
+      }) || null
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,11 +248,14 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       const repeatWeeks = Number(formData.repeatWeeks);
 
       if (!initialTuition) {
+        let zoomAcc: ZoomAccount | null = null;
+        let updatedMeetings: Meeting[] = []
+
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-              i * 7 * 24 * 60 * 60 * 1000 +
-              8 * 60 * 60 * 1000
+            i * 7 * 24 * 60 * 60 * 1000 +
+            8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
           const localTimeZone =
@@ -120,7 +266,14 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           console.log("localtimezone: ", localTimeZone);
           console.log("startTimeUTC: ", startTimeUTC);
 
-          const zoomAcc = getZoomAcc(zoomStartTime, duration, zoomAccounts);
+
+          if (i === 0) {
+            zoomAcc = getZoomAcc(zoomStartTime, duration, zoomAccounts, repeatWeeks);
+            if (zoomAcc && zoomAcc.meetings.length !== 0) {
+              updatedMeetings.push(...zoomAcc.meetings);
+            }
+          }
+
           if (!zoomAcc)
             throw new Error(
               "No Time Slot available in any of the Zoom Account"
@@ -133,6 +286,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             duration,
             localTimeZone
           );
+
           if (!zoom) throw new Error("Failed to create zoom meeting");
 
           const { meetingid, url } = zoom;
@@ -154,14 +308,16 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             null,
             null,
             meetingid,
-            i === 0 && formData.trial
+            i === 0 && formData.trial,
+            zoomAcc.id!
           );
           await addTuition(newTuition);
 
-          const updatedMeetings = [
-            ...zoomAcc.meetings,
-            new Meeting(zoomStartTime, duration),
-          ];
+          updatedMeetings.push(new Meeting(zoomStartTime, duration, meetingid))
+
+
+        }
+        if (zoomAcc)
           await updateZoomAccount(
             new ZoomAccount(
               zoomAcc.id,
@@ -172,7 +328,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               updatedMeetings
             )
           );
-        }
         toast({
           title: "Success",
           description: `${repeatWeeks} tuition sessions created successfully.`,
@@ -184,16 +339,41 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const startTimeUTC = formatDateTimeLocalToUTC(startTime.toISOString());
 
+        let zoomAccount: string | null = initialTuition.zoomAcc;
+        let deleteZoomAcc = false
+        let newZoomMeetingId = null
+        let newZoomMeetingUrl = null
+
         if (
           initialTuition.startTime !== zoomStartTime ||
           initialTuition.name !== formData.name ||
           initialTuition.duration !== duration
         ) {
-          const zoomAcc = getZoomAcc(zoomStartTime, duration, zoomAccounts);
-          if (!zoomAcc)
+
+          if (newStartTime.getTime() > Date.now()) {
+            console.log('updatezoooom')
+
+            const zoomAcc = getZoomAcc(zoomStartTime, duration, 1, zoomAccounts);
+            if (!zoomAcc)
             throw new Error(
               "No Time Slot available in any of the Zoom Account"
             );
+
+            zoomAccount = zoomAcc.id
+
+            if (initialTuition.meetingId === '') {
+              const { meetingid, url } = await createZoom(
+                zoomAcc,
+                formData.name,
+                zoomStartTime,
+                duration
+              );
+
+
+              newZoomMeetingId = meetingid
+              newZoomMeetingUrl = url
+
+            } else {
 
           await updateZoom(
             zoomAcc,
@@ -204,20 +384,51 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             duration
           );
 
-          const updatedMeetings = [
-            ...zoomAcc.meetings,
-            new Meeting(zoomStartTime, duration),
-          ];
-          await updateZoomAccount(
-            new ZoomAccount(
-              zoomAcc.id,
-              zoomAcc.email,
-              zoomAcc.clientid,
-              zoomAcc.clientsecret,
-              zoomAcc.accountid,
-              updatedMeetings
-            )
-          );
+            const updatedMeetings = [
+              ...zoomAcc.meetings.filter((meeting) => meeting.meetingId !== initialTuition.meetingId),
+              new Meeting(zoomStartTime, duration, newZoomMeetingId ?? initialTuition.meetingId),
+            ];
+            await updateZoomAccount(
+              new ZoomAccount(
+                zoomAcc.id,
+                zoomAcc.email,
+                zoomAcc.clientid,
+                zoomAcc.clientsecret,
+                zoomAcc.accountid,
+                updatedMeetings
+              )
+            );
+          }
+
+          if (newStartTime.getTime() < Date.now() && new Date(initialTuition.startTime).getTime() > Date.now()) {
+            if (initialTuition.meetingId) {
+              const zoomAcc = zoomAccounts.find((account) => account.id === initialTuition.zoomAcc);
+
+              if (zoomAcc) {
+                await deleteZoom(zoomAcc, initialTuition.meetingId);
+
+                deleteZoomAcc = true
+                const updatedMeetings: Meeting[] = [
+                  ...zoomAcc.meetings.filter((meeting) => meeting.meetingId !== initialTuition.meetingId),
+                ];
+
+                await updateZoomAccount(
+                  new ZoomAccount(
+                    zoomAcc.id,
+                    zoomAcc.email,
+                    zoomAcc.clientid,
+                    zoomAcc.clientsecret,
+                    zoomAcc.accountid,
+                    updatedMeetings
+                  )
+                );
+
+              }
+            } else {
+              console.log("No meeting ID found to delete.");
+            }
+          }
+
         }
 
         let tiid = initialTuition.tutorInvoiceId;
@@ -396,14 +607,15 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           startTimeUTC,
           localTimeZone,
           duration,
-          initialTuition.url,
+          newZoomMeetingUrl ? newZoomMeetingUrl : initialTuition.url,
           formData.studentPrice,
           formData.tutorPrice,
           formData.currency as Currency,
           siid,
           tiid,
-          initialTuition.meetingId,
-          formData.trial
+          deleteZoomAcc ? '' : (newZoomMeetingId ? newZoomMeetingId : initialTuition.meetingId),
+          formData.trial,
+          zoomAccount
         );
         await updateTuition(updatedTuition);
         setTuition(updatedTuition);
@@ -414,6 +626,10 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         router.back();
       }
     } catch (error) {
+      toast({
+        title: "Failed",
+        description: `Error : ${error}.`,
+      });
       console.error("Failed to submit the form", error);
     } finally {
       setIsSubmitting(false);

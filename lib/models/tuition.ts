@@ -20,6 +20,7 @@ export class Tuition {
     public tutorInvoiceId: string | null,
     public meetingId: string | null,
     public trial: boolean,
+    public zoomAcc: string | null,
 
   ) { }
 
@@ -43,6 +44,7 @@ export class Tuition {
       data.tutorInvoiceId,
       data.meetingId,
       data.trial,
+      data.zoomAcc,
     );
   }
 
@@ -64,6 +66,7 @@ export class Tuition {
       tutorInvoiceId: this.tutorInvoiceId,
       meetingId: this.meetingId,
       trial: this.trial,
+      zoomAcc: this.zoomAcc,
     };
   }
 }

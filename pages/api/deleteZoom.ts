@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json(response.data);
         } catch (error: any) {
-            console.error('Error creating Zoom meeting:', error.message);
+            console.error('Error delete Zoom meeting:', error.message);
             if (error.response) {
 
                 // More detailed error information from the response
