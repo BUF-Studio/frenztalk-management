@@ -24,10 +24,7 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import {
-  formatDateTimeLocal,
-  formatDateTimeLocalTuitionForm,
-} from "@/utils/util";
+import { formatDateTimeLocalToUTC } from "@/utils/util";
 import { Label } from "@/app/components/ui/label";
 import { Meeting, ZoomAccount } from "@/lib/models/zoom";
 import axios from "axios";
@@ -56,7 +53,7 @@ interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
-// Do input field validation!!!!!
+// TODO: Do input field validation!!!!!
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { user } = useUser();
   const { students } = useStudents();
@@ -135,6 +132,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log("initital tuition", initialTuition);
     setFormData({
       name: initialTuition?.name || "",
       studentId: initialTuition?.studentId || "",
@@ -182,7 +180,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     account: ZoomAccount,
     topic: string,
     start_time: string,
-    duration: number
+    duration: number,
+    localTimeZone: string
   ) => {
     try {
       const token = await authToken(account);
@@ -192,6 +191,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         start_time,
         duration,
         password: null,
+        localTimeZone,
       });
       return { meetingid: response.data.id, url: response.data.join_url };
     } catch (error) {
@@ -205,6 +205,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     meetingId: string,
     topic: string,
     start_time: string,
+    localTimeZone: string,
     duration: number
   ) => {
     try {
@@ -214,6 +215,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         meetingId,
         topic,
         start_time,
+        localTimeZone,
         duration,
         password: null,
         recurrence: null,
@@ -238,17 +240,20 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     return (
       zoomAccounts.find((zoom) => {
         if (zoom.meetings.length === 0) return true;
-        return !zoom.meetings.some((meeting) => {
-          const meetingStartTime = new Date(meeting.start).getTime();
-          const meetingEndTime =
-            meetingStartTime + meeting.duration * 60 * 1000;
-          return (
-            (newStartTime >= meetingStartTime &&
-              newStartTime < meetingEndTime) ||
-            (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
-            (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
-          );
-        });
+        return (
+          zoom.email === "bufstudio2020@gmail.com" &&
+          !zoom.meetings.some((meeting) => {
+            const meetingStartTime = new Date(meeting.start).getTime();
+            const meetingEndTime =
+              meetingStartTime + meeting.duration * 60 * 1000;
+            return (
+              (newStartTime >= meetingStartTime &&
+                newStartTime < meetingEndTime) ||
+              (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
+              (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
+            );
+          })
+        );
       }) || null
     );
   };
@@ -270,15 +275,26 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
+          const localTimeZone =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const startTimeUTC = startTime.toISOString();
+
+          console.log("starttime: ", zoomStartTime);
+          console.log("localtimezone: ", localTimeZone);
+          console.log("startTimeUTC: ", startTimeUTC);
 
           const zoomAcc = getZoomAcc(zoomStartTime, duration);
-          if (!zoomAcc) throw new Error("No Zoom Account Available");
+          if (!zoomAcc)
+            throw new Error(
+              "No Time Slot available in any of the Zoom Account"
+            );
 
           const zoom = await createZoom(
             zoomAcc,
             formData.name,
             zoomStartTime,
-            duration
+            duration,
+            localTimeZone
           );
           if (!zoom) throw new Error("Failed to create zoom meeting");
 
@@ -291,7 +307,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             formData.subjectId,
             formData.levelId,
             formData.status as TuitionStatus,
-            zoomStartTime,
+            startTimeUTC,
+            localTimeZone,
             duration,
             url,
             formData.studentPrice,
@@ -327,6 +344,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       } else {
         const newStartTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
         const zoomStartTime = newStartTime.toISOString();
+        const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const startTimeUTC = formatDateTimeLocalToUTC(startTime.toISOString());
 
         if (
           initialTuition.startTime !== zoomStartTime ||
@@ -334,13 +353,17 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           initialTuition.duration !== duration
         ) {
           const zoomAcc = getZoomAcc(zoomStartTime, duration);
-          if (!zoomAcc) throw new Error("No Zoom Account Available");
+          if (!zoomAcc)
+            throw new Error(
+              "No Time Slot available in any of the Zoom Account"
+            );
 
           await updateZoom(
             zoomAcc,
             initialTuition.meetingId ?? "",
             formData.name,
             zoomStartTime,
+            localTimeZone,
             duration
           );
 
@@ -533,7 +556,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           formData.subjectId,
           formData.levelId,
           formData.status as TuitionStatus,
-          zoomStartTime,
+          startTimeUTC,
+          localTimeZone,
           duration,
           initialTuition.url,
           formData.studentPrice,
@@ -756,7 +780,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           <Input
             type="datetime-local"
             name="startDateTime"
-            value={formatDateTimeLocalTuitionForm(formData.startDateTime)}
+            value={formatDateTimeLocalToUTC(formData.startDateTime)}
             onChange={handleChange}
             placeholder="Start Time"
             required
