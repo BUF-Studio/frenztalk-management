@@ -186,7 +186,7 @@ export const SidebarLink = ({
     <button
       onClick={handleClick}
       className={cn(
-        "flex items-center justify-start gap-4 group/sidebar p-2 w-full text-left",
+        "flex items-center justify-start gap-4 group/sidebar p-2 w-full text-left active:bg-primary",
         className
       )}
       {...props}

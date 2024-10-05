@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTuitions } from "@/lib/context/collection/tuitionContext";
@@ -21,9 +21,8 @@ import { Tuition } from "@/lib/models/tuition";
 import { updateInvoice } from "@/lib/firebase/invoice";
 import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
-import { useInvoicePage } from "@/lib/context/page/invoicePageContext";
-import { capitalizeFirstLetter } from "@/lib/utils";
-import { Payment } from "../models/payment";
+import { toast } from "@/app/components/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface InvoiceTemplateProps {
   invoice: Invoice | null;
@@ -34,7 +33,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
   const { students } = useStudents();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
-  const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const tuition = tuitions.find((t) => t.id === invoice?.tuitionId);
   const student = students.find((s) => s.id === invoice?.studentId);
@@ -69,17 +68,16 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
 
     switch (status.toLowerCase()) {
       case InvoiceStatus.PAID:
-        return "secondary";
+        return "outline";
       case InvoiceStatus.PENDING:
         return "default";
-      case InvoiceStatus.CANCEL:
-        return "outline";
       default:
         return "destructive";
     }
   }
   const handleStatusChange = async (status: InvoiceStatus) => {
-    if (invoice) {
+    if (!invoice) return;
+    try {
       const updatedInvoice = new Invoice(
         invoice.id,
         invoice.tuitionId,
@@ -94,7 +92,16 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
         invoice.price
       );
       await updateInvoice(updatedInvoice);
-      showSnackbar("Invoice status updated", "success");
+      toast({
+        title: "Status Updated Successfully",
+        description: `Invoice status has been updated to ${status}`,
+      });
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Error Updating Status",
+        description: "An error occurred while updating the status.",
+      });
     }
   };
 
@@ -125,7 +132,10 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-bold">{invoice?.id}</h2>
               <Badge variant={getStatusVariant(invoice?.status)}>
-                {capitalizeFirstLetter(invoice?.status)}
+                {invoice && invoice.status
+                  ? invoice.status.charAt(0).toUpperCase() +
+                    invoice.status.slice(1)
+                  : "Status Unknown"}
               </Badge>
             </div>
             <div className="flex gap-2" data-html2canvas-ignore>
@@ -141,7 +151,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
                         key={status}
                         onClick={() => handleStatusChange(status)}
                       >
-                        {capitalizeFirstLetter(status)}
+                        {status.charAt(0)!.toUpperCase() + status.slice(1)}
                       </DropdownMenuItem>
                     ))}
                 </DropdownMenuContent>

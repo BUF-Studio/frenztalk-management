@@ -3,7 +3,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addPayment, updatePayment } from '@/lib/firebase/payment';
+import {updatePayment } from '@/lib/firebase/payment';
 import { Payment } from '@/lib/models/payment';
 import { Subject } from '@/lib/models/subject';
 import { Tutor } from '@/lib/models/tutor';
@@ -13,7 +13,6 @@ import { useTuitions } from '@/lib/context/collection/tuitionContext';
 import { useStudents } from '@/lib/context/collection/studentsContext';
 import { useSubjects } from '@/lib/context/collection/subjectContext';
 import Currency from '@/lib/models/currency';
-import { Timestamp } from 'firebase/firestore';
 import { InvoiceStatus } from '@/lib/models/invoiceStatus';
 import { usePaymentPage } from '@/lib/context/page/paymentPageContext';
 import { useTutors } from '@/lib/context/collection/tutorContext';

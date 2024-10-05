@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useStudents } from "@/lib/context/collection/studentsContext";
 import { Student } from "@/lib/models/student";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 
 interface InvoicesProps {
   invoices?: Invoice[];
@@ -70,22 +71,20 @@ export const InvoiceList: React.FC<InvoicesProps> = ({ invoices, studentId }) =>
     );
   };
 
-  function getStatusVariant(status: string | undefined): BadgeProps["variant"] {
+  function getStatusVariant(
+    status: string | undefined
+  ): "default" | "secondary" | "destructive" | "outline" | undefined {
     if (!status) {
-      // Handle the case where status is undefined or null
-      return "error"; // or any appropriate fallback value
+      return "destructive";
     }
 
     switch (status.toLowerCase()) {
-      case "paid":
-        return "success";
-      case "pending":
-        return "info";
-      case "cancel":
-        return "warning";
-      // Add other cases as needed
+      case InvoiceStatus.PAID:
+        return "outline";
+      case InvoiceStatus.PENDING:
+        return "default";
       default:
-        return "error"; // Handle unexpected statuses
+        return "destructive";
     }
   }
 

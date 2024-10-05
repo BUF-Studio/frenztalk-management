@@ -48,8 +48,7 @@ export const TutorList: React.FC<TutorsProps> = ({ tutors }) => {
                       {tutor.name}
                     </button>
                     <p className="text-gray-500 dark:text-neutral-400 text-sm line-clamp-2">
-                      Hello there I am just bombing whatever to test out whether
-                      this thing is working or not
+                      {tutor.des}
                     </p>
                   </div>
                 </div>

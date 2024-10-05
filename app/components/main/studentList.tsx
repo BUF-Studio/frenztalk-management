@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Student from "@/lib/models/student";
+import { Student } from "@/lib/models/student";
 
 interface StudentsProps {
   students?: Student[];
@@ -48,8 +48,7 @@ export const StudentList: React.FC<StudentsProps> = ({ students }) =>{
                       {student.name}
                     </button>
                     <p className="text-gray-500 dark:text-neutral-400 text-sm line-clamp-2">
-                      Hello there I am just bombing whatever to test out whether
-                      this thing is working or not
+                      {student.status}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 
-const serviceAccount = require("@/frenztalk-firebase-adminsdk-h68uw-8c7b585859.json");
+const serviceAccount = require("@/frenztalk-firebase-adminsdk-h68uw-fc6bb96aea.json");
 
 if (!admin.apps.length) {
   admin.initializeApp({

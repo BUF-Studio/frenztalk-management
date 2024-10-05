@@ -15,8 +15,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
+import { useUser } from "@/lib/context/collection/userContext";
+import { UserRole } from "@/lib/models/user";
 
 export default function TuitionPage() {
+  const { user } = useUser();
   const { tuitions } = useTuitions();
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -42,7 +45,9 @@ export default function TuitionPage() {
 
     for (const tuition of tuitions) {
       const localStartTime = utcToLocal(tuition.startTime);
-      const localEndTime = new Date(localStartTime.getTime() + tuition.duration * 60000);
+      const localEndTime = new Date(
+        localStartTime.getTime() + tuition.duration * 60000
+      );
 
       if (localEndTime.getTime() <= currentTime) {
         past.push(tuition);
@@ -138,19 +143,23 @@ export default function TuitionPage() {
               onResetDateSelect={selectedDate === null}
             />
           </div>
-          <div className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold dark:text-neutral-200">
-                Unpaid Invoices
-              </h2>
+          {user?.role === UserRole.ADMIN && (
+            <div className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold dark:text-neutral-200">
+                  Unpaid Invoices
+                </h2>
+              </div>
+              {
+                <div className="max-h-[300px] overflow-y-auto">
+                  <UnpaidWarningList
+                    unpaidInvoiceList={unpaidInvoices}
+                    tuitions={tuitions}
+                  />
+                </div>
+              }
             </div>
-            <div className="max-h-[300px] overflow-y-auto">
-              <UnpaidWarningList
-                unpaidInvoiceList={unpaidInvoices}
-                tuitions={tuitions}
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
