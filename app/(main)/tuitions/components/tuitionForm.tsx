@@ -48,6 +48,10 @@ import {
 } from "@/lib/firebase/mergePayment";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useUser } from "@/lib/context/collection/userContext";
+import SelectField from "./SelectField";
+import InputField from "./InputField";
+import { useTuitionForm } from "../add/custom_hook/useTuitionForm";
+import { useZoomAPI } from "../add/custom_hook/useZoomApi";
 
 interface TuitionFormProps {
   initialTuition?: Tuition | null;
@@ -70,87 +74,12 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const router = useRouter();
 
-  const [formData, setFormData] = useState<{
-    name: string;
-    studentId: string;
-    tutorId: string;
-    subjectId: string;
-    levelId: string;
-    status: string;
-    currency: string;
-    studentPrice: number;
-    tutorPrice: number;
-    startDateTime: string;
-    duration: number;
-    repeatWeeks: number;
-    trial: boolean;
-  }>({
-    name: "",
-    studentId: "",
-    tutorId: user?.role === "tutor" ? user.id ?? "" : "",
-    subjectId: "",
-    levelId: "",
-    status: "",
-    currency: "",
-    studentPrice: 0,
-    tutorPrice: 0,
-    startDateTime: "",
-    duration: 60,
-    repeatWeeks: 1,
-    trial: true,
-  });
-
-  useEffect(() => {
-    if (formData.levelId && formData.currency) {
-      const selectedLevel = levels.find((l) => l.id === formData.levelId);
-      if (selectedLevel) {
-        const prices = {
-          [Currency.USD]: {
-            student: selectedLevel.student_price_usd ?? 0,
-            tutor: selectedLevel.tutor_price_usd ?? 0,
-          },
-          [Currency.GBP]: {
-            student: selectedLevel.student_price_gbp ?? 0,
-            tutor: selectedLevel.tutor_price_gbp ?? 0,
-          },
-          [Currency.MYR]: {
-            student: selectedLevel.student_price_myr ?? 0,
-            tutor: selectedLevel.tutor_price_myr ?? 0,
-          },
-        };
-
-        setFormData((prevData) => ({
-          ...prevData,
-          studentPrice: prices[formData.currency as Currency].student,
-          tutorPrice: prices[formData.currency as Currency].tutor,
-        }));
-      }
-    }
-  }, [formData.levelId, formData.currency, levels]);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    console.log("initital tuition", initialTuition);
-    setFormData({
-      name: initialTuition?.name || "",
-      studentId: initialTuition?.studentId || "",
-      tutorId: initialTuition?.tutorId || "",
-      subjectId: initialTuition?.subjectId || "",
-      levelId: initialTuition?.levelId || "",
-      status: initialTuition?.status || "",
-      currency: initialTuition?.currency || Currency.MYR,
-      studentPrice: initialTuition?.studentPrice || 0,
-      tutorPrice: initialTuition?.tutorPrice || 0,
-      startDateTime: initialTuition?.startTime || "",
-      duration: initialTuition?.duration || 60,
-      repeatWeeks: 1,
-      trial: initialTuition?.trial ?? true,
-    });
-
-    setIsLoading(false);
-  }, [initialTuition]);
+  const {
+    formData,
+    setFormData,
+    isSubmitting,
+    setIsSubmitting,
+  } = useTuitionForm(initialTuition, levels);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -162,101 +91,9 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     }));
   };
 
-  const authToken = async (zoom: ZoomAccount) => {
-    try {
-      const response = await axios.post("/api/auth/authorize", {
-        clientId: zoom.clientid,
-        clientSecret: zoom.clientsecret,
-        accountId: zoom.accountid,
-      });
-      return response.data.access_token;
-    } catch (error) {
-      console.error("Error getting auth token:", error);
-      throw error;
-    }
-  };
+  const { createZoom, updateZoom, getZoomAcc } = useZoomAPI();
 
-  const createZoom = async (
-    account: ZoomAccount,
-    topic: string,
-    start_time: string,
-    duration: number,
-    localTimeZone: string
-  ) => {
-    try {
-      const token = await authToken(account);
-      const response = await axios.post("/api/addZoom", {
-        accessToken: token,
-        topic,
-        start_time,
-        duration,
-        password: null,
-        localTimeZone,
-      });
-      return { meetingid: response.data.id, url: response.data.join_url };
-    } catch (error) {
-      console.error("Error creating Zoom meeting:", error);
-      throw error;
-    }
-  };
-
-  const updateZoom = async (
-    zoom: ZoomAccount,
-    meetingId: string,
-    topic: string,
-    start_time: string,
-    localTimeZone: string,
-    duration: number
-  ) => {
-    try {
-      const token = await authToken(zoom);
-      const response = await axios.post("/api/updateZoom", {
-        accessToken: token,
-        meetingId,
-        topic,
-        start_time,
-        localTimeZone,
-        duration,
-        password: null,
-        recurrence: null,
-      });
-      if (response.status >= 200 && response.status < 300) {
-        return { success: true };
-      }
-      throw new Error(`Unexpected response status: ${response.status}`);
-    } catch (error) {
-      console.error("Error updating Zoom meeting:", error);
-      throw error;
-    }
-  };
-
-  const getZoomAcc = (
-    zoomStartTime: string,
-    duration: number
-  ): ZoomAccount | null => {
-    const newStartTime = new Date(zoomStartTime).getTime();
-    const newEndTime = newStartTime + duration * 60 * 1000;
-
-    return (
-      zoomAccounts.find((zoom) => {
-        if (zoom.meetings.length === 0) return true;
-        return (
-          zoom.email === "bufstudio2020@gmail.com" &&
-          !zoom.meetings.some((meeting) => {
-            const meetingStartTime = new Date(meeting.start).getTime();
-            const meetingEndTime =
-              meetingStartTime + meeting.duration * 60 * 1000;
-            return (
-              (newStartTime >= meetingStartTime &&
-                newStartTime < meetingEndTime) ||
-              (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
-              (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
-            );
-          })
-        );
-      }) || null
-    );
-  };
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -283,7 +120,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           console.log("localtimezone: ", localTimeZone);
           console.log("startTimeUTC: ", startTimeUTC);
 
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
+          const zoomAcc = getZoomAcc(zoomStartTime, duration, zoomAccounts);
           if (!zoomAcc)
             throw new Error(
               "No Time Slot available in any of the Zoom Account"
@@ -352,7 +189,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           initialTuition.name !== formData.name ||
           initialTuition.duration !== duration
         ) {
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
+          const zoomAcc = getZoomAcc(zoomStartTime, duration, zoomAccounts);
           if (!zoomAcc)
             throw new Error(
               "No Time Slot available in any of the Zoom Account"
@@ -604,10 +441,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     level: levels.map((level) => ({ value: level.id, label: level.name })),
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid w-full items-center gap-1.5">
@@ -622,155 +455,92 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="student">Student</Label>
-          <Select
-            value={formData.studentId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, studentId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Student" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.student.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SelectField
+          label="Student"
+          name="student"
+          value={formData.studentId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, studentId: value }))
+          }
+          options={optionsMap.student}
+          placeholder="Select Student"
+        />
         {user?.role !== "tutor" && (
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="tutor">Tutor</Label>
-            <Select
-              value={formData.tutorId}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, tutorId: value }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Tutor" />
-              </SelectTrigger>
-              <SelectContent>
-                {optionsMap.tutor.map((option) => (
-                  <SelectItem key={option.value} value={option.value as string}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <SelectField
+            label="Tutor"
+            name="tutor"
+            value={formData.tutorId}
+            onChange={(value: string) =>
+              setFormData((prev) => ({ ...prev, tutorId: value }))
+            }
+            options={optionsMap.tutor}
+            placeholder="Select Tutor"
+          />
         )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="subject">Subject</Label>
-          <Select
-            value={formData.subjectId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, subjectId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Subject" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.subject.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="level">Level</Label>
-          <Select
-            value={formData.levelId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, levelId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Level" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.level.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="status">Status</Label>
-        <Select
-          value={formData.status}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, status: value }))
+        <SelectField
+          label="Subject"
+          name="subject"
+          value={formData.subjectId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, subjectId: value }))
           }
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            {optionsMap.status.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="currency">Currency</Label>
-        <Select
-          value={formData.currency}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, currency: value as Currency }))
+          options={optionsMap.subject}
+          placeholder="Select Subject"
+        />
+        <SelectField
+          label="Level"
+          name="level"
+          value={formData.levelId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, levelId: value }))
           }
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Currency" />
-          </SelectTrigger>
-          <SelectContent>
-            {optionsMap.currency.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          options={optionsMap.level}
+          placeholder="Select Level"
+        />
       </div>
+      <SelectField
+        label="Status"
+        name="status"
+        value={formData.status}
+        onChange={(value: string) =>
+          setFormData((prev) => ({ ...prev, status: value }))
+        }
+        options={optionsMap.status}
+        placeholder="Select Status"
+      />
+      <SelectField
+        label="Currency"
+        name="currency"
+        value={formData.currency}
+        onChange={(value: string) =>
+          setFormData((prev) => ({ ...prev, currency: value as Currency }))
+        }
+        options={optionsMap.currency}
+        placeholder="Select Currency"
+      />
+
       {user?.role !== "tutor" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="student-rate">Student Rate</Label>
-            <Input
-              type="number"
-              name="studentPrice"
-              value={formData.studentPrice}
-              onChange={handleChange}
-              placeholder="Student Price"
-              required
-            />
-          </div>
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="tutor-rate">Tutor Rate</Label>
-            <Input
-              type="number"
-              name="tutorPrice"
-              value={formData.tutorPrice}
-              onChange={handleChange}
-              placeholder="Tutor Price"
-              required
-            />
-          </div>
+          <InputField
+            label="Student Rate"
+            name="studentPrice"
+            type="number"
+            value={formData.studentPrice}
+            onChange={handleChange}
+            placeholder="Student Price"
+            required
+          />
+          <InputField
+            label="Tutor Rate"
+            name="tutorPrice"
+            type="number"
+            value={formData.tutorPrice}
+            onChange={handleChange}
+            placeholder="Tutor Price"
+            required
+          />
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -787,31 +557,27 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           />
         </div>
         {/* FIXME : Duration's granularity should be 30 minutes instead of 1 minute? */}
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="duration">Duration (min)</Label>
-          <Input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="Duration (minutes)"
-            required
-          />
-        </div>
+        <InputField
+          label="Duration (min)"
+          name="duration"
+          type="number"
+          value={formData.duration}
+          onChange={handleChange}
+          placeholder="Duration (minutes)"
+          required
+        />
       </div>
       {initialTuition == null && (
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
-          <Input
-            type="number"
-            name="repeatWeeks"
-            value={formData.repeatWeeks}
-            onChange={handleChange}
-            placeholder="Repeat Weeks"
-            required
-            min={1}
-          />
-        </div>
+        <InputField
+          label="Repeat Weeks"
+          name="repeatWeeks"
+          type="number"
+          value={formData.repeatWeeks}
+          onChange={handleChange}
+          placeholder="Repeat Weeks"
+          required
+          min={1}
+        />
       )}
       <div className="flex items-center space-x-2">
         <Checkbox

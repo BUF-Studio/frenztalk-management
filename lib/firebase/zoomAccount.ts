@@ -1,6 +1,6 @@
 import { type DocumentData, type Query, query, where } from "firebase/firestore";
 import { addData, collectionStream, setData } from "./service/firestoreService";
-import { ZoomAccount } from "../models/zoom";
+import { ZoomAccount } from "@/lib/models/zoom";
 
 const PATH = "zoomAccount";
 
