@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -30,11 +30,27 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface TrialChartProps {
-  data: { month: string; trial: number; nonTrial: number }[];
+  chartData: { month: string; trial: number; nonTrial: number }[];
 }
 
-export function TrialChart({ data }: TrialChartProps) {
-  const chartData = data;
+export function TrialChart({ chartData }: TrialChartProps) {
+  const sortedData = [...chartData].sort(
+    (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+  );
+  const dateRange = `${sortedData[0].month} - ${
+    sortedData[sortedData.length - 1].month
+  }`;
+
+  const calculateTrend = () => {
+    if (sortedData.length < 2) return { percentage: 0, isUp: true };
+    const lastMonth = sortedData[sortedData.length - 1].nonTrial;
+    const previousMonth = sortedData[sortedData.length - 2].nonTrial;
+    const difference = lastMonth - previousMonth;
+    const percentage = (difference / previousMonth) * 100;
+    return { percentage: Math.abs(percentage), isUp: percentage >= 0 };
+  };
+
+  const { percentage, isUp } = calculateTrend();
 
   return (
     <Card>
@@ -111,11 +127,20 @@ export function TrialChart({ data }: TrialChartProps) {
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium">
-              Non-trial classes trending up by 8.7% this month <TrendingUp className="h-4 w-4" />
+            <div className="flex gap-2 font-medium">
+              {`
+              Non trial class
+               ${isUp ? "trending up" : "trending down"} by ${" "}
+              ${percentage.toFixed(1)}% this month
+              `}
+              {isUp ? (
+                <TrendingUp className="h-4 w-4" />
+              ) : (
+                <TrendingDown className="h-4 w-4" />
+              )}
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              {dateRange}
             </div>
           </div>
         </div>
