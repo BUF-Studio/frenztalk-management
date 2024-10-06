@@ -92,6 +92,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     try {
       const startTime = new Date(formData.startDateTime);
@@ -109,13 +110,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
-          const localTimeZone =
-            Intl.DateTimeFormat().resolvedOptions().timeZone;
-          const startTimeUTC = startTime.toISOString();
-
-          console.log("starttime: ", zoomStartTime);
-          console.log("localtimezone: ", localTimeZone);
-          console.log("startTimeUTC: ", startTimeUTC);
 
           if (i === 0) {
             zoomAcc = getZoomAcc(
@@ -129,10 +123,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             }
           }
 
-          if (!zoomAcc)
-            throw new Error(
-              "No Time Slot available in any of the Zoom Account"
-            );
+          if (!zoomAcc) throw new Error( "No Time Slot available in any of the Zoom Account");
 
           const zoom = await createZoom(
             zoomAcc,
@@ -153,7 +144,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             formData.subjectId,
             formData.levelId,
             formData.status as TuitionStatus,
-            startTimeUTC,
+            zoomStartTime,
             localTimeZone,
             duration,
             url,
@@ -187,18 +178,13 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         });
         router.back();
       } else {
-        const newStartTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
+        const newStartTime = new Date(startTime.getTime());
         const zoomStartTime = newStartTime.toISOString();
-        const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const startTimeUTC = formatDateTimeLocalToUTC(startTime.toISOString());
-
         let zoomAccount: string | null = initialTuition.zoomAcc;
         let deleteZoomAcc = false;
         let newZoomMeetingId = null;
         let newZoomMeetingUrl = null;
-
-        
-
 
         if (
           initialTuition.startTime !== zoomStartTime ||
@@ -213,10 +199,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               1,
               zoomAccounts
             );
-            if (!zoomAcc)
-              throw new Error(
-                "No Time Slot available in any of the Zoom Account"
-              );
+            if (!zoomAcc) throw new Error("No Zoom Account Available");
 
             zoomAccount = zoomAcc.id;
 
@@ -240,264 +223,263 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
                 localTimeZone,
                 duration
               );
-
-              const updatedMeetings = [
-                ...zoomAcc.meetings.filter(
-                  (meeting) => meeting.meetingId !== initialTuition.meetingId
-                ),
-                new Meeting(
-                  zoomStartTime,
-                  duration,
-                  newZoomMeetingId ?? initialTuition.meetingId ?? ""
-                ),
-              ];
-              await updateZoomAccount(
-                new ZoomAccount(
-                  zoomAcc.id,
-                  zoomAcc.email,
-                  zoomAcc.clientid,
-                  zoomAcc.clientsecret,
-                  zoomAcc.accountid,
-                  updatedMeetings
-                )
-              );
             }
 
-            if (
-              newStartTime.getTime() < Date.now() &&
-              new Date(initialTuition.startTime).getTime() > Date.now()
-            ) {
-              if (initialTuition.meetingId) {
-                const zoomAcc = zoomAccounts.find(
-                  (account) => account.id === initialTuition.zoomAcc
-                );
-
-                if (zoomAcc) {
-                  await deleteZoom(zoomAcc, initialTuition.meetingId);
-
-                  deleteZoomAcc = true;
-                  const updatedMeetings: Meeting[] = [
-                    ...zoomAcc.meetings.filter(
-                      (meeting) =>
-                        meeting.meetingId !== initialTuition.meetingId
-                    ),
-                  ];
-
-                  await updateZoomAccount(
-                    new ZoomAccount(
-                      zoomAcc.id,
-                      zoomAcc.email,
-                      zoomAcc.clientid,
-                      zoomAcc.clientsecret,
-                      zoomAcc.accountid,
-                      updatedMeetings
-                    )
-                  );
-                }
-              } else {
-                console.log("No meeting ID found to delete.");
-              }
-            }
-          }
-
-          let tiid = initialTuition.tutorInvoiceId;
-          let siid = initialTuition.studentInvoiceId;
-          if (
-            initialTuition.status !== TuitionStatus.END &&
-            formData.status === TuitionStatus.END &&
-            (!tiid || !siid)
-          ) {
-            const month = zoomStartTime.slice(0, 7);
-            if (!siid) {
-              const studentRate = (formData.studentPrice * duration) / 60;
-              const studentInvoice = new Invoice(
-                null,
-                initialTuition.id ?? "",
-                formData.tutorId,
-                formData.studentId,
-                formData.subjectId,
-                studentRate,
-                InvoiceStatus.PENDING,
+            const updatedMeetings = [
+              ...zoomAcc.meetings.filter(
+                (meeting) => meeting.meetingId !== initialTuition.meetingId
+              ),
+              new Meeting(
                 zoomStartTime,
                 duration,
-                formData.currency as Currency,
-                formData.studentPrice
-              );
-              siid = await addInvoice(studentInvoice);
-
-              const mergeInvoiceId = month + formData.studentId;
-              const existMergeInvoice = mergeInvoices.find(
-                (minv) => minv.id === mergeInvoiceId
-              );
-
-              if (existMergeInvoice) {
-                const mergeInvoice = new MergeInvoice(
-                  mergeInvoiceId,
-                  [...existMergeInvoice.invoicesId, siid as string],
-                  month,
-                  existMergeInvoice.rate + studentRate,
-                  InvoiceStatus.PENDING,
-                  existMergeInvoice.currency,
-                  formData.studentId
-                );
-
-                await updateMergeInvoice(mergeInvoice);
-              } else {
-                const mergeInvoice = new MergeInvoice(
-                  mergeInvoiceId,
-                  [siid as string],
-                  month,
-                  studentRate,
-                  InvoiceStatus.PENDING,
-                  formData.currency as Currency,
-                  formData.studentId
-                );
-
-                await updateMergeInvoice(mergeInvoice);
-              }
-            }
-            if (!tiid) {
-              const tutorRate = (formData.tutorPrice * duration) / 60;
-              const tutorPayment = new Payment(
-                null,
-                initialTuition.id ?? "",
-                formData.tutorId,
-                formData.studentId,
-                formData.subjectId,
-                tutorRate,
-                InvoiceStatus.PENDING,
-                zoomStartTime,
-                duration,
-                formData.currency as Currency,
-                formData.tutorPrice
-              );
-              tiid = await addPayment(tutorPayment);
-
-              const mergePaymentId = month + formData.tutorId;
-              const existMergePayment = mergePayments.find(
-                (minv) => minv.id === mergePaymentId
-              );
-
-              if (existMergePayment) {
-                const mergePayment = new MergePayment(
-                  mergePaymentId,
-                  [...existMergePayment.paymentsId, tiid as string],
-                  month,
-                  existMergePayment.rate + tutorRate,
-                  InvoiceStatus.PENDING,
-                  existMergePayment.currency,
-                  formData.tutorId
-                );
-
-                await updateMergePayment(mergePayment);
-              } else {
-                const mergePayment = new MergePayment(
-                  mergePaymentId,
-                  [tiid as string],
-                  month,
-                  tutorRate,
-                  InvoiceStatus.PENDING,
-                  formData.currency as Currency,
-                  formData.tutorId
-                );
-
-                await updateMergePayment(mergePayment);
-              }
-            }
+                newZoomMeetingId ?? initialTuition.meetingId ?? ""
+              ),
+            ];
+            await updateZoomAccount(
+              new ZoomAccount(
+                zoomAcc.id,
+                zoomAcc.email,
+                zoomAcc.clientid,
+                zoomAcc.clientsecret,
+                zoomAcc.accountid,
+                updatedMeetings
+              )
+            );
           }
 
           if (
-            initialTuition.status === TuitionStatus.END &&
-            formData.status !== TuitionStatus.END &&
-            tiid &&
-            siid
+            newStartTime.getTime() < Date.now() &&
+            new Date(initialTuition.startTime).getTime() > Date.now()
           ) {
-            const month = initialTuition.startTime.slice(0, 7);
+            if (initialTuition.meetingId) {
+              const zoomAcc = zoomAccounts.find(
+                (account) => account.id === initialTuition.zoomAcc
+              );
+
+              if (zoomAcc) {
+                await deleteZoom(zoomAcc, initialTuition.meetingId);
+
+                deleteZoomAcc = true;
+                const updatedMeetings: Meeting[] = [
+                  ...zoomAcc.meetings.filter(
+                    (meeting) => meeting.meetingId !== initialTuition.meetingId
+                  ),
+                ];
+
+                await updateZoomAccount(
+                  new ZoomAccount(
+                    zoomAcc.id,
+                    zoomAcc.email,
+                    zoomAcc.clientid,
+                    zoomAcc.clientsecret,
+                    zoomAcc.accountid,
+                    updatedMeetings
+                  )
+                );
+              }
+            } else {
+              console.log("No meeting ID found to delete.");
+            }
+          }
+        }
+
+        let tiid = initialTuition.tutorInvoiceId;
+        let siid = initialTuition.studentInvoiceId;
+        if (
+          initialTuition.status !== TuitionStatus.END &&
+          formData.status === TuitionStatus.END &&
+          (!tiid || !siid)
+        ) {
+          const month = zoomStartTime.slice(0, 7);
+          if (!siid) {
+            const studentRate = (formData.studentPrice * duration) / 60;
+            const studentInvoice = new Invoice(
+              null,
+              initialTuition.id ?? "",
+              formData.tutorId,
+              formData.studentId,
+              formData.subjectId,
+              studentRate,
+              InvoiceStatus.PENDING,
+              zoomStartTime,
+              duration,
+              formData.currency as Currency,
+              formData.studentPrice
+            );
+            siid = await addInvoice(studentInvoice);
+
             const mergeInvoiceId = month + formData.studentId;
-            const mergePaymentId = month + formData.tutorId;
-
-            const mergeInvoice = mergeInvoices.find(
+            const existMergeInvoice = mergeInvoices.find(
               (minv) => minv.id === mergeInvoiceId
             );
-            const mergePayment = mergePayments.find(
+
+            if (existMergeInvoice) {
+              const mergeInvoice = new MergeInvoice(
+                mergeInvoiceId,
+                [...existMergeInvoice.invoicesId, siid as string],
+                month,
+                existMergeInvoice.rate + studentRate,
+                InvoiceStatus.PENDING,
+                existMergeInvoice.currency,
+                formData.studentId
+              );
+
+              await updateMergeInvoice(mergeInvoice);
+            } else {
+              const mergeInvoice = new MergeInvoice(
+                mergeInvoiceId,
+                [siid as string],
+                month,
+                studentRate,
+                InvoiceStatus.PENDING,
+                formData.currency as Currency,
+                formData.studentId
+              );
+
+              await updateMergeInvoice(mergeInvoice);
+            }
+          }
+          if (!tiid) {
+            const tutorRate = (formData.tutorPrice * duration) / 60;
+            const tutorPayment = new Payment(
+              null,
+              initialTuition.id ?? "",
+              formData.tutorId,
+              formData.studentId,
+              formData.subjectId,
+              tutorRate,
+              InvoiceStatus.PENDING,
+              zoomStartTime,
+              duration,
+              formData.currency as Currency,
+              formData.tutorPrice
+            );
+            tiid = await addPayment(tutorPayment);
+
+            const mergePaymentId = month + formData.tutorId;
+            const existMergePayment = mergePayments.find(
               (minv) => minv.id === mergePaymentId
             );
 
-            const updatedMergeInvoice = mergeInvoice;
-            const updatedMergePayment = mergePayment;
+            if (existMergePayment) {
+              const mergePayment = new MergePayment(
+                mergePaymentId,
+                [...existMergePayment.paymentsId, tiid as string],
+                month,
+                existMergePayment.rate + tutorRate,
+                InvoiceStatus.PENDING,
+                existMergePayment.currency,
+                formData.tutorId
+              );
 
-            if (updatedMergeInvoice) {
-              updatedMergeInvoice.invoicesId =
-                updatedMergeInvoice.invoicesId.filter(
-                  (invoiceId) => invoiceId !== siid
-                );
+              await updateMergePayment(mergePayment);
+            } else {
+              const mergePayment = new MergePayment(
+                mergePaymentId,
+                [tiid as string],
+                month,
+                tutorRate,
+                InvoiceStatus.PENDING,
+                formData.currency as Currency,
+                formData.tutorId
+              );
 
-              if (updatedMergeInvoice.invoicesId.length === 0) {
-                await deleteMergeInvoice(mergeInvoiceId);
-              } else {
-                const inv = invoices.find((inv) => inv.id === siid);
-                updatedMergeInvoice.rate =
-                  updatedMergeInvoice.rate - (inv?.rate ?? 0);
-                await updateMergeInvoice(updatedMergeInvoice);
-              }
+              await updateMergePayment(mergePayment);
             }
+          }
+        }
 
-            if (updatedMergePayment) {
-              updatedMergePayment.paymentsId =
-                updatedMergePayment?.paymentsId.filter(
-                  (paymentId) => paymentId !== tiid
-                );
+        if (
+          initialTuition.status === TuitionStatus.END &&
+          formData.status !== TuitionStatus.END &&
+          tiid &&
+          siid
+        ) {
+          const month = initialTuition.startTime.slice(0, 7);
+          const mergeInvoiceId = month + formData.studentId;
+          const mergePaymentId = month + formData.tutorId;
 
-              if (updatedMergePayment.paymentsId.length === 0) {
-                await deleteMergePayment(mergePaymentId);
-              } else {
-                const pay = payments.find((inv) => inv.id === tiid);
-                updatedMergePayment.rate =
-                  updatedMergePayment.rate - (pay?.rate ?? 0);
-                await updateMergePayment(updatedMergePayment);
-              }
+          const mergeInvoice = mergeInvoices.find(
+            (minv) => minv.id === mergeInvoiceId
+          );
+          const mergePayment = mergePayments.find(
+            (minv) => minv.id === mergePaymentId
+          );
+
+          const updatedMergeInvoice = mergeInvoice;
+          const updatedMergePayment = mergePayment;
+
+          if (updatedMergeInvoice) {
+            updatedMergeInvoice.invoicesId =
+              updatedMergeInvoice.invoicesId.filter(
+                (invoiceId) => invoiceId !== siid
+              );
+
+            if (updatedMergeInvoice.invoicesId.length === 0) {
+              await deleteMergeInvoice(mergeInvoiceId);
+            } else {
+              const inv = invoices.find((inv) => inv.id === siid);
+              updatedMergeInvoice.rate =
+                updatedMergeInvoice.rate - (inv?.rate ?? 0);
+              await updateMergeInvoice(updatedMergeInvoice);
             }
-
-            await deleteInvoice(siid);
-            await deletePayment(tiid);
-
-            siid = null;
-            tiid = null;
           }
 
-          const updatedTuition = new Tuition(
-            initialTuition.id,
-            formData.name,
-            formData.tutorId,
-            formData.studentId,
-            formData.subjectId,
-            formData.levelId,
-            formData.status as TuitionStatus,
-            startTimeUTC,
-            localTimeZone,
-            duration,
-            newZoomMeetingUrl ? newZoomMeetingUrl : initialTuition.url,
-            formData.studentPrice,
-            formData.tutorPrice,
-            formData.currency as Currency,
-            siid,
-            tiid,
-            deleteZoomAcc
-              ? ""
-              : newZoomMeetingId
-              ? newZoomMeetingId
-              : initialTuition.meetingId,
-            formData.trial,
-            zoomAccount
-          );
-          await updateTuition(updatedTuition);
-          setTuition(updatedTuition);
-          toast({
-            title: "Success",
-            description: "Tuition updated successfully.",
-          });
-          router.back();
+          if (updatedMergePayment) {
+            updatedMergePayment.paymentsId =
+              updatedMergePayment?.paymentsId.filter(
+                (paymentId) => paymentId !== tiid
+              );
+
+            if (updatedMergePayment.paymentsId.length === 0) {
+              await deleteMergePayment(mergePaymentId);
+            } else {
+              const pay = payments.find((inv) => inv.id === tiid);
+              updatedMergePayment.rate =
+                updatedMergePayment.rate - (pay?.rate ?? 0);
+              await updateMergePayment(updatedMergePayment);
+            }
+          }
+
+          await deleteInvoice(siid);
+          await deletePayment(tiid);
+
+          siid = null;
+          tiid = null;
         }
+
+        const updatedTuition = new Tuition(
+          initialTuition.id,
+          formData.name,
+          formData.tutorId,
+          formData.studentId,
+          formData.subjectId,
+          formData.levelId,
+          formData.status as TuitionStatus,
+          startTimeUTC,
+          localTimeZone,
+          duration,
+          newZoomMeetingUrl ? newZoomMeetingUrl : initialTuition.url,
+          formData.studentPrice,
+          formData.tutorPrice,
+          formData.currency as Currency,
+          siid,
+          tiid,
+          deleteZoomAcc
+            ? ""
+            : newZoomMeetingId
+            ? newZoomMeetingId
+            : initialTuition.meetingId,
+          formData.trial,
+          zoomAccount
+        );
+        await updateTuition(updatedTuition);
+        setTuition(updatedTuition);
+        toast({
+          title: "Success",
+          description: "Tuition updated successfully.",
+        });
+        router.back();
       }
     } catch (error) {
       toast({
