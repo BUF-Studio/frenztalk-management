@@ -18,7 +18,6 @@ export function formatDate(dateString: string): string | null | undefined {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-      timeZone: "UTC",
     });
   } catch (error) {
     console.error("Error formatting date:", error);
@@ -63,7 +62,6 @@ export const formatTime = (
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-      timeZone: "UTC", // Specify UTC timezone
     };
 
     const startTime = start
@@ -90,7 +88,7 @@ export function formatDateRange(
   start: string | null | undefined,
   duration: number | null | undefined,
   outputFormat?: string | null
-): string {
+): string | null | undefined {
   if (!start) {
     console.error("Invalid start time: null or undefined");
     return "Invalid time";
@@ -102,7 +100,7 @@ export function formatDateRange(
       startDate.getTime() + (duration ?? 0) * 60 * 60 * 1000
     );
     return outputFormat === "date"
-      ? formatDate(endDate)
+      ? formatDate(endDate.toISOString())
       : formatDateTime(endDate);
   } catch (error) {
     console.error("Error formatting time range:", error);
@@ -116,21 +114,53 @@ export const formatDateTimeLocal = (isoString: string): string => {
 
   const date = new Date(isoString);
 
-  // Get the timezone offset in minutes
-  const timezoneOffsetInMinutes = date.getTimezoneOffset();
   const utcIsoTime = new Date(date.getTime()).toISOString();
 
-  // Adjust for local timezone offset (convert minutes to milliseconds)
-  // const offsetInMilliseconds = timezoneOffsetInMinutes * 60000;
-  // const localISOTime = new Date(date.getTime() - offsetInMilliseconds).toISOString();
   return utcIsoTime.slice(0, 16); // Remove seconds and milliseconds
 };
 
-export const formatDateTimeLocalTuitionForm = (isoString: string): string => {
+export const formatDateTimeLocalToUTC = (isoString: string): string => {
   if (!isoString) return "";
   const date = new Date(isoString);
   // Adjust for local timezone offset
   const offset = date.getTimezoneOffset() * 60000;
-  const localISOTime = new Date(date.getTime() - offset).toISOString();
-  return localISOTime.slice(0, 16); // Remove seconds and milliseconds
+  const localISOUTCTime = new Date(date.getTime() - offset).toISOString();
+
+  console.log("before: ",date.toISOString())
+  console.log("after: ",localISOUTCTime)
+
+
+  return localISOUTCTime.slice(0, 16); // Remove seconds and milliseconds
 };
+
+export function toLocalIsoString(date: Date) {
+  var tzo = -date.getTimezoneOffset(),
+    dif = tzo >= 0 ? "+" : "-",
+    pad = function (num: number) {
+      return (num < 10 ? "0" : "") + num;
+    };
+
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes()) +
+    ":" +
+    pad(date.getSeconds()) +
+    dif +
+    pad(Math.floor(Math.abs(tzo) / 60)) +
+    ":" +
+    pad(Math.abs(tzo) % 60)
+  );
+}
+
+export const utcToLocal = (utcDate: string): Date => {
+  const date = new Date(utcDate);
+  return new Date(date.getTime());
+};
+

@@ -10,6 +10,7 @@ export class Tuition {
     public levelId: string,
     public status: string,
     public startTime: string,
+    public timezone: string,
     public duration: number,
     public url: string,
     public studentPrice: number,
@@ -19,6 +20,7 @@ export class Tuition {
     public tutorInvoiceId: string | null,
     public meetingId: string | null,
     public trial: boolean,
+    public zoomAcc: string | null,
 
   ) { }
 
@@ -32,6 +34,7 @@ export class Tuition {
       data.levelId,
       data.status,
       data.startTime,
+      data.timezone,
       data.duration,
       data.url,
       data.studentPrice,
@@ -41,6 +44,7 @@ export class Tuition {
       data.tutorInvoiceId,
       data.meetingId,
       data.trial,
+      data.zoomAcc,
     );
   }
 
@@ -62,6 +66,7 @@ export class Tuition {
       tutorInvoiceId: this.tutorInvoiceId,
       meetingId: this.meetingId,
       trial: this.trial,
+      zoomAcc: this.zoomAcc,
     };
   }
 }

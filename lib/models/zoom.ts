@@ -4,12 +4,14 @@ export class Meeting {
     constructor(
         public start: string,
         public duration: number,
+        public meetingId: string,
     ) { }
 
     static fromMap(data: Record<string, any>): Meeting {
         return new Meeting(
             data.start,
             data.duration,
+            data.meetingId,
         );
     }
 
@@ -17,6 +19,7 @@ export class Meeting {
         return {
             start: this.start,
             duration: this.duration,
+            meetingId: this.meetingId,
         };
     }
 }

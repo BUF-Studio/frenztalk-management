@@ -8,6 +8,7 @@ import { useSubjects } from "@/lib/context/collection/subjectContext"
 import { useTutors } from "@/lib/context/collection/tutorContext"
 import type { Tuition } from "@/lib/models/tuition"
 import TuitionCard from "../general/tuitionCard"
+import { utcToLocal } from "@/utils/util"
 
 type TuitionListProps = {
   tuitions: Tuition[]
@@ -35,10 +36,6 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
     return tuitionDate === filterDate
   })
 
-  const utcToLocal = (utcDate: string): Date => {
-    const date = new Date(utcDate);
-    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-  };
 
   const now = new Date()
   const utcNow = new Date(now.toUTCString())

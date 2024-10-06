@@ -17,6 +17,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { useUser } from "@/lib/context/collection/userContext";
 import { UserRole } from "@/lib/models/user";
+import { utcToLocal } from "@/utils/util";
 
 export default function TuitionPage() {
   const { user } = useUser();
@@ -24,8 +25,7 @@ export default function TuitionPage() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { unpaidInvoices } = useInvoices();
-  const [currentTime] = useState(() => new Date().getTime());
-
+  const currentTime = new Date();
   const handleAddTuition = () => {
     router.push("/tuitions/add");
   };
@@ -34,24 +34,26 @@ export default function TuitionPage() {
     console.log(selectedDate);
   }, [selectedDate]);
 
-  const utcToLocal = (utcDate: string): Date => {
-    const date = new Date(utcDate);
-    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-  };
-
   const { presentTuitions, pastTuitions } = useMemo(() => {
     const present = [];
     const past = [];
 
     for (const tuition of tuitions) {
       const localStartTime = utcToLocal(tuition.startTime);
+      
       const localEndTime = new Date(
         localStartTime.getTime() + tuition.duration * 60000
       );
+      console.log("tuition : ", tuition.name);
+      console.log("localStartTime tuitionsPage : ", localStartTime.toISOString());
+      console.log("localEndTime tuitionsPage : ", localEndTime.toISOString());
+      console.log("currentTime tuitionsPage : ", currentTime.toISOString());
 
-      if (localEndTime.getTime() <= currentTime) {
+      if (localEndTime.getTime() <= currentTime.getTime()) {
+        console.log("pushing to past");
         past.push(tuition);
       } else {
+        console.log("pushing to present");
         present.push(tuition);
       }
     }

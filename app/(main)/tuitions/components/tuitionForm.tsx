@@ -24,7 +24,7 @@ import { useTutors } from "@/lib/context/collection/tutorContext";
 import { useZoomAccounts } from "@/lib/context/collection/zoomContext";
 import { useLevels } from "@/lib/context/collection/levelContext";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import { formatDateTimeLocal, formatDateTimeLocalTuitionForm } from "@/utils/util";
+import { formatDateTimeLocalToUTC } from "@/utils/util";
 import { Label } from "@/app/components/ui/label";
 import { Meeting, ZoomAccount } from "@/lib/models/zoom";
 import axios from "axios";
@@ -48,12 +48,16 @@ import {
 } from "@/lib/firebase/mergePayment";
 import { useTuitionPage } from "@/lib/context/page/tuitionPageContext";
 import { useUser } from "@/lib/context/collection/userContext";
+import SelectField from "./SelectField";
+import InputField from "./InputField";
+import { useTuitionForm } from "../add/custom_hook/useTuitionForm";
+import { useZoomAPI } from "../add/custom_hook/useZoomApi";
 
 interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
-// Do input field validation!!!!!
+// TODO: Do input field validation!!!!!
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { user } = useUser();
   const { students } = useStudents();
@@ -70,87 +74,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const router = useRouter();
 
-  const [formData, setFormData] = useState<{
-    name: string;
-    studentId: string;
-    tutorId: string;
-    subjectId: string;
-    levelId: string;
-    status: string;
-    currency: string;
-    studentPrice: number;
-    tutorPrice: number;
-    startDateTime: string;
-    duration: number;
-    repeatWeeks: number;
-    trial: boolean;
-  }>({
-    name: "",
-    studentId: "",
-    tutorId: user?.role === "tutor" ? user.id ?? "" : "",
-    subjectId: "",
-    levelId: "",
-    status: "",
-    currency: "",
-    studentPrice: 0,
-    tutorPrice: 0,
-    startDateTime: "",
-    duration: 60,
-    repeatWeeks: 1,
-    trial: true,
-  });
-
-  useEffect(() => {
-    if (formData.levelId && formData.currency) {
-      const selectedLevel = levels.find((l) => l.id === formData.levelId);
-      if (selectedLevel) {
-        const prices = {
-          [Currency.USD]: {
-            student: selectedLevel.student_price_usd ?? 0,
-            tutor: selectedLevel.tutor_price_usd ?? 0,
-          },
-          [Currency.GBP]: {
-            student: selectedLevel.student_price_gbp ?? 0,
-            tutor: selectedLevel.tutor_price_gbp ?? 0,
-          },
-          [Currency.MYR]: {
-            student: selectedLevel.student_price_myr ?? 0,
-            tutor: selectedLevel.tutor_price_myr ?? 0,
-          },
-        };
-
-        setFormData((prevData) => ({
-          ...prevData,
-          studentPrice: prices[formData.currency as Currency].student,
-          tutorPrice: prices[formData.currency as Currency].tutor,
-        }));
-      }
-    }
-  }, [formData.levelId, formData.currency, levels]);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (initialTuition) {
-      setFormData({
-        name: initialTuition?.name || "",
-        studentId: initialTuition?.studentId || "",
-        tutorId: initialTuition?.tutorId || "",
-        subjectId: initialTuition?.subjectId || "",
-        levelId: initialTuition?.levelId || "",
-        status: initialTuition?.status || "",
-        currency: initialTuition?.currency || Currency.MYR,
-        studentPrice: initialTuition?.studentPrice || 0,
-        tutorPrice: initialTuition?.tutorPrice || 0,
-        startDateTime: initialTuition?.startTime || "",
-        duration: initialTuition?.duration || 60,
-        repeatWeeks: 1,
-        trial: initialTuition?.trial ?? true,
-      });
-    }
-    setIsLoading(false);
-  }, [initialTuition]);
+  const { formData, setFormData, isSubmitting, setIsSubmitting } =
+    useTuitionForm(initialTuition, levels);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -162,94 +87,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     }));
   };
 
-  const authToken = async (zoom: ZoomAccount) => {
-    try {
-      const response = await axios.post("/api/auth/authorize", {
-        clientId: zoom.clientid,
-        clientSecret: zoom.clientsecret,
-        accountId: zoom.accountid,
-      });
-      return response.data.access_token;
-    } catch (error) {
-      console.error("Error getting auth token:", error);
-      throw error;
-    }
-  };
-
-  const createZoom = async (
-    account: ZoomAccount,
-    topic: string,
-    start_time: string,
-    duration: number
-  ) => {
-    try {
-      const token = await authToken(account);
-      const response = await axios.post("/api/addZoom", {
-        accessToken: token,
-        topic,
-        start_time,
-        duration,
-        password: null,
-      });
-      return { meetingid: response.data.id, url: response.data.join_url };
-    } catch (error) {
-      console.error("Error creating Zoom meeting:", error);
-      throw error;
-    }
-  };
-
-  const updateZoom = async (
-    zoom: ZoomAccount,
-    meetingId: string,
-    topic: string,
-    start_time: string,
-    duration: number
-  ) => {
-    try {
-      const token = await authToken(zoom);
-      const response = await axios.post("/api/updateZoom", {
-        accessToken: token,
-        meetingId,
-        topic,
-        start_time,
-        duration,
-        password: null,
-        recurrence: null,
-      });
-      if (response.status >= 200 && response.status < 300) {
-        return { success: true };
-      }
-      throw new Error(`Unexpected response status: ${response.status}`);
-    } catch (error) {
-      console.error("Error updating Zoom meeting:", error);
-      throw error;
-    }
-  };
-
-  const getZoomAcc = (
-    zoomStartTime: string,
-    duration: number
-  ): ZoomAccount | null => {
-    const newStartTime = new Date(zoomStartTime).getTime();
-    const newEndTime = newStartTime + duration * 60 * 1000;
-
-    return (
-      zoomAccounts.find((zoom) => {
-        if (zoom.meetings.length === 0) return true;
-        return !zoom.meetings.some((meeting) => {
-          const meetingStartTime = new Date(meeting.start).getTime();
-          const meetingEndTime =
-            meetingStartTime + meeting.duration * 60 * 1000;
-          return (
-            (newStartTime >= meetingStartTime &&
-              newStartTime < meetingEndTime) ||
-            (newEndTime > meetingStartTime && newEndTime <= meetingEndTime) ||
-            (newStartTime <= meetingStartTime && newEndTime >= meetingEndTime)
-          );
-        });
-      }) || null
-    );
-  };
+  const { createZoom, updateZoom, getZoomAcc, deleteZoom } = useZoomAPI();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -261,6 +99,9 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       const repeatWeeks = Number(formData.repeatWeeks);
 
       if (!initialTuition) {
+        let zoomAcc: ZoomAccount | null = null;
+        let updatedMeetings: Meeting[] = [];
+
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
@@ -268,16 +109,39 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
+          const localTimeZone =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const startTimeUTC = startTime.toISOString();
 
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
-          if (!zoomAcc) throw new Error("No Zoom Account Available");
+          console.log("starttime: ", zoomStartTime);
+          console.log("localtimezone: ", localTimeZone);
+          console.log("startTimeUTC: ", startTimeUTC);
+
+          if (i === 0) {
+            zoomAcc = getZoomAcc(
+              zoomStartTime,
+              duration,
+              repeatWeeks,
+              zoomAccounts
+            );
+            if (zoomAcc && zoomAcc.meetings.length !== 0) {
+              updatedMeetings.push(...zoomAcc.meetings);
+            }
+          }
+
+          if (!zoomAcc)
+            throw new Error(
+              "No Time Slot available in any of the Zoom Account"
+            );
 
           const zoom = await createZoom(
             zoomAcc,
             formData.name,
             zoomStartTime,
-            duration
+            duration,
+            localTimeZone
           );
+
           if (!zoom) throw new Error("Failed to create zoom meeting");
 
           const { meetingid, url } = zoom;
@@ -289,7 +153,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             formData.subjectId,
             formData.levelId,
             formData.status as TuitionStatus,
-            zoomStartTime,
+            startTimeUTC,
+            localTimeZone,
             duration,
             url,
             formData.studentPrice,
@@ -298,14 +163,14 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             null,
             null,
             meetingid,
-            i === 0 && formData.trial
+            i === 0 && formData.trial,
+            zoomAcc.id!
           );
           await addTuition(newTuition);
 
-          const updatedMeetings = [
-            ...zoomAcc.meetings,
-            new Meeting(zoomStartTime, duration),
-          ];
+          updatedMeetings.push(new Meeting(zoomStartTime, duration, meetingid));
+        }
+        if (zoomAcc)
           await updateZoomAccount(
             new ZoomAccount(
               zoomAcc.id,
@@ -316,7 +181,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
               updatedMeetings
             )
           );
-        }
         toast({
           title: "Success",
           description: `${repeatWeeks} tuition sessions created successfully.`,
@@ -325,232 +189,321 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       } else {
         const newStartTime = new Date(startTime.getTime() + 8 * 60 * 60 * 1000);
         const zoomStartTime = newStartTime.toISOString();
+        const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const startTimeUTC = formatDateTimeLocalToUTC(startTime.toISOString());
+
+        let zoomAccount: string | null = initialTuition.zoomAcc;
+        let deleteZoomAcc = false;
+        let newZoomMeetingId = null;
+        let newZoomMeetingUrl = null;
+
+        
+
 
         if (
           initialTuition.startTime !== zoomStartTime ||
           initialTuition.name !== formData.name ||
           initialTuition.duration !== duration
         ) {
-          const zoomAcc = getZoomAcc(zoomStartTime, duration);
-          if (!zoomAcc) throw new Error("No Zoom Account Available");
-
-          await updateZoom(
-            zoomAcc,
-            initialTuition.meetingId ?? "",
-            formData.name,
-            zoomStartTime,
-            duration
-          );
-
-          const updatedMeetings = [
-            ...zoomAcc.meetings,
-            new Meeting(zoomStartTime, duration),
-          ];
-          await updateZoomAccount(
-            new ZoomAccount(
-              zoomAcc.id,
-              zoomAcc.email,
-              zoomAcc.clientid,
-              zoomAcc.clientsecret,
-              zoomAcc.accountid,
-              updatedMeetings
-            )
-          );
-        }
-
-        let tiid = initialTuition.tutorInvoiceId;
-        let siid = initialTuition.studentInvoiceId;
-        if (
-          initialTuition.status !== TuitionStatus.END &&
-          formData.status === TuitionStatus.END &&
-          (!tiid || !siid)
-        ) {
-          const month = zoomStartTime.slice(0, 7);
-          if (!siid) {
-            const studentRate = (formData.studentPrice * duration) / 60;
-            const studentInvoice = new Invoice(
-              null,
-              initialTuition.id ?? "",
-              formData.tutorId,
-              formData.studentId,
-              formData.subjectId,
-              studentRate,
-              InvoiceStatus.PENDING,
+          if (newStartTime.getTime() > Date.now()) {
+            console.log("update zoom");
+            const zoomAcc = getZoomAcc(
               zoomStartTime,
               duration,
-              formData.currency as Currency,
-              formData.studentPrice
+              1,
+              zoomAccounts
             );
-            siid = await addInvoice(studentInvoice);
-
-            const mergeInvoiceId = month + formData.studentId;
-            const existMergeInvoice = mergeInvoices.find(
-              (minv) => minv.id === mergeInvoiceId
-            );
-
-            if (existMergeInvoice) {
-              const mergeInvoice = new MergeInvoice(
-                mergeInvoiceId,
-                [...existMergeInvoice.invoicesId, siid as string],
-                month,
-                existMergeInvoice.rate + studentRate,
-                InvoiceStatus.PENDING,
-                existMergeInvoice.currency,
-                formData.studentId
+            if (!zoomAcc)
+              throw new Error(
+                "No Time Slot available in any of the Zoom Account"
               );
 
-              await updateMergeInvoice(mergeInvoice);
+            zoomAccount = zoomAcc.id;
+
+            if (initialTuition.meetingId === "") {
+              const { meetingid, url } = await createZoom(
+                zoomAcc,
+                formData.name,
+                zoomStartTime,
+                duration,
+                localTimeZone
+              );
+
+              newZoomMeetingId = meetingid;
+              newZoomMeetingUrl = url;
             } else {
-              const mergeInvoice = new MergeInvoice(
-                mergeInvoiceId,
-                [siid as string],
-                month,
-                studentRate,
-                InvoiceStatus.PENDING,
-                formData.currency as Currency,
-                formData.studentId
+              await updateZoom(
+                zoomAcc,
+                initialTuition.meetingId ?? "",
+                formData.name,
+                zoomStartTime,
+                localTimeZone,
+                duration
               );
 
-              await updateMergeInvoice(mergeInvoice);
+              const updatedMeetings = [
+                ...zoomAcc.meetings.filter(
+                  (meeting) => meeting.meetingId !== initialTuition.meetingId
+                ),
+                new Meeting(
+                  zoomStartTime,
+                  duration,
+                  newZoomMeetingId ?? initialTuition.meetingId ?? ""
+                ),
+              ];
+              await updateZoomAccount(
+                new ZoomAccount(
+                  zoomAcc.id,
+                  zoomAcc.email,
+                  zoomAcc.clientid,
+                  zoomAcc.clientsecret,
+                  zoomAcc.accountid,
+                  updatedMeetings
+                )
+              );
+            }
+
+            if (
+              newStartTime.getTime() < Date.now() &&
+              new Date(initialTuition.startTime).getTime() > Date.now()
+            ) {
+              if (initialTuition.meetingId) {
+                const zoomAcc = zoomAccounts.find(
+                  (account) => account.id === initialTuition.zoomAcc
+                );
+
+                if (zoomAcc) {
+                  await deleteZoom(zoomAcc, initialTuition.meetingId);
+
+                  deleteZoomAcc = true;
+                  const updatedMeetings: Meeting[] = [
+                    ...zoomAcc.meetings.filter(
+                      (meeting) =>
+                        meeting.meetingId !== initialTuition.meetingId
+                    ),
+                  ];
+
+                  await updateZoomAccount(
+                    new ZoomAccount(
+                      zoomAcc.id,
+                      zoomAcc.email,
+                      zoomAcc.clientid,
+                      zoomAcc.clientsecret,
+                      zoomAcc.accountid,
+                      updatedMeetings
+                    )
+                  );
+                }
+              } else {
+                console.log("No meeting ID found to delete.");
+              }
             }
           }
-          if (!tiid) {
-            const tutorRate = (formData.tutorPrice * duration) / 60;
-            const tutorPayment = new Payment(
-              null,
-              initialTuition.id ?? "",
-              formData.tutorId,
-              formData.studentId,
-              formData.subjectId,
-              tutorRate,
-              InvoiceStatus.PENDING,
-              zoomStartTime,
-              duration,
-              formData.currency as Currency,
-              formData.tutorPrice
-            );
-            tiid = await addPayment(tutorPayment);
 
+          let tiid = initialTuition.tutorInvoiceId;
+          let siid = initialTuition.studentInvoiceId;
+          if (
+            initialTuition.status !== TuitionStatus.END &&
+            formData.status === TuitionStatus.END &&
+            (!tiid || !siid)
+          ) {
+            const month = zoomStartTime.slice(0, 7);
+            if (!siid) {
+              const studentRate = (formData.studentPrice * duration) / 60;
+              const studentInvoice = new Invoice(
+                null,
+                initialTuition.id ?? "",
+                formData.tutorId,
+                formData.studentId,
+                formData.subjectId,
+                studentRate,
+                InvoiceStatus.PENDING,
+                zoomStartTime,
+                duration,
+                formData.currency as Currency,
+                formData.studentPrice
+              );
+              siid = await addInvoice(studentInvoice);
+
+              const mergeInvoiceId = month + formData.studentId;
+              const existMergeInvoice = mergeInvoices.find(
+                (minv) => minv.id === mergeInvoiceId
+              );
+
+              if (existMergeInvoice) {
+                const mergeInvoice = new MergeInvoice(
+                  mergeInvoiceId,
+                  [...existMergeInvoice.invoicesId, siid as string],
+                  month,
+                  existMergeInvoice.rate + studentRate,
+                  InvoiceStatus.PENDING,
+                  existMergeInvoice.currency,
+                  formData.studentId
+                );
+
+                await updateMergeInvoice(mergeInvoice);
+              } else {
+                const mergeInvoice = new MergeInvoice(
+                  mergeInvoiceId,
+                  [siid as string],
+                  month,
+                  studentRate,
+                  InvoiceStatus.PENDING,
+                  formData.currency as Currency,
+                  formData.studentId
+                );
+
+                await updateMergeInvoice(mergeInvoice);
+              }
+            }
+            if (!tiid) {
+              const tutorRate = (formData.tutorPrice * duration) / 60;
+              const tutorPayment = new Payment(
+                null,
+                initialTuition.id ?? "",
+                formData.tutorId,
+                formData.studentId,
+                formData.subjectId,
+                tutorRate,
+                InvoiceStatus.PENDING,
+                zoomStartTime,
+                duration,
+                formData.currency as Currency,
+                formData.tutorPrice
+              );
+              tiid = await addPayment(tutorPayment);
+
+              const mergePaymentId = month + formData.tutorId;
+              const existMergePayment = mergePayments.find(
+                (minv) => minv.id === mergePaymentId
+              );
+
+              if (existMergePayment) {
+                const mergePayment = new MergePayment(
+                  mergePaymentId,
+                  [...existMergePayment.paymentsId, tiid as string],
+                  month,
+                  existMergePayment.rate + tutorRate,
+                  InvoiceStatus.PENDING,
+                  existMergePayment.currency,
+                  formData.tutorId
+                );
+
+                await updateMergePayment(mergePayment);
+              } else {
+                const mergePayment = new MergePayment(
+                  mergePaymentId,
+                  [tiid as string],
+                  month,
+                  tutorRate,
+                  InvoiceStatus.PENDING,
+                  formData.currency as Currency,
+                  formData.tutorId
+                );
+
+                await updateMergePayment(mergePayment);
+              }
+            }
+          }
+
+          if (
+            initialTuition.status === TuitionStatus.END &&
+            formData.status !== TuitionStatus.END &&
+            tiid &&
+            siid
+          ) {
+            const month = initialTuition.startTime.slice(0, 7);
+            const mergeInvoiceId = month + formData.studentId;
             const mergePaymentId = month + formData.tutorId;
-            const existMergePayment = mergePayments.find(
+
+            const mergeInvoice = mergeInvoices.find(
+              (minv) => minv.id === mergeInvoiceId
+            );
+            const mergePayment = mergePayments.find(
               (minv) => minv.id === mergePaymentId
             );
 
-            if (existMergePayment) {
-              const mergePayment = new MergePayment(
-                mergePaymentId,
-                [...existMergePayment.paymentsId, tiid as string],
-                month,
-                existMergePayment.rate + tutorRate,
-                InvoiceStatus.PENDING,
-                existMergePayment.currency,
-                formData.tutorId
-              );
+            const updatedMergeInvoice = mergeInvoice;
+            const updatedMergePayment = mergePayment;
 
-              await updateMergePayment(mergePayment);
-            } else {
-              const mergePayment = new MergePayment(
-                mergePaymentId,
-                [tiid as string],
-                month,
-                tutorRate,
-                InvoiceStatus.PENDING,
-                formData.currency as Currency,
-                formData.tutorId
-              );
+            if (updatedMergeInvoice) {
+              updatedMergeInvoice.invoicesId =
+                updatedMergeInvoice.invoicesId.filter(
+                  (invoiceId) => invoiceId !== siid
+                );
 
-              await updateMergePayment(mergePayment);
+              if (updatedMergeInvoice.invoicesId.length === 0) {
+                await deleteMergeInvoice(mergeInvoiceId);
+              } else {
+                const inv = invoices.find((inv) => inv.id === siid);
+                updatedMergeInvoice.rate =
+                  updatedMergeInvoice.rate - (inv?.rate ?? 0);
+                await updateMergeInvoice(updatedMergeInvoice);
+              }
             }
+
+            if (updatedMergePayment) {
+              updatedMergePayment.paymentsId =
+                updatedMergePayment?.paymentsId.filter(
+                  (paymentId) => paymentId !== tiid
+                );
+
+              if (updatedMergePayment.paymentsId.length === 0) {
+                await deleteMergePayment(mergePaymentId);
+              } else {
+                const pay = payments.find((inv) => inv.id === tiid);
+                updatedMergePayment.rate =
+                  updatedMergePayment.rate - (pay?.rate ?? 0);
+                await updateMergePayment(updatedMergePayment);
+              }
+            }
+
+            await deleteInvoice(siid);
+            await deletePayment(tiid);
+
+            siid = null;
+            tiid = null;
           }
-        }
 
-        if (
-          initialTuition.status === TuitionStatus.END &&
-          formData.status !== TuitionStatus.END &&
-          tiid &&
-          siid
-        ) {
-          const month = initialTuition.startTime.slice(0, 7);
-          const mergeInvoiceId = month + formData.studentId;
-          const mergePaymentId = month + formData.tutorId;
-
-          const mergeInvoice = mergeInvoices.find(
-            (minv) => minv.id === mergeInvoiceId
+          const updatedTuition = new Tuition(
+            initialTuition.id,
+            formData.name,
+            formData.tutorId,
+            formData.studentId,
+            formData.subjectId,
+            formData.levelId,
+            formData.status as TuitionStatus,
+            startTimeUTC,
+            localTimeZone,
+            duration,
+            newZoomMeetingUrl ? newZoomMeetingUrl : initialTuition.url,
+            formData.studentPrice,
+            formData.tutorPrice,
+            formData.currency as Currency,
+            siid,
+            tiid,
+            deleteZoomAcc
+              ? ""
+              : newZoomMeetingId
+              ? newZoomMeetingId
+              : initialTuition.meetingId,
+            formData.trial,
+            zoomAccount
           );
-          const mergePayment = mergePayments.find(
-            (minv) => minv.id === mergePaymentId
-          );
-
-          const updatedMergeInvoice = mergeInvoice;
-          const updatedMergePayment = mergePayment;
-
-          if (updatedMergeInvoice) {
-            updatedMergeInvoice.invoicesId =
-              updatedMergeInvoice.invoicesId.filter(
-                (invoiceId) => invoiceId !== siid
-              );
-
-            if (updatedMergeInvoice.invoicesId.length === 0) {
-              await deleteMergeInvoice(mergeInvoiceId);
-            } else {
-              const inv = invoices.find((inv) => inv.id === siid);
-              updatedMergeInvoice.rate =
-                updatedMergeInvoice.rate - (inv?.rate ?? 0);
-              await updateMergeInvoice(updatedMergeInvoice);
-            }
-          }
-
-          if (updatedMergePayment) {
-            updatedMergePayment.paymentsId =
-              updatedMergePayment?.paymentsId.filter(
-                (paymentId) => paymentId !== tiid
-              );
-
-            if (updatedMergePayment.paymentsId.length === 0) {
-              await deleteMergePayment(mergePaymentId);
-            } else {
-              const pay = payments.find((inv) => inv.id === tiid);
-              updatedMergePayment.rate =
-                updatedMergePayment.rate - (pay?.rate ?? 0);
-              await updateMergePayment(updatedMergePayment);
-            }
-          }
-
-          await deleteInvoice(siid);
-          await deletePayment(tiid);
-
-          siid = null;
-          tiid = null;
+          await updateTuition(updatedTuition);
+          setTuition(updatedTuition);
+          toast({
+            title: "Success",
+            description: "Tuition updated successfully.",
+          });
+          router.back();
         }
-
-        const updatedTuition = new Tuition(
-          initialTuition.id,
-          formData.name,
-          formData.tutorId,
-          formData.studentId,
-          formData.subjectId,
-          formData.levelId,
-          formData.status as TuitionStatus,
-          zoomStartTime,
-          duration,
-          initialTuition.url,
-          formData.studentPrice,
-          formData.tutorPrice,
-          formData.currency as Currency,
-          siid,
-          tiid,
-          initialTuition.meetingId,
-          formData.trial
-        );
-        await updateTuition(updatedTuition);
-        setTuition(updatedTuition);
-        toast({
-          title: "Success",
-          description: "Tuition updated successfully.",
-        });
-        router.back();
       }
     } catch (error) {
+      toast({
+        title: "Failed",
+        description: `Error : ${error}.`,
+      });
       console.error("Failed to submit the form", error);
     } finally {
       setIsSubmitting(false);
@@ -578,10 +531,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     level: levels.map((level) => ({ value: level.id, label: level.name })),
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid w-full items-center gap-1.5">
@@ -596,153 +545,94 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="student">Student</Label>
-          <Select
-            value={formData.studentId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, studentId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Student" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.student.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {user?.role !== "tutor" && <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="tutor">Tutor</Label>
-          <Select
+        <SelectField
+          label="Student"
+          name="student"
+          value={formData.studentId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, studentId: value }))
+          }
+          options={optionsMap.student}
+          placeholder="Select Student"
+        />
+        {user?.role !== "tutor" && (
+          <SelectField
+            label="Tutor"
+            name="tutor"
             value={formData.tutorId}
-            onValueChange={(value) =>
+            onChange={(value: string) =>
               setFormData((prev) => ({ ...prev, tutorId: value }))
             }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Tutor" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.tutor.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>}
+            options={optionsMap.tutor}
+            placeholder="Select Tutor"
+          />
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="subject">Subject</Label>
-          <Select
-            value={formData.subjectId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, subjectId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Subject" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.subject.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="level">Level</Label>
-          <Select
-            value={formData.levelId}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, levelId: value }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Level" />
-            </SelectTrigger>
-            <SelectContent>
-              {optionsMap.level.map((option) => (
-                <SelectItem key={option.value} value={option.value as string}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="status">Status</Label>
-        <Select
-          value={formData.status}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, status: value }))
+        <SelectField
+          label="Subject"
+          name="subject"
+          value={formData.subjectId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, subjectId: value }))
           }
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            {optionsMap.status.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="currency">Currency</Label>
-        <Select
-          value={formData.currency}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, currency: value as Currency }))
+          options={optionsMap.subject}
+          placeholder="Select Subject"
+        />
+        <SelectField
+          label="Level"
+          name="level"
+          value={formData.levelId}
+          onChange={(value: string) =>
+            setFormData((prev) => ({ ...prev, levelId: value }))
           }
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Currency" />
-          </SelectTrigger>
-          <SelectContent>
-            {optionsMap.currency.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          options={optionsMap.level}
+          placeholder="Select Level"
+        />
       </div>
-      {user?.role !== "tutor" && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="student-rate">Student Rate</Label>
-          <Input
-            type="number"
+      <SelectField
+        label="Status"
+        name="status"
+        value={formData.status}
+        onChange={(value: string) =>
+          setFormData((prev) => ({ ...prev, status: value }))
+        }
+        options={optionsMap.status}
+        placeholder="Select Status"
+      />
+      <SelectField
+        label="Currency"
+        name="currency"
+        value={formData.currency}
+        onChange={(value: string) =>
+          setFormData((prev) => ({ ...prev, currency: value as Currency }))
+        }
+        options={optionsMap.currency}
+        placeholder="Select Currency"
+      />
+
+      {user?.role !== "tutor" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            label="Student Rate"
             name="studentPrice"
+            type="number"
             value={formData.studentPrice}
             onChange={handleChange}
             placeholder="Student Price"
             required
           />
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="tutor-rate">Tutor Rate</Label>
-          <Input
-            type="number"
+          <InputField
+            label="Tutor Rate"
             name="tutorPrice"
+            type="number"
             value={formData.tutorPrice}
             onChange={handleChange}
             placeholder="Tutor Price"
             required
           />
         </div>
-      </div>}
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
@@ -750,37 +640,35 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           <Input
             type="datetime-local"
             name="startDateTime"
-            value={ formatDateTimeLocalTuitionForm(formData.startDateTime)}
+            value={formatDateTimeLocalToUTC(formData.startDateTime)}
             onChange={handleChange}
             placeholder="Start Time"
             required
           />
         </div>
         {/* FIXME : Duration's granularity should be 30 minutes instead of 1 minute? */}
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="duration">Duration (min)</Label>
-          <Input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            placeholder="Duration (minutes)"
-            required
-          />
-        </div>
-      </div>
-      {initialTuition == null && <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="repeatWeeks">Repeat Weeks</Label>
-        <Input
+        <InputField
+          label="Duration (min)"
+          name="duration"
           type="number"
+          value={formData.duration}
+          onChange={handleChange}
+          placeholder="Duration (minutes)"
+          required
+        />
+      </div>
+      {initialTuition == null && (
+        <InputField
+          label="Repeat Weeks"
           name="repeatWeeks"
+          type="number"
           value={formData.repeatWeeks}
           onChange={handleChange}
           placeholder="Repeat Weeks"
           required
           min={1}
         />
-      </div>}
+      )}
       <div className="flex items-center space-x-2">
         <Checkbox
           id="trial"
@@ -788,6 +676,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           onCheckedChange={(checked) =>
             setFormData((prev) => ({ ...prev, trial: checked as boolean }))
           }
+          onClick={(e) => e.stopPropagation}
         />
         <label
           htmlFor="trial"

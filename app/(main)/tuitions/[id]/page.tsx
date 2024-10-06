@@ -153,6 +153,7 @@ export default function TuitionDetail({ params }: { params: { id: string } }) {
     },
   ];
 
+  // TODO - Implement delete tuition
   const handleDelete = useCallback(() => {
     if (tuition) {
       showAlert({

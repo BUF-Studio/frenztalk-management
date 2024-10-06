@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { Tuition } from "@/lib/models/tuition"
 import { cn } from "@/utils/manage-class-name"
 import { Subject } from "@/lib/models/subject"
+import { utcToLocal } from "@/utils/util"
 
 interface MonthCalendarProps {
   events: Tuition[]
@@ -106,11 +107,6 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     )
-  }
-
-  const utcToLocal = (utcDate: string): Date => {
-    const date = new Date(utcDate)
-    return new Date(date.getTime() + date.getTimezoneOffset() * 60000)
   }
 
   const getEventsForDate = (date: number) => {
