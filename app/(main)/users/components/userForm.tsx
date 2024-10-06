@@ -83,8 +83,6 @@ const UserForm: React.FC<UserFormProps> = ({ user }) => {
           new Date()
         );
         await updateTutor(newTutor);
-      } else if (formData.role === UserRole.ADMIN) {
-        // TODO: add admin to admin collection
       }
 
       setUser(updatedUser);

@@ -76,7 +76,7 @@ const UnpaidInvoiceCard: React.FC<TuitionCardProps> = ({
     try {
       // TODO : Enhance the checking logic
       setIsFreeze(!isFreeze);
-      freezeStudent(studentId!, e);
+      await freezeStudent(studentId!, e);
       isFreeze
         ? showSnackbar("Student unfreezed", "success")
         : showSnackbar("Student freezed", "success");

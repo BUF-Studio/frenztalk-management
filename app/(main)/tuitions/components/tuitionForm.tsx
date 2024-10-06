@@ -620,7 +620,6 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="datetime">Date & Time</Label>
-          {/* TODO:  TIME FORMAT PROBLEM */}
           <Input
             type="datetime-local"
             name="startDateTime"
