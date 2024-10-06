@@ -19,6 +19,10 @@ interface TuitionFormData {
   trial: boolean;
 }
 
+interface FormErrors {
+  [key: string]: string;
+}
+
 export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
   const { user } = useUser();
 
@@ -70,10 +74,81 @@ export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
     }
   }, [formData.levelId, formData.currency, levels]);
 
+  const validateTuitionForm = (
+    formData: TuitionFormData
+  ): FormErrors => {
+    const errors: FormErrors = {};
+
+    // Validate name
+    if (!formData.name.trim()) {
+      errors.name = "Tuition name is required.";
+    }
+
+    // Validate studentId
+    if (!formData.studentId) {
+      errors.studentId = "Student is required.";
+    }
+
+    // Validate tutorId (if the user is not a tutor, since you're handling this separately)
+    if (formData.tutorId === "") {
+      errors.tutorId = "Tutor is required.";
+    }
+
+    // Validate subjectId
+    if (!formData.subjectId) {
+      errors.subjectId = "Subject is required.";
+    }
+
+    // Validate levelId
+    if (!formData.levelId) {
+      errors.levelId = "Level is required.";
+    }
+
+    // Validate status
+    if (!formData.status) {
+      errors.status = "Status is required.";
+    }
+
+    // Validate currency
+    if (!formData.currency) {
+      errors.currency = "Currency is required.";
+    }
+
+    // Validate studentPrice
+    if (formData.studentPrice <= 0) {
+      errors.studentPrice = "Student price must be a positive value.";
+    }
+
+    // Validate tutorPrice
+    if (formData.tutorPrice <= 0) {
+      errors.tutorPrice = "Tutor price must be a positive value.";
+    }
+
+    // Validate startDateTime
+    if (!formData.startDateTime) {
+      errors.startDateTime = "Start date and time are required.";
+    } else if (isNaN(new Date(formData.startDateTime).getTime())) {
+      errors.startDateTime = "Invalid start date and time.";
+    }
+
+    // Validate duration
+    if (formData.duration <= 0) {
+      errors.duration = "Duration must be a positive number.";
+    }
+
+    // Validate repeatWeeks (if this field should not be zero)
+    if (formData.repeatWeeks <= 0) {
+      errors.repeatWeeks = "Repeat weeks must be a positive number.";
+    }
+
+    return errors;
+  };
+
   return {
     formData,
     setFormData,
     isSubmitting,
     setIsSubmitting,
+    validateTuitionForm,
   };
 };

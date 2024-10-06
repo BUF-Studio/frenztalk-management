@@ -2,13 +2,6 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "@/app/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -57,7 +50,6 @@ interface TuitionFormProps {
   initialTuition?: Tuition | null;
 }
 
-// TODO: Do input field validation!!!!!
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { user } = useUser();
   const { students } = useStudents();
@@ -74,7 +66,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
 
   const router = useRouter();
 
-  const { formData, setFormData, isSubmitting, setIsSubmitting } =
+  const { formData, setFormData, isSubmitting, setIsSubmitting, validateTuitionForm } =
     useTuitionForm(initialTuition, levels);
 
   const handleChange = (
@@ -92,6 +84,16 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const errors = validateTuitionForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setIsSubmitting(false);
+      return toast({
+        title: "Failed",
+        description: "Please fill in all required fields.",
+      });
+    }
+
     const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     try {
