@@ -30,7 +30,7 @@ export default function PaymentList() {
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          onClick={(e)=> e.stopPropagation}
+          onClick={(e) => e.stopPropagation()}
         />
       ),
       cell: ({ row }) => (
@@ -50,7 +50,7 @@ export default function PaymentList() {
         <DataTableColumnHeader column={column} title="Id" />
       ),
     },
-    ...(user!.role === UserRole.ADMIN
+    ...(user && user.role === UserRole.ADMIN
       ? [
           {
             accessorKey: "tutorId",
@@ -70,16 +70,6 @@ export default function PaymentList() {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Month" />
       ),
-    },
-    {
-      accessorKey: "currency",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Currency" />
-      ),
-      cell: ({ row }) => {
-        const currency: Currency = row.getValue("currency");
-        return <span>{currency}</span>;
-      },
     },
     {
       accessorKey: "rate",
@@ -139,7 +129,6 @@ export default function PaymentList() {
         columns={columns}
         getRowHref={(payment) => {
           router.push(`/payments/${payment.id}`);
-          // setInvoice(invoice);
         }}
       />
     </div>
