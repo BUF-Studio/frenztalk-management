@@ -15,6 +15,7 @@ import { db } from "@/lib/firebase/service/clientApp";
 import TuitionList from "../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
+import UserAvatar from "@/app/components/general/avatar";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const authContext = useAuth();
@@ -63,13 +64,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             <div className="flex items-center justify-between">
               <div className="flex flex-row gap-6 items-center">
                 <div className="w-20 h-20 bg-gray-200 dark:bg-white rounded-full flex items-center justify-center">
-                  {/* <span className="text-gray-500 text-xl">Avatar</span> */}
-                  {/* TODO: Change to Icon */}
-                  <img
-                    src={authContext.user?.photoURL ?? "/account-darkmode.png"}
-                    alt="avatar"
-                    className="w-20 h-20 object-cover rounded-full"
-                  />
+                  <UserAvatar url={authContext.user?.photoURL} />
                 </div>
                 <div className="grid grid-row-2">
                   <p className="text-lg font-semibold">
