@@ -197,14 +197,16 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         let newZoomMeetingId = null;
         let newZoomMeetingUrl = null;
 
+        
+
+
         if (
           initialTuition.startTime !== zoomStartTime ||
           initialTuition.name !== formData.name ||
           initialTuition.duration !== duration
         ) {
           if (newStartTime.getTime() > Date.now()) {
-            console.log("updatezoooom");
-
+            console.log("update zoom");
             const zoomAcc = getZoomAcc(
               zoomStartTime,
               duration,

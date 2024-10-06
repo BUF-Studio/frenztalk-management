@@ -18,7 +18,6 @@ export function formatDate(dateString: string): string | null | undefined {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-      timeZone: "UTC",
     });
   } catch (error) {
     console.error("Error formatting date:", error);
@@ -63,7 +62,6 @@ export const formatTime = (
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-      timeZone: "UTC", // Specify UTC timezone
     };
 
     const startTime = start

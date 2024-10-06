@@ -30,7 +30,6 @@ function LoadingContent() {
 
 export default function AddTuitionModal() {
   const router = useRouter();
-  console.log("Hello from AddStudentModal");
   return (
     <Dialog open={true} onOpenChange={() => router.back()}>
       <DialogContent className="sm:max-w-[550px] p-0 border-0">
