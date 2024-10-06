@@ -27,7 +27,13 @@ type FilterContextType = {
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 export function FilterProvider({ children }: { children: ReactNode }) {
-  const [selectedMonth, setSelectedMonth] = useState<string>("June 2023");
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const currentDate = new Date();
+    currentDate.setDate(1); // Set to the first day of the month
+    currentDate.setHours(0, 0, 0, 0); // Set time to midnight
+    return currentDate.toISOString();
+  });
+
   const [showGraphs, setShowGraphs] = useState<ShowGraphsState>({
     totalUser: true,
     totalHours: true,
