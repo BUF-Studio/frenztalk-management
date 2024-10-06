@@ -46,7 +46,7 @@ export default function TuitionCard({
       const now = new Date()
       const startTime = new Date(time)
       const endTime = new Date(startTime.getTime() + duration * 60000)
-      const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      const localNow = new Date(now.getTime())
       setIsLive(localNow >= startTime && localNow <= endTime)
     }
 
