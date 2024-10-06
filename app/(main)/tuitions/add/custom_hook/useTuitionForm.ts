@@ -23,19 +23,19 @@ export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
   const { user } = useUser();
 
   const [formData, setFormData] = useState<TuitionFormData>({
-    name: "",
-    studentId: "",
-    tutorId: user?.role === "tutor" ? user.id ?? "" : "",
-    subjectId: "",
-    levelId: "",
-    status: "",
-    currency: "",
-    studentPrice: 0,
-    tutorPrice: 0,
-    startDateTime: "",
-    duration: 60,
+    name: initialTuition?.name || "",
+    studentId: initialTuition?.studentId || "",
+    tutorId: initialTuition?.tutorId || "",
+    subjectId: initialTuition?.subjectId || "",
+    levelId: initialTuition?.levelId || "",
+    status: initialTuition?.status || "",
+    currency: initialTuition?.currency || Currency.MYR,
+    studentPrice: initialTuition?.studentPrice || 0,
+    tutorPrice: initialTuition?.tutorPrice || 0,
+    startDateTime: initialTuition?.startTime || "",
+    duration: initialTuition?.duration || 60,
     repeatWeeks: 1,
-    trial: true,
+    trial: initialTuition?.trial ?? true,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,29 +69,6 @@ export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
       }
     }
   }, [formData.levelId, formData.currency, levels]);
-
-  // Initialize form data from initialTuition
-  useEffect(() => {
-    if (initialTuition) {
-      setFormData({
-        name: initialTuition?.name || "",
-        studentId: initialTuition?.studentId || "",
-        tutorId: initialTuition?.tutorId || "",
-        subjectId: initialTuition?.subjectId || "",
-        levelId: initialTuition?.levelId || "",
-        status: initialTuition?.status || "",
-        currency: initialTuition?.currency || Currency.MYR,
-        studentPrice: initialTuition?.studentPrice || 0,
-        tutorPrice: initialTuition?.tutorPrice || 0,
-        startDateTime: initialTuition?.startTime || "",
-        duration: initialTuition?.duration || 60,
-        repeatWeeks: 1,
-        trial: initialTuition?.trial ?? true,
-      });
-
-      setIsLoading(false);
-    }
-  }, [initialTuition]);
 
   return {
     formData,
