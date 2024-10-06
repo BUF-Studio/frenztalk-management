@@ -77,7 +77,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           try {
             const tempStudent = studentData;
 
-            //TODO : make this transactional, rollback the changes when something failed in the mid way
+            // Freeze Student TODO : make this transactional, rollback the changes when something failed in the half way
             await updateStudent(tempStudent);
 
             const freezedStudentFutureClasses = tuitions.filter(

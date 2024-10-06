@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Return 204 No Content
             // return res.status(204).end();
         } catch (error: any) {
-            console.error('Error updating Zoom meeting start time:', error.message);
+            console.error('Error updating Zoom meeting SERVER:', error.message);
             if (error.response) {
                 return res.status(error.response.status).json({ error: error.response.data.message });
             } else {

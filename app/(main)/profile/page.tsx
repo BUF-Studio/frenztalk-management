@@ -15,6 +15,7 @@ import { db } from "@/lib/firebase/service/clientApp";
 import TuitionList from "../../components/main/tuitionList";
 import { InvoiceList } from "@/app/components/main/invoiceList";
 import { StudentList } from "@/app/components/main/studentList";
+import UserAvatar from "@/app/components/general/avatar";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
   const authContext = useAuth();
@@ -43,18 +44,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      {/* Back Button */}
-      <button
-        type="button"
-        // onClick={(e) => {
-        //   router.back();
-        // }}
-        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
-      >
-        <ArrowBackIosNew className="h-5 w-5 mr-2" />
-        <h1 className="text-lg font-semibold">Tutor Details</h1>
-      </button>
-
       {/* Main Section */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side */}
@@ -63,30 +52,24 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             <div className="flex items-center justify-between">
               <div className="flex flex-row gap-6 items-center">
                 <div className="w-20 h-20 bg-gray-200 dark:bg-white rounded-full flex items-center justify-center">
-                  {/* <span className="text-gray-500 text-xl">Avatar</span> */}
-                  {/* TODO: Change to Icon */}
-                  <img
-                    src={authContext.user?.photoURL ?? "/account-darkmode.png"}
-                    alt="avatar"
-                    className="w-20 h-20 object-cover rounded-full"
-                  />
+                  <UserAvatar url={authContext.user?.photoURL} />
                 </div>
                 <div className="grid grid-row-2">
                   <p className="text-lg font-semibold">
                     {authContext.user?.displayName}
                   </p>
                   <p className="text-xs text-gray-600 font-semibolds">
-                    {tutor?.des}
+                    {tutor?.des || "Admin"}
                   </p>
                 </div>
               </div>
-              <button
+              {tutor && <button
                 className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
                 type="button"
               >
                 <Edit size={16} strokeWidth={3} className="mr-1" />
                 Edit
-              </button>
+              </button>}
             </div>
           </div>
           {authContext.role === "tutor" && (

@@ -23,7 +23,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <div className="grid w-full items-center gap-1.5">
       <Label htmlFor={name}>{label}</Label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange} required={true} >
         <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
