@@ -159,7 +159,7 @@ export function toLocalIsoString(date: Date) {
   );
 }
 
-export const utcToLocal = (utcDate: string): Date => {
+export const utcIsoStringToLocalTime = (utcDate: string): Date => {
   const date = new Date(utcDate);
   return new Date(date.getTime());
 };

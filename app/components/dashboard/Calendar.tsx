@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { Tuition } from "@/lib/models/tuition"
 import { cn } from "@/utils/manage-class-name"
 import { Subject } from "@/lib/models/subject"
-import { utcToLocal } from "@/utils/util"
+import { utcIsoStringToLocalTime } from "@/utils/util"
 
 interface MonthCalendarProps {
   events: Tuition[]
@@ -112,7 +112,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
   const getEventsForDate = (date: number) => {
     const dayEvents = events.filter((event) => {
       if (!event.startTime) return false
-      const localEventDate = utcToLocal(event.startTime)
+      const localEventDate = utcIsoStringToLocalTime(event.startTime)
       return (
         localEventDate.getDate() === date &&
         localEventDate.getMonth() === currentDate.getMonth() &&
@@ -122,8 +122,8 @@ const MonthCalendar: React.FC<MonthCalendarProps> = ({
 
     dayEvents.sort(
       (a, b) =>
-        utcToLocal(a.startTime ?? "").getTime() -
-        utcToLocal(b.startTime ?? "").getTime()
+        utcIsoStringToLocalTime(a.startTime ?? "").getTime() -
+        utcIsoStringToLocalTime(b.startTime ?? "").getTime()
     )
 
     return {

@@ -17,7 +17,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { useUser } from "@/lib/context/collection/userContext";
 import { UserRole } from "@/lib/models/user";
-import { utcToLocal } from "@/utils/util";
+import { utcIsoStringToLocalTime } from "@/utils/util";
 
 export default function TuitionPage() {
   const { user } = useUser();
@@ -39,7 +39,7 @@ export default function TuitionPage() {
     const past = [];
 
     for (const tuition of tuitions) {
-      const localStartTime = utcToLocal(tuition.startTime);
+      const localStartTime = utcIsoStringToLocalTime(tuition.startTime);
       
       const localEndTime = new Date(
         localStartTime.getTime() + tuition.duration * 60000

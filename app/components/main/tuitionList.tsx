@@ -8,7 +8,7 @@ import { useSubjects } from "@/lib/context/collection/subjectContext"
 import { useTutors } from "@/lib/context/collection/tutorContext"
 import type { Tuition } from "@/lib/models/tuition"
 import TuitionCard from "../general/tuitionCard"
-import { utcToLocal } from "@/utils/util"
+import { utcIsoStringToLocalTime } from "@/utils/util"
 
 type TuitionListProps = {
   tuitions: Tuition[]
@@ -42,20 +42,20 @@ export default function TuitionList({ tuitions, filter }: TuitionListProps) {
   const in24Hours = new Date(utcNow.getTime() + 24 * 60 * 60 * 1000)
 
   const pastTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = utcToLocal(tuition.startTime);
+    const startTime = utcIsoStringToLocalTime(tuition.startTime);
     const endTime = new Date(startTime.getTime() + tuition.duration * 60000);
 
     return endTime < utcNow
   })
 
   const upcomingTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = utcToLocal(tuition.startTime);
+    const startTime = utcIsoStringToLocalTime(tuition.startTime);
     const endTime = new Date(startTime.getTime() + tuition.duration * 60000);
     return endTime >= utcNow && startTime <= in24Hours
   })
 
   const otherTuitions = filteredTuitions.filter((tuition) => {
-    const startTime = utcToLocal(tuition.startTime);
+    const startTime = utcIsoStringToLocalTime(tuition.startTime);
     return startTime > in24Hours
   })
 
