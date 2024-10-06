@@ -72,16 +72,30 @@ export default function InvoiceList() {
       ),
     },
     {
+      accessorKey: "currency",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Currency" />
+      ),
+      cell: ({ row }) => {
+        const currency: Currency = row.getValue("currency");
+        return (
+          <span>
+            {currency}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: "rate",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Rate" />
       ),
       cell: ({ row }) => {
-        const currency: string = row.getValue("currency");
+        // const currency: any = row.getValue("currency");
         const rate: number = row.getValue("rate");
         return (
           <span>
-            {currency} {rate.toFixed(2)}
+            {rate.toFixed(2)}
           </span>
         );
       },
