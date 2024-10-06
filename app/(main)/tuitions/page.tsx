@@ -17,6 +17,7 @@ import {
 } from "@/app/components/ui/tabs";
 import { useUser } from "@/lib/context/collection/userContext";
 import { UserRole } from "@/lib/models/user";
+import { utcToLocal } from "@/utils/util";
 
 export default function TuitionPage() {
   const { user } = useUser();
@@ -32,11 +33,6 @@ export default function TuitionPage() {
   useEffect(() => {
     console.log(selectedDate);
   }, [selectedDate]);
-
-  const utcToLocal = (utcDate: string): Date => {
-    const date = new Date(utcDate);
-    return new Date(date.getTime());
-  };
 
   const { presentTuitions, pastTuitions } = useMemo(() => {
     const present = [];

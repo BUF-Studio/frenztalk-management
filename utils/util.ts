@@ -158,3 +158,9 @@ export function toLocalIsoString(date: Date) {
     pad(Math.abs(tzo) % 60)
   );
 }
+
+export const utcToLocal = (utcDate: string): Date => {
+  const date = new Date(utcDate);
+  return new Date(date.getTime());
+};
+
