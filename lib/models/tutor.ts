@@ -8,6 +8,7 @@ export class Tutor {
     public des: string,
     public status: string,
     public pic: string,
+    public createdAt: Date
   ) {}
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -19,6 +20,7 @@ export class Tutor {
       data.des,
       data.status,
       data.pic,
+      data.createdAt ? new Date(data.createdAt) : new Date()
     );
   }
 
@@ -30,6 +32,7 @@ export class Tutor {
       des: this.des,
       status: this.status,
       pic: this.pic,
+      createdAt: this.createdAt.toISOString()
     };
   }
 }

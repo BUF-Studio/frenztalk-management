@@ -10,6 +10,7 @@ export class User {
     public name: string,
     public email: string,
     public role: UserRole,
+    public createdAt: Date
   ) {}
 
   static fromMap(data: Record<string, any>, id: string) {
@@ -17,7 +18,8 @@ export class User {
       id, 
       data.name,
       data.email,
-      data.role
+      data.role,
+      data.createdAt ? new Date(data.createdAt) : new Date()
     );
   }
 
@@ -26,6 +28,7 @@ export class User {
             name: this.name,
             email: this.email,
             role: this.role,
+            createdAt: this.createdAt.toISOString()
         };
     }
 }

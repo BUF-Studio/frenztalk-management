@@ -3,7 +3,8 @@ export class Student {
     public id: string | null,
     public name: string,
     public age: number,
-    public status: string
+    public status: string,
+    public createdAt: Date
   ) // public tuitionsId: string[],
   // public tutorsId: string[],
   {}
@@ -13,9 +14,8 @@ export class Student {
       id,
       data.name,
       data.age,
-      data.status
-      // data.tuitionsId ?? [],
-      // data.tutorsId ?? [],
+      data.status,
+      data.createdAt
     );
   }
 
@@ -24,8 +24,7 @@ export class Student {
       name: this.name,
       age: this.age,
       status: this.status,
-      // tuitionsId: this.tuitionsId,
-      // tutorsId: this.tutorsId,
+      createdAt: this.createdAt.toISOString()
     };
   }
 }
