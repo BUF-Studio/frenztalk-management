@@ -69,7 +69,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           initialStudent.id,
           formData.name,
           Number.parseInt(formData.age),
-          formData.status
+          formData.status,
+          initialStudent.createdAt,
         );
 
         if (formData.status === "frozen") {
@@ -100,7 +101,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           null,
           formData.name,
           Number.parseInt(formData.age),
-          formData.status
+          formData.status,
+          new Date(),
         );
         await addStudent(studentData);
       }

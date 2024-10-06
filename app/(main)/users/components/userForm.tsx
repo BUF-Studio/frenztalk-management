@@ -67,7 +67,8 @@ const UserForm: React.FC<UserFormProps> = ({ user }) => {
         user.id,
         formData.name,
         user.email,
-        formData.role as UserRole
+        formData.role as UserRole,
+        new Date()
       );
       await updateUser(updatedUser);
 
@@ -78,7 +79,8 @@ const UserForm: React.FC<UserFormProps> = ({ user }) => {
           [],
           "",
           "active",
-          ""
+          "",
+          new Date()
         );
         await updateTutor(newTutor);
       } else if (formData.role === UserRole.ADMIN) {
