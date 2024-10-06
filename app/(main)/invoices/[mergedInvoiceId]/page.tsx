@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import html2pdf from "html2pdf.js";
 import { useRouter } from "next/navigation";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { Button } from "@/app/components/ui/button";
@@ -47,8 +48,15 @@ export default function InvoiceDetail({
   const { subjects } = useSubjects();
   const { tutors } = useTutors();
   const [loading, setLoading] = useState(true);
+  const [logoLoaded, setLogoLoaded] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setLogoLoaded(true);
+    img.src = "/frenztalk-logo.jpg";
+  }, []);
 
   useEffect(() => {
     const foundMergeInvoice = mergeInvoices.find(
@@ -68,6 +76,20 @@ export default function InvoiceDetail({
   const student = students.find((s) => s.id === mergeInvoice?.studentId);
   const subject = (id: string) => subjects.find((s) => s.id === id);
   const tutor = (id: string) => tutors.find((t) => t.id === id);
+
+  const generatePDF = () => {
+    const element = document.getElementById(mergeInvoice?.id!);
+    if (element) {
+      const opt = {
+        margin: 10,
+        filename: `invoice_${mergeInvoice?.id}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -127,7 +149,7 @@ export default function InvoiceDetail({
       }
       toast({
         title: "Status Updated Successfully",
-        description: `Merge Invoice status has been updated to ${status}`
+        description: `Merge Invoice status has been updated to ${status}`,
       });
       router.refresh();
     } catch (error) {
@@ -139,7 +161,7 @@ export default function InvoiceDetail({
   }
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto ">
       <button
         type="button"
         onClick={() => router.back()}
@@ -148,9 +170,23 @@ export default function InvoiceDetail({
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
         <h1 className="text-lg font-semibold">Invoice Details</h1>
       </button>
-      <div className="rounded-lg shadow-md p-6 space-y-6">
+      <div
+        id={mergeInvoice?.id!}
+        className="rounded-lg shadow-md p-6 space-y-6 bg-background text-foreground"
+      >
         <div className="flex items-center justify-between">
           <div className="flex flex-row gap-2 items-center">
+            <div className="w-8 h-8">
+              {logoLoaded && (
+                <img
+                  src="/frenztalk-logo.jpg"
+                  alt="Frenztalk Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              )}
+            </div>
             <h1 className="text-2xl font-bold">Merged Invoice</h1>
             <div>
               <Badge variant={getStatusVariant(mergeInvoice?.status)}>
@@ -176,23 +212,35 @@ export default function InvoiceDetail({
                   ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button
-              variant="outline"
-              onClick={() => console.log("Edit")}
-            >
+            <Button variant="outline" onClick={generatePDF}>
               Download
               <Download className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex justify-between">
+          <div>
+            <p className="text-md mb-1 text-muted-foreground">Billed to:</p>
+            <strong className="font-bold text-lg mb-1">{student?.name}</strong>
+            {/* <div className="text-sm">
+              <p><span className="font-medium">Email:</span> --</p>
+              <p><span className="font-medium">Phone No.:</span> --</p>
+            </div> */}
+          </div>
+          <div className="flex flex-col items-end">
+            <p className="text-md mb-1 text-muted-foreground">
+              Payment Information
+            </p>
+            <strong className="font-bold text-md mb-1">FREN TALK HUB</strong>
+            <p className="font-normal text-sm mb-1">04400099507</p>
+            <p className="font-normal text-sm mb-1">Hong Leong Bank</p>
+          </div>
+        </div>
+        <Separator />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <p className="text-muted-foreground text-sm">Invoice ID</p>
             <p className="font-medium">{mergeInvoice.id}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-sm">Student</p>
-            <p className="font-medium">{student?.name}</p>
           </div>
           <div>
             <p className="text-muted-foreground text-sm">Invoice Month</p>

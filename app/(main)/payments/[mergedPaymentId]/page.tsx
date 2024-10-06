@@ -3,6 +3,7 @@
 import { usePayments } from "@/lib/context/collection/paymentContext";
 import { useSubjects } from "@/lib/context/collection/subjectContext";
 import { useTutors } from "@/lib/context/collection/tutorContext";
+import html2pdf from "html2pdf.js";
 import { Payment } from "@/lib/models/payment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,8 +47,15 @@ export default function PaymentDetail({
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const [loading, setLoading] = useState(true);
+  const [logoLoaded, setLogoLoaded] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setLogoLoaded(true);
+    img.src = "/frenztalk-logo.jpg";
+  }, []);
 
   useEffect(() => {
     const foundMergePayment = mergePayments.find(
@@ -125,7 +133,7 @@ export default function PaymentDetail({
       }
       toast({
         title: "Status Updated Successfully",
-        description: `Merge payment status has been updated to ${status}`
+        description: `Merge payment status has been updated to ${status}`,
       });
       router.refresh();
     } catch (error) {
@@ -138,7 +146,19 @@ export default function PaymentDetail({
     }
   }
 
-  
+  const generatePDF = () => {
+    const element = document.getElementById(mergePayment?.id!);
+    if (element) {
+      const opt = {
+        margin: 10,
+        filename: `invoice_${mergePayment?.id}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  };
 
   return (
     <div className="container mx-auto">
@@ -150,9 +170,23 @@ export default function PaymentDetail({
         <ArrowBackIosNew className="h-5 w-5 mr-2" />
         <h1 className="text-lg font-semibold">Payment Details</h1>
       </button>
-      <div className="rounded-lg shadow-md p-6 space-y-6">
+      <div
+        id={mergePayment?.id!}
+        className="rounded-lg shadow-md p-6 space-y-6 bg-background text-foreground"
+      >
         <div className="flex items-center justify-between">
           <div className="flex flex-row gap-2 items-center">
+            <div className="w-8 h-8">
+              {logoLoaded && (
+                <img
+                  src="/frenztalk-logo.jpg"
+                  alt="Frenztalk Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              )}
+            </div>
             <h1 className="text-2xl font-bold">Merged Payment</h1>
             <div>
               <Badge variant={getStatusVariant(mergePayment.status)}>
@@ -178,20 +212,35 @@ export default function PaymentDetail({
                   ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" onClick={() => console.log("Edit")}>
+            <Button variant="outline" onClick={generatePDF}>
               Download
               <Download className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex justify-between">
+          <div>
+            <p className="text-md mb-1 text-muted-foreground">Billed to:</p>
+            <strong className="font-bold text-lg mb-1">{tutor?.name}</strong>
+            {/* <div className="text-sm">
+              <p><span className="font-medium">Email:</span> --</p>
+              <p><span className="font-medium">Phone No.:</span> --</p>
+            </div> */}
+          </div>
+          {/* <div className="flex flex-col items-end">
+            <p className="text-md mb-1 text-muted-foreground">
+              Payment Information
+            </p>
+            <strong className="font-bold text-md mb-1">FREN TALK HUB</strong>
+            <p className="font-normal text-sm mb-1">04400099507</p>
+            <p className="font-normal text-sm mb-1">Hong Leong Bank</p>
+          </div> */}
+        </div>
+        <Separator />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <p className="text-muted-foreground text-sm">Payment ID</p>
             <p className="font-medium">{mergePayment.id}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-sm">Tutor</p>
-            <p className="font-medium">{tutor?.name}</p>
           </div>
           <div>
             <p className="text-muted-foreground text-sm">Payment Month</p>

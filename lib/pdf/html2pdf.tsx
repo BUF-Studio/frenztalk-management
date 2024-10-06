@@ -36,6 +36,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
   const router = useRouter();
 
   const tuition = tuitions.find((t) => t.id === invoice?.tuitionId);
+  console.log(`Tuition found: ${invoice?.tuitionId}`);
   const student = students.find((s) => s.id === invoice?.studentId);
   const subject = subjects.find((s) => s.id === invoice?.subjectId);
 
@@ -50,7 +51,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
     if (element) {
       const opt = {
         margin: 10,
-        filename: "invoice.pdf",
+        filename: `sinvoice_${invoice?.id}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -172,6 +173,20 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
               <p><span className="font-medium">Phone No.:</span> --</p>
             </div> */}
           </div>
+          <div className="flex flex-col items-end">
+            <p className="text-md mb-1 text-muted-foreground">
+              Payment Information
+            </p>
+            <strong className="font-bold text-md mb-1">
+              FREN TALK HUB
+            </strong>
+            <p className="font-normal text-sm mb-1">
+              04400099507
+            </p>
+            <p className="font-normal text-sm mb-1">
+              Hong Leong Bank
+            </p>
+          </div>
         </div>
         <div className="grid grid-cols-3 border border-border">
           <div className="p-4 border-r border-border">
@@ -218,7 +233,7 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
           <tbody>
             <tr className="border-b border-border">
               <td className="py-3 px-4">{subject?.name}</td>
-              <td className="py-3 px-4">{tuition?.startTime}</td>
+              <td className="py-3 px-4">{new Date(tuition?.startTime!).toDateString()}</td>
               <td className="py-3 px-4 text-center">{tuition?.duration}</td>
               <td className="py-3 px-4 text-center">
                 {tuition?.studentPrice.toFixed(2)}
@@ -269,15 +284,6 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
           </p>
           <p className="font-normal text-sm text-muted-foreground">
             Thank you and have a nice day!
-          </p>
-        </div>
-        <div>
-          <div className="font-bold mb-1">Payment Information</div>
-          <p className="text-sm">
-            <span className="font-medium">Account Name:</span> FREN TALK HUB
-          </p>
-          <p className="text-sm">
-            <span className="font-medium">Account No.:</span> 04400099507
           </p>
         </div>
       </div>

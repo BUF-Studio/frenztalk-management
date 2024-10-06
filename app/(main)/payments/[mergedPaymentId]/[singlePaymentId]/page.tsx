@@ -18,12 +18,9 @@ export default function SinglePaymentDetail({ params }: { params: { singlePaymen
     if (payment === null || payment.id !== params.singlePaymentId) {
       const foundPayment = payments.find((s) => s.id === params.singlePaymentId);
       if (foundPayment) setPayment(foundPayment);
+      console.log(foundPayment);
     }
   }, [params, payment, payments, setPayment]);
-
-  const handleStatusChange = (updatedPayment: Payment) => {
-    router.refresh();
-  }
 
   return (
     <div>

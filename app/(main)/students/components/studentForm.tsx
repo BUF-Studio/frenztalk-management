@@ -160,6 +160,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         onValueChange={(value) =>
           setFormData((prev) => ({ ...prev, status: value }))
         }
+        required
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Status" />
