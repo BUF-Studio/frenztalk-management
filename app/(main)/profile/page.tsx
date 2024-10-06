@@ -44,18 +44,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      {/* Back Button */}
-      <button
-        type="button"
-        // onClick={(e) => {
-        //   router.back();
-        // }}
-        className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-4"
-      >
-        <ArrowBackIosNew className="h-5 w-5 mr-2" />
-        <h1 className="text-lg font-semibold">Tutor Details</h1>
-      </button>
-
       {/* Main Section */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Side */}
@@ -71,17 +59,17 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                     {authContext.user?.displayName}
                   </p>
                   <p className="text-xs text-gray-600 font-semibolds">
-                    {tutor?.des}
+                    {tutor?.des || "Admin"}
                   </p>
                 </div>
               </div>
-              <button
+              {tutor && <button
                 className="flex flex-row items-center px-4 py-2  bg-red-800 text-white text-sm rounded-md font-semibold hover:bg-red-800/[0.8] hover:shadow-lg"
                 type="button"
               >
                 <Edit size={16} strokeWidth={3} className="mr-1" />
                 Edit
-              </button>
+              </button>}
             </div>
           </div>
           {authContext.role === "tutor" && (
