@@ -23,6 +23,8 @@ import { InvoiceStatus } from "@/lib/models/invoiceStatus";
 import { useSnackbar } from "@/lib/context/component/SnackbarContext";
 import { toast } from "@/app/components/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "@/lib/firebase/service/clientApp";
 
 interface InvoiceTemplateProps {
   invoice: Invoice | null;
@@ -33,6 +35,8 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
   const { students } = useStudents();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
   const router = useRouter();
 
   const tuition = tuitions.find((t) => t.id === invoice?.tuitionId);
@@ -41,9 +45,16 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
   const subject = subjects.find((s) => s.id === invoice?.subjectId);
 
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => setLogoLoaded(true);
-    img.src = "/frenztalk-logo.jpg";
+    const fetchLogo = async () => {
+      try {
+        const logoRef = ref(storage, "frenztalk-logo.jpg");
+        const url = await getDownloadURL(logoRef);
+        setLogoUrl(url);
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+    fetchLogo();
   }, []);
 
   const generatePDF = () => {
@@ -115,9 +126,10 @@ export default function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
         <div>
           <div className="flex items-center mb-4 gap-4">
             <div className="w-8 h-8">
-              {logoLoaded && (
+            {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src="/frenztalk-logo.jpg"
+                  src={logoUrl}
                   alt="Frenztalk Logo"
                   width={32}
                   height={32}

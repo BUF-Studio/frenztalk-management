@@ -20,6 +20,8 @@ import { Payment } from "@/lib/models/payment";
 import { updatePayment } from "@/lib/firebase/payment";
 import { toast } from "@/app/components/hooks/use-toast";
 import { useTutors } from "../context/collection/tutorContext";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "@/lib/firebase/service/clientApp";
 
 interface PaymentTemplateProps {
   initialPayment: Payment | null;
@@ -32,16 +34,23 @@ export default function PaymentTemplate({
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { tuitions } = useTuitions();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const tutor = tutors.find((t) => t.id === initialPayment?.tutorId);
   const subject = subjects.find((s) => s.id === initialPayment?.subjectId);
   const tuition = tuitions.find((t) => t.id === initialPayment?.tuitionId);
 
-
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => setLogoLoaded(true);
-    img.src = "/frenztalk-logo.jpg";
+    const fetchLogo = async () => {
+      try {
+        const logoRef = ref(storage, "frenztalk-logo.jpg");
+        const url = await getDownloadURL(logoRef);
+        setLogoUrl(url);
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+    fetchLogo();
   }, []);
 
   const generatePDF = () => {
@@ -120,9 +129,10 @@ export default function PaymentTemplate({
         <div>
           <div className="flex items-center mb-4 gap-4">
             <div className="w-8 h-8">
-              {logoLoaded && (
+              {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src="/frenztalk-logo.jpg"
+                  src={logoUrl}
                   alt="Frenztalk Logo"
                   width={32}
                   height={32}
@@ -181,15 +191,9 @@ export default function PaymentTemplate({
             <p className="text-md mb-1 text-muted-foreground">
               Payment Information
             </p>
-            <strong className="font-bold text-md mb-1">
-              FREN TALK HUB
-            </strong>
-            <p className="font-normal text-sm mb-1">
-              04400099507
-            </p>
-            <p className="font-normal text-sm mb-1">
-              Hong Leong Bank
-            </p>
+            <strong className="font-bold text-md mb-1">FREN TALK HUB</strong>
+            <p className="font-normal text-sm mb-1">04400099507</p>
+            <p className="font-normal text-sm mb-1">Hong Leong Bank</p>
           </div>
         </div>
         <div className="grid grid-cols-3 border border-border">
@@ -197,7 +201,9 @@ export default function PaymentTemplate({
             <p className="font-normal text-sm text-muted-foreground">
               Date Issued:
             </p>
-            <p className="mt-1 font-bold text-md">{new Date(initialPayment?.startDateTime).toDateString()}</p>
+            <p className="mt-1 font-bold text-md">
+              {new Date(initialPayment?.startDateTime).toDateString()}
+            </p>
           </div>
           <div className="p-4 border-r border-border">
             <p className="font-normal text-sm text-muted-foreground">
@@ -237,7 +243,9 @@ export default function PaymentTemplate({
           <tbody>
             <tr className="border-b border-border">
               <td className="py-3 px-4">{subject?.name}</td>
-              <td className="py-3 px-4">{new Date(tuition?.startTime!).toDateString()}</td>
+              <td className="py-3 px-4">
+                {new Date(tuition?.startTime!).toDateString()}
+              </td>
               <td className="py-3 px-4 text-center">{tuition?.duration}</td>
               <td className="py-3 px-4 text-center">
                 {tuition?.studentPrice.toFixed(2)}
@@ -273,7 +281,9 @@ export default function PaymentTemplate({
                 Total
               </td>
               <td className="py-3 px-4 text-right font-bold text-xl">
-                {`${initialPayment?.currency} ${initialPayment?.rate.toFixed(2)}`}
+                {`${initialPayment?.currency} ${initialPayment?.rate.toFixed(
+                  2
+                )}`}
               </td>
             </tr>
           </tfoot>

@@ -34,6 +34,8 @@ import { Download } from "lucide-react";
 import { updateMergePayment } from "@/lib/firebase/mergePayment";
 import { toast } from "@/app/components/hooks/use-toast";
 import { updatePayment } from "@/lib/firebase/payment";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "@/lib/firebase/service/clientApp";
 
 export default function PaymentDetail({
   params,
@@ -47,14 +49,21 @@ export default function PaymentDetail({
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const [loading, setLoading] = useState(true);
-  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => setLogoLoaded(true);
-    img.src = "/frenztalk-logo.jpg";
+    const fetchLogo = async () => {
+      try {
+        const logoRef = ref(storage, "frenztalk-logo.jpg");
+        const url = await getDownloadURL(logoRef);
+        setLogoUrl(url);
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+    fetchLogo();
   }, []);
 
   useEffect(() => {
@@ -177,9 +186,10 @@ export default function PaymentDetail({
         <div className="flex items-center justify-between">
           <div className="flex flex-row gap-2 items-center">
             <div className="w-8 h-8">
-              {logoLoaded && (
+              {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src="/frenztalk-logo.jpg"
+                  src={logoUrl}
                   alt="Frenztalk Logo"
                   width={32}
                   height={32}

@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -28,22 +29,40 @@ import {
   SidebarLink,
 } from "@/app/components/general/sidebar"
 import UserAvatar from "@/app/components/general/avatar"
+import { storage } from "@/lib/firebase/service/clientApp"
+import { getDownloadURL, ref } from "firebase/storage"
 
 const Logo = ({ open }: { open: boolean }) => {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+
+  useState(() => {
+    const fetchLogo = async () => {
+      try {
+        const logoRef = ref(storage, 'frenztalk-logo.jpg')
+        const url = await getDownloadURL(logoRef)
+        setLogoUrl(url)
+      } catch (error) {
+        console.error("Error fetching logo:", error)
+      }
+    }
+    fetchLogo()
+  })
+
   return (
     <Link
       href="#"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
+      className="font-normal flex space-x-2 items-center justify-center text-sm text-black py-1 relative z-20"
     >
-      <Image
-        src="/frenztalk-logo.jpg"
-        alt="Frenztalk Logo"
-        width={80}
-        height={80}
-        priority
-        className="h-10 w-10 bg-black dark:bg-white flex-shrink-0"
-      />
-      {open && (
+      {logoUrl && (
+        <Image
+          src={logoUrl}
+          alt="Frenztalk Logo"
+          width={80}
+          height={80}
+          priority
+        />
+      )}
+      {/* {open && (
         <motion.span
           initial={{ opacity: 0, x: 0 }}
           animate={{ opacity: 1, x: 0 }}
@@ -52,10 +71,11 @@ const Logo = ({ open }: { open: boolean }) => {
         >
           Frenztalk
         </motion.span>
-      )}
+      )} */}
     </Link>
   )
 }
+
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const authContext = useAuth()
