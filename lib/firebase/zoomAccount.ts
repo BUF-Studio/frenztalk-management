@@ -1,5 +1,5 @@
 import { type DocumentData, type Query, query, where } from "firebase/firestore";
-import { addData, collectionStream, setData } from "./service/firestoreService";
+import { addData, collectionStream, deleteData, setData } from "./service/firestoreService";
 import { ZoomAccount } from "@/lib/models/zoom";
 
 const PATH = "zoomAccount";
@@ -34,6 +34,22 @@ export const updateZoomAccount = async (
     );
   }
 };
+
+export const deleteZoomAccount = async (
+  id: string,
+): Promise<void> => {
+  try {
+    const path = `${PATH}/${id}`;
+    await deleteData(path)
+    console.log(`ZoomAccount ${id} deleted in Firestore`);
+  } catch (error) {
+    console.error(
+      `Error setting ZoomAccount ${id} in Firestore:`,
+      error,
+    );
+  }
+};
+
 
 export const zoomAccountStream = (
   onUpdate: (updatedData: ZoomAccount[]) => void,

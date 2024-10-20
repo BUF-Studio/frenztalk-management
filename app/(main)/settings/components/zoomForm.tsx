@@ -1,8 +1,9 @@
 "use client";
 
 import TextFieldComponent from "@/app/components/general/input/textField";
-import { addZoomAccount, updateZoomAccount } from "@/lib/firebase/zoomAccount";
+import { addZoomAccount, deleteZoomAccount, updateZoomAccount } from "@/lib/firebase/zoomAccount";
 import { ZoomAccount } from "@/lib/models/zoom";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface ZoomFormProps {
@@ -16,6 +17,7 @@ function ZoomForm({ zoom }: ZoomFormProps) {
     clientSecret: "",
     accountId: "",
   });
+  const router = useRouter();
 
   useEffect(() => {
     if (zoom) {
@@ -61,6 +63,7 @@ function ZoomForm({ zoom }: ZoomFormProps) {
       updateZoomAccount(zoomAcc);
     }
     console.log("Form data submitted:", formData);
+    router.back();
   };
 
   return (
@@ -100,6 +103,16 @@ function ZoomForm({ zoom }: ZoomFormProps) {
         onChange={handleChange}
       />
       <div className="flex justify-end space-x-2 mt-6">
+        {zoom && <button
+          type="button"
+          onClick={() => {
+            deleteZoomAccount(zoom.id!)
+            router.back();
+          }}
+          className="block select-none rounded bg-gradient-to-tr from-red-900 to-red-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        >
+          Delete Account
+        </button>}
         <button
           type="submit"
           className="block select-none rounded bg-gradient-to-tr from-red-900 to-red-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
