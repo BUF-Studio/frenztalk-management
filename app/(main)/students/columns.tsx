@@ -69,6 +69,8 @@ export const columns: ColumnDef<Student>[] = [
             return "default";
           case "frozen":
             return "destructive";
+          case "inactive":
+            return "destructive";
           default:
             return "outline";
         }

@@ -149,6 +149,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
     status: [
       { value: "active", label: "Active" },
       { value: "frozen", label: "Frozen" },
+      { value: "inactive", label: "Inactive" },
     ],
   };
 

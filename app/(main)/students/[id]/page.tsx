@@ -77,6 +77,8 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
         return "default";
       case "frozen":
         return "destructive";
+      case "inactive":
+          return "destructive";
       default:
         return "destructive";
     }
