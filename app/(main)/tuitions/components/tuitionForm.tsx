@@ -85,9 +85,12 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+  
+
     const errors = validateTuitionForm(formData);
     if (Object.keys(errors).length > 0) {
       setIsSubmitting(false);
+      console.log(errors)
       return toast({
         title: "Failed",
         description: "Please fill in all required fields.",
@@ -108,8 +111,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         for (let i = 0; i < repeatWeeks; i++) {
           const newStartTime = new Date(
             startTime.getTime() +
-              i * 7 * 24 * 60 * 60 * 1000 +
-              8 * 60 * 60 * 1000
+            i * 7 * 24 * 60 * 60 * 1000 +
+            8 * 60 * 60 * 1000
           );
           const zoomStartTime = newStartTime.toISOString();
 
@@ -125,7 +128,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
             }
           }
 
-          if (!zoomAcc) throw new Error( "No Time Slot available in any of the Zoom Account");
+          if (!zoomAcc) throw new Error("No Time Slot available in any of the Zoom Account");
 
           const zoom = await createZoom(
             zoomAcc,
@@ -470,8 +473,8 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
           deleteZoomAcc
             ? ""
             : newZoomMeetingId
-            ? newZoomMeetingId
-            : initialTuition.meetingId,
+              ? newZoomMeetingId
+              : initialTuition.meetingId,
           formData.trial,
           zoomAccount
         );
@@ -584,7 +587,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         options={optionsMap.status}
         placeholder="Select Status"
       />
-      <SelectField
+      {user?.role !== "tutor" && <SelectField
         label="Currency"
         name="currency"
         value={formData.currency}
@@ -593,7 +596,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
         }
         options={optionsMap.currency}
         placeholder="Select Currency"
-      />
+      />}
 
       {user?.role !== "tutor" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

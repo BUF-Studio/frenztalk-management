@@ -29,7 +29,7 @@ export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
   const [formData, setFormData] = useState<TuitionFormData>({
     name: initialTuition?.name || "",
     studentId: initialTuition?.studentId || "",
-    tutorId: initialTuition?.tutorId || "",
+    tutorId: initialTuition?.tutorId || (user?.role === 'tutor' ? user.id:''),
     subjectId: initialTuition?.subjectId || "",
     levelId: initialTuition?.levelId || "",
     status: initialTuition?.status || "",

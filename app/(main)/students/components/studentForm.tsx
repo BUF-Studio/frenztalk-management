@@ -27,6 +27,10 @@ interface StudentFormProps {
 const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
   const [formData, setFormData] = useState({
     name: "",
+    contact: "",
+    parentName: "",
+    parentContact: "",
+    nationality: "",
     age: "",
     status: "active",
   });
@@ -42,9 +46,16 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       console.log("initial student:", initialStudent);
       setFormData({
         name: initialStudent.name || "",
+        contact: initialStudent.contact || "",
+        parentName: initialStudent.parentName || "",
+        parentContact: initialStudent.parentContact || "",
+        nationality: initialStudent.nationality || "",
         age: initialStudent.age?.toString() || "",
         status: initialStudent.status || "active",
       });
+
+      console.log(initialStudent.name)
+      console.log(initialStudent.createdAt)
     }
     setIsLoading(false);
   }, [initialStudent]);
@@ -68,6 +79,10 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         const studentData = new Student(
           initialStudent.id,
           formData.name,
+          formData.contact,
+          formData.parentName,
+          formData.parentContact,
+          formData.nationality,
           Number.parseInt(formData.age),
           formData.status,
           initialStudent.createdAt,
@@ -92,6 +107,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
             showSnackbar("Error: ", "error");
           }
         } else {
+          console.log('stu')
           await updateStudent(studentData);
         }
 
@@ -100,6 +116,10 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         const studentData = new Student(
           null,
           formData.name,
+          formData.contact,
+          formData.parentName,
+          formData.parentContact,
+          formData.nationality,
           Number.parseInt(formData.age),
           formData.status,
           new Date(),
@@ -108,9 +128,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
       }
       toast({
         title: initialStudent ? "Student Updated" : "Student Created",
-        description: `Successfully ${
-          initialStudent ? "updated" : "added"
-        } student: ${formData.name}`,
+        description: `Successfully ${initialStudent ? "updated" : "added"
+          } student: ${formData.name}`,
         variant: "default",
       });
       router.back();
@@ -148,6 +167,38 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
         required
       />
       <Input
+        type="text"
+        name="contact"
+        value={formData.contact}
+        onChange={handleChange}
+        placeholder="Contact"
+        required
+      />
+      <Input
+        type="text"
+        name="parentName"
+        value={formData.parentName}
+        onChange={handleChange}
+        placeholder="Parent Name"
+        required
+      />
+      <Input
+        type="text"
+        name="parentContact"
+        value={formData.parentContact}
+        onChange={handleChange}
+        placeholder="Parent Contact"
+        required
+      />
+      <Input
+        type="text"
+        name="nationality"
+        value={formData.nationality}
+        onChange={handleChange}
+        placeholder="Nationality"
+        required
+      />
+      <Input
         type="number"
         name="age"
         value={formData.age}
@@ -179,8 +230,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialStudent }) => {
           {isSubmitting
             ? "Loading..."
             : initialStudent
-            ? "Update Student"
-            : "Add Student"}
+              ? "Update Student"
+              : "Add Student"}
         </Button>
       </div>
     </form>
