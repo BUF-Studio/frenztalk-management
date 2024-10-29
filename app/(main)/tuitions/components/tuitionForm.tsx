@@ -52,7 +52,7 @@ interface TuitionFormProps {
 
 const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
   const { user } = useUser();
-  const { students } = useStudents();
+  const { nonFreezedStudents } = useStudents();
   const { tutors } = useTutors();
   const { subjects } = useSubjects();
   const { zoomAccounts } = useZoomAccounts();
@@ -506,7 +506,7 @@ const TuitionForm: React.FC<TuitionFormProps> = ({ initialTuition }) => {
       value: currency,
       label: currency,
     })),
-    student: students.map((student) => ({
+    student: nonFreezedStudents.map((student) => ({
       value: student.id,
       label: student.name,
     })),

@@ -12,10 +12,12 @@ import { useTuitions } from "./tuitionContext";
 
 type StudentsContextType = {
   students: Student[];
+  nonFreezedStudents: Student[];
 };
 
 const initialContext: StudentsContextType = {
   students: [],
+  nonFreezedStudents: [],
 };
 // Create a context to hold the data
 const StudentsContext = createContext<StudentsContextType>(initialContext);
@@ -29,6 +31,7 @@ export const useStudents = () => useContext(StudentsContext);
 
 function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
   const [students, setStudents] = useState<Student[]>([]);
+  const [ nonFreezedStudents, setNonFreezedStudent ] = useState<Student[]>([]);
 
   const { tuitions } = useTuitions()
 
@@ -65,8 +68,12 @@ function StudentsProvider({ children, tutorId }: StudentsProviderProps) {
     return () => unsubscribe();
   }, [tutorId, tuitions]);
 
+  useEffect(()=>{
+    setNonFreezedStudent(students.filter((student)=>student.status === "active"));
+  }, [students]);
+
   return (
-    <StudentsContext.Provider value={{ students }}>
+    <StudentsContext.Provider value={{ students, nonFreezedStudents }}>
       {children}
     </StudentsContext.Provider>
   );
