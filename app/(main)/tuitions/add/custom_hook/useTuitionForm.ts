@@ -43,8 +43,6 @@ export const useTuitionForm = (initialTuition: any, levels: Level[]) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
   // Updates prices when levelId or currency changes
   useEffect(() => {
     if (formData.levelId && formData.currency) {

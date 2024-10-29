@@ -123,8 +123,8 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                   <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Age : ${student?.age}`}</p>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Contact Number : ${student?.contact??''}`}</p>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Parent Name : ${student?.parentName??''}`}</p>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Parent Contact Number ${student?.parentContact??''}`}</p>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Nationality ${student?.nationality??''}`}</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Parent Contact Number : ${student?.parentContact??''}`}</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">{`Nationality : ${student?.nationality??''}`}</p>
                 </div>
               </div>
               <button
