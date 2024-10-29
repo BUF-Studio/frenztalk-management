@@ -24,7 +24,10 @@ export default function SignIn() {
     setLoading(true);
 
     try {
-      await signInWithEmail(email, password);
+      const response = await signInWithEmail(email, password);
+      if (!response || !response.uid) {
+        throw new Error("Failed to sign in with email and password");
+      }
       showSnackbar("Signed in successfully", "success");
       router.push("/tuitions");
     } catch (error) {
@@ -37,12 +40,15 @@ export default function SignIn() {
 
   const handleGoogleLogin = async () => {
     try {
+      setLoading(true);
       await signInWithGoogle();
       console.log("Signed in with Google successfully");
       showSnackbar("Signed in successfully", "success");
       router.push("/tuitions");
     } catch (err) {
       console.error("Error signing in with Google:", err);
+    }finally{
+      setLoading(false);
     }
   };
 
